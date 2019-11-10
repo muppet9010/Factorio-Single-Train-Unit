@@ -1,0 +1,11 @@
+{
+    "name": "multiple_unit_trains",
+    "version": "17.0.0",
+    "title": "Multiple Unit Trains",
+    "author": "Muppet9010",
+    "contact": "",
+    "homepage": "https://mods.factorio.com/mod/multiple_unit_trains",
+    "factorio_version": "0.17",
+    "dependencies": ["base >= 0.17.75"],
+    "description": "Adds multiple unit trains that are standard length, include storage and can travel in both directions"
+}
