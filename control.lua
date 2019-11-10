@@ -24,9 +24,40 @@ local function OnSettingChanged(event)
     UpdateSetting(event.setting)
 end
 
+local function PlaceWagon(prototypeName, position, surface, force, orientation)
+    rendering.draw_circle {
+        color = {r = 0, g = 0, b = 1},
+        radius = 0.1,
+        filled = true,
+        target = position,
+        surface = surface
+    }
+    local wagon = surface.create_entity {name = prototypeName, position = position, force = force}
+    if wagon == nil then
+        Logging.LogPrint(prototypeName .. " failed to place at " .. Logging.PositionToString(position) .. " with orientation: " .. orientation)
+        return
+    end
+    local orientationDiff = orientation - wagon.orientation
+    if orientationDiff > 0.25 or orientationDiff < -0.25 then
+        wagon.rotate()
+    end
+end
+
 local function OnBuiltEntity_MUPlacement(event)
     local entity = event.created_entity
-    game.print(entity.name .. ": " .. Logging.PositionToString(entity.position))
+    local surface = entity.surface
+    local force = entity.force
+    local locoDistance = (StaticData.mu_placement.joint_distance / 2) - (StaticData.mu_locomotive.joint_distance / 2)
+    local forwardLocoOrientation = entity.orientation
+    local forwardLocoPosition = Utils.GetPositionForAngledDistance(entity.position, locoDistance, forwardLocoOrientation * 360)
+    local rearLocoOrientation = entity.orientation - 0.5
+    local rearLocoPosition = Utils.GetPositionForAngledDistance(entity.position, locoDistance, rearLocoOrientation * 360)
+    local cargoOrientation = entity.orientation
+    local cargoPosition = entity.position
+    entity.destroy()
+    PlaceWagon(StaticData.mu_locomotive.name, forwardLocoPosition, surface, force, forwardLocoOrientation)
+    PlaceWagon(StaticData.mu_locomotive.name, rearLocoPosition, surface, force, rearLocoOrientation)
+    PlaceWagon(StaticData.mu_cargo_wagon.name, cargoPosition, surface, force, cargoOrientation)
 end
 
 script.on_init(OnStartup)
