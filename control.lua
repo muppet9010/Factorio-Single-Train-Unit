@@ -32,14 +32,18 @@ local function PlaceWagon(prototypeName, position, surface, force, orientation)
         target = position,
         surface = surface
     }
-    local wagon = surface.create_entity {name = prototypeName, position = position, force = force}
+    local wagon = surface.create_entity {name = prototypeName, position = position, force = force, snap_to_train_stop = false}
     if wagon == nil then
         Logging.LogPrint(prototypeName .. " failed to place at " .. Logging.PositionToString(position) .. " with orientation: " .. orientation)
         return
     end
     local orientationDiff = orientation - wagon.orientation
     if orientationDiff > 0.25 or orientationDiff < -0.25 then
+        wagon.disconnect_rolling_stock(defines.rail_direction.front)
+        wagon.disconnect_rolling_stock(defines.rail_direction.back)
         wagon.rotate()
+        wagon.connect_rolling_stock(defines.rail_direction.front)
+        wagon.connect_rolling_stock(defines.rail_direction.back)
     end
 end
 

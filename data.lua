@@ -28,6 +28,7 @@ muLoco.collision_box = StaticData.mu_locomotive.collision_box
 muLoco.selection_box = StaticData.mu_locomotive.selection_box
 muLoco.joint_distance = StaticData.mu_locomotive.joint_distance
 muLoco.connection_distance = StaticData.mu_locomotive.connection_distance
+muLoco.connection_snap_distance = StaticData.mu_locomotive.connection_snap_distance
 
 local muCargoWagon = Utils.DeepCopy(data.raw["cargo-wagon"]["cargo-wagon"])
 muCargoWagon.name = StaticData.mu_cargo_wagon.name
@@ -40,6 +41,7 @@ muCargoWagon.collision_box = StaticData.mu_cargo_wagon.collision_box
 muCargoWagon.selection_box = StaticData.mu_cargo_wagon.selection_box
 muCargoWagon.joint_distance = StaticData.mu_cargo_wagon.joint_distance
 muCargoWagon.connection_distance = StaticData.mu_cargo_wagon.connection_distance
+muCargoWagon.connection_snap_distance = StaticData.mu_cargo_wagon.connection_snap_distance
 
 local muPlacement = Utils.DeepCopy(data.raw.locomotive.locomotive)
 muPlacement.name = StaticData.mu_placement.name
@@ -47,7 +49,8 @@ muPlacement.collision_box = StaticData.mu_placement.collision_box
 muPlacement.selection_box = StaticData.mu_placement.selection_box
 muPlacement.joint_distance = StaticData.mu_placement.joint_distance
 muPlacement.connection_distance = StaticData.mu_placement.connection_distance
-muCargoWagon.wheels = EmptyRotatedSprite()
+muPlacement.connection_snap_distance = StaticData.mu_placement.connection_snap_distance
+muPlacement.wheels = EmptyRotatedSprite()
 
 data:extend(
     {
