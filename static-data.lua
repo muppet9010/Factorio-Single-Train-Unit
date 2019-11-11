@@ -23,7 +23,7 @@ StaticData.mu_placement = {
     collision_box = {{-0.6, -3}, {0.6, 3}},
     selection_box = {{-1, -3}, {1, 3}},
     connection_distance = 1.8,
-    connection_snap_distance = 2,
+    connection_snap_distance = 4,
     joint_distance = 5.2
 }
 

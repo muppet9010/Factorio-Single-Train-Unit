@@ -42,9 +42,8 @@ local function PlaceWagon(prototypeName, position, surface, force, orientation)
         wagon.disconnect_rolling_stock(defines.rail_direction.front)
         wagon.disconnect_rolling_stock(defines.rail_direction.back)
         wagon.rotate()
-        wagon.connect_rolling_stock(defines.rail_direction.front)
-        wagon.connect_rolling_stock(defines.rail_direction.back)
     end
+    return wagon
 end
 
 local function OnBuiltEntity_MUPlacement(event)
@@ -56,12 +55,20 @@ local function OnBuiltEntity_MUPlacement(event)
     local forwardLocoPosition = Utils.GetPositionForAngledDistance(entity.position, locoDistance, forwardLocoOrientation * 360)
     local rearLocoOrientation = entity.orientation - 0.5
     local rearLocoPosition = Utils.GetPositionForAngledDistance(entity.position, locoDistance, rearLocoOrientation * 360)
-    local cargoOrientation = entity.orientation
-    local cargoPosition = entity.position
+    local middleCargoOrientation = entity.orientation
+    local middleCargoPosition = entity.position
+
     entity.destroy()
-    PlaceWagon(StaticData.mu_locomotive.name, forwardLocoPosition, surface, force, forwardLocoOrientation)
-    PlaceWagon(StaticData.mu_locomotive.name, rearLocoPosition, surface, force, rearLocoOrientation)
-    PlaceWagon(StaticData.mu_cargo_wagon.name, cargoPosition, surface, force, cargoOrientation)
+    local forwardLoco = PlaceWagon(StaticData.mu_locomotive.name, forwardLocoPosition, surface, force, forwardLocoOrientation)
+    local rearLoco = PlaceWagon(StaticData.mu_locomotive.name, rearLocoPosition, surface, force, rearLocoOrientation)
+    local middleCargo = PlaceWagon(StaticData.mu_cargo_wagon.name, middleCargoPosition, surface, force, middleCargoOrientation)
+    for _, wagon in pairs({forwardLoco, rearLoco, middleCargo}) do
+        if wagon == nil then
+            return
+        end
+        wagon.connect_rolling_stock(defines.rail_direction.front)
+        wagon.connect_rolling_stock(defines.rail_direction.back)
+    end
 end
 
 script.on_init(OnStartup)
