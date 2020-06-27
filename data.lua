@@ -58,7 +58,7 @@ data:extend(
         {
             type = "item-with-entity-data",
             name = StaticData.mu_locomotive.name,
-            icon = "__base__/graphics/icons/diesel-locomotive.png",
+            icon = "__base__/graphics/icons/locomotive.png",
             icon_size = 32,
             subgroup = "transport",
             order = "za1",
@@ -80,7 +80,7 @@ data:extend(
         {
             type = "item-with-entity-data",
             name = StaticData.mu_placement.name,
-            icon = "__base__/graphics/icons/diesel-locomotive.png",
+            icon = "__base__/graphics/icons/locomotive.png",
             icon_size = 32,
             subgroup = "transport",
             order = "za0",
