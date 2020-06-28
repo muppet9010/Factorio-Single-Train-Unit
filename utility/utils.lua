@@ -779,4 +779,8 @@ function Utils.IsPositionWithinCircled(circleCenter, radius, position)
     end
 end
 
+Utils.GetValueAndUnitFromString = function(text)
+    return string.match(text, "%d+"), string.match(text, "%a+")
+end
+
 return Utils

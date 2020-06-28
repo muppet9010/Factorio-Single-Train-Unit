@@ -5,12 +5,14 @@
     + If one part is deconstructed the whole single train unit should be picked up.
     + Link damage between the 3 parts.
     + Avoid the uncoupling of the inner cargo wagon from the locos.
-- Balance:
-    - Apply approperiate cargo size, train fuel inventory, speed and weight to the sub parts so that they are equal to half a regular loco pulling a single wagon.
-    - Crafting cost equal to 2 locos and a wagon.
++ Balance:
+    + Apply approperiate cargo size and train fuel inventory at 1/3 regular. Speed and weight, plus other factors at something between a singular loco and a loco pulling a wagon.
+    + Crafting cost equal to 2 locos and a wagon.
 - Blueprint support:
+    - Prevent the trains being blueprinted for now.
     - If placed train is blueprinted convert BP item to the placable one or handle this scenario some other way.
 - Bot support:
+    - Prevent being marked for deconstruction for now.
     - Handle bot placement.
     - Handle bot mining.
     - Handle mod entity placement?

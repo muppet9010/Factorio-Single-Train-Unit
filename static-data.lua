@@ -1,25 +1,25 @@
 local StaticData = {}
 
 StaticData.mu_locomotive = {
-    name = "mu_locomotive",
+    name = "single_train_unit-double_end_loco",
     collision_box = {{-0.6, -0.6}, {0.6, 0.6}},
-    selection_box = {{-1, -0.7}, {1, 0.7}},
+    selection_box = {{-1, -1}, {1, 1}},
     connection_distance = 1.8,
     connection_snap_distance = 2,
     joint_distance = 0.4
 }
 
 StaticData.mu_cargo_wagon = {
-    name = "mu_cargo_wagon",
+    name = "single_train_unit-double_end_cargo_wagon",
     collision_box = {{-0.6, -1}, {0.6, 1}},
-    selection_box = {{-1, -1.2}, {1, 1.2}},
+    selection_box = {{-1, -1.4}, {1, 1.4}},
     connection_distance = 1.8,
     connection_snap_distance = 2,
     joint_distance = 0.8
 }
 
 StaticData.mu_placement = {
-    name = "mu_placement",
+    name = "single_train_unit-double_end_loco_cargo_wagon",
     collision_box = {{-0.6, -3}, {0.6, 3}},
     selection_box = {{-1, -3}, {1, 3}},
     connection_distance = 1.8,
