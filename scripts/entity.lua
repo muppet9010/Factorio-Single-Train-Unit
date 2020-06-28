@@ -10,6 +10,13 @@ local LoopDirectionValue = function(value)
     return Utils.LoopIntValueWithinRange(value, 0, 7)
 end
 
+Entity.CreateGlobals = function()
+    global.entity = global.entity or {}
+    global.entity.forces = global.entity.forces or {}
+    global.singleTrainUnitIdsWagonsIds = {}
+    global.wagonsIdsSingleTrainUnitIds = {}
+end
+
 Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
     if placementAttemptCircles then
         rendering.draw_circle {
@@ -29,6 +36,7 @@ Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
 end
 
 Entity.PlaceOrionalLocoBack = function(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, failedOnName, eventReplaced)
+    -- As we failed to place all the expected parts remove any placed. Then place the origional loco placement entity back, but backwards. Calling the replacement process on this reversed placement loco generally works for any standard use cases because Factorio.
     Logging.LogPrint("WARNING: " .. "failed placing " .. failedOnName, writeAllWarnings)
     for _, wagon in pairs(wagons) do
         if wagon ~= nil and wagon.valid then
@@ -90,11 +98,47 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     end
 
     for _, wagon in pairs(wagons) do
-        if wagon == nil then
-            return
-        end
         wagon.connect_rolling_stock(defines.rail_direction.front)
         wagon.connect_rolling_stock(defines.rail_direction.back)
+    end
+
+    Entity.RecordSingleUnit(force, wagons)
+end
+
+Entity.RecordSingleUnit = function(force, wagons)
+    global.entity.forces[force.index] =
+        global.entity.forces[force.index] or
+        {
+            singleTrainUnits = {}
+        }
+    local forcesEntry = global.entity.forces[force.index]
+
+    forcesEntry.singleTrainUnits[#forcesEntry.singleTrainUnits] = {
+        id = #forcesEntry.singleTrainUnits,
+        wagons = wagons
+    }
+
+    local singleTrainUnitId = #global.singleTrainUnitIdsWagonsIds
+    for _, wagon in pairs(wagons) do
+        global.singleTrainUnitIdsWagonsIds[singleTrainUnitId] = wagon.unit_number
+        global.wagonsIdsSingleTrainUnitIds[wagon.unit_number] = singleTrainUnitId
+    end
+end
+
+Entity.OnTrainCreated = function(event)
+    if event.old_train_id_1 == nil and event.old_train_id_2 == nil then
+        return
+    end
+    local carriages = event.train.carriages
+    if carriages == nil or #carriages == 0 then
+        return
+    end
+
+    for i, wagon in pairs(carriages) do
+        if wagon.name == StaticData.mu_cargo_wagon.name then
+            wagon.connect_rolling_stock(defines.rail_direction.front)
+            wagon.connect_rolling_stock(defines.rail_direction.back)
+        end
     end
 end
 

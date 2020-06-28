@@ -2,6 +2,7 @@ local StaticData = require("static-data")
 local Entity = require("scripts/entity")
 
 local function CreateGlobals()
+    Entity.CreateGlobals()
 end
 
 local function OnLoad()
@@ -25,3 +26,4 @@ script.on_configuration_changed(OnStartup)
 script.on_event(defines.events.on_runtime_mod_setting_changed, OnSettingChanged)
 script.on_load(OnLoad)
 script.on_event(defines.events.on_built_entity, Entity.OnBuiltEntity_MUPlacement, {{filter = "name", name = StaticData.mu_placement.name}})
+script.on_event(defines.events.on_train_created, Entity.OnTrainCreated)

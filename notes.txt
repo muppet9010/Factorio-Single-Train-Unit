@@ -1,15 +1,24 @@
-- make a placement vehicle that when placed becomes the 3 sub parts:
-    + handle manual placement
-    - handle bot placement
-    - handle mod entity placement?
-- if placed train is blueprinted convert BP item to the placable one or handle this scenario some other way
-- make rough graphics for new vehicle
-- make rough single train wheel graphics to avoid the weirdness - make them stick out less from the centre so they fit under the MU body better and don't overlap so bad when joined up
-- link damage between the 3 parts, should have health equal to 1 loco
-- share color setting on the 2 locos and apply to combined graphics
-- avoid the uncoupling of the inner cargo wagon from the locos. ideally the locos can detach from the loco of another connected combined unit
-- apply approperiate cargo size, train fuel inventory, speed and weight to the sub parts so that they are equal to a regular loco pulling 1 wagon.
-- apply impact damage equal to 1 loco and 1 wagon as it is heavy.
++ Make a placement vehicle that when placed becomes the 3 sub parts:
+    + Handle manual placement
+- Merged entities behavour:
+    - If one part is deconstructed the whole single train unit should be picked up.
+    - Link damage between the 3 parts, should have health equal to 1 loco
+    + Avoid the uncoupling of the inner cargo wagon from the locos.
+- Balance:
+    - Apply approperiate cargo size, train fuel inventory, speed and weight to the sub parts so that they are equal to half a regular loco pulling a single wagon.
+    - Crafting cost equal to 2 locos and a wagon.
+- Blueprint support:
+    - If placed train is blueprinted convert BP item to the placable one or handle this scenario some other way
+    - Handle bot placement
+    - Handle mod entity placement?
+- Graphics:
+    - Make rough graphics for new vehicle
+    - Make rough single train wheel graphics to avoid the weirdness - make them stick out less from the centre so they fit under the MU body better and don't overlap so bad when joined up
+    - Make a unique minimap image.
 
+- Future ideas:
+    - Fluid train version
 
-- make a MU fluid train
+- Not Possible:
+    - Share color settings on the 2 locos and apply to combined graphics. No simple event to flag when color is changed so not sure how to detect this.
+    - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it.
