@@ -15,7 +15,6 @@ local muLoco = Utils.DeepCopy(data.raw.locomotive.locomotive)
 muLoco.name = StaticData.mu_locomotive.name
 muLoco.localised_name = {"entity-name." .. StaticData.mu_placement.name}
 muLoco.minable.result = nil
- --StaticData.mu_locomotive.name
 muLoco.vertical_selection_shift = -0.5
 muLoco.pictures = EmptyRotatedSprite()
 muLoco.back_light[1].shift[2] = 1.2
@@ -34,9 +33,13 @@ muLoco.connection_snap_distance = StaticData.mu_locomotive.connection_snap_dista
 muLoco.weight = muLoco.weight / 5
 local muLocoPowerValue, muLocoPowerUnit = Utils.GetValueAndUnitFromString(muLoco.max_power)
 muLoco.max_power = (muLocoPowerValue / 2) .. muLocoPowerUnit
+muLoco.reversing_power_modifier = 1
 muLoco.burner.fuel_inventory_size = 1
+muLoco.burner.effectivity = 0.5
 muLoco.braking_force = muLoco.braking_force / 4
 muLoco.friction_force = muLoco.friction_force / 2
+table.insert(muLoco.flags, "not-blueprintable")
+table.insert(muLoco.flags, "not-deconstructable")
 
 local muCargoWagon = Utils.DeepCopy(data.raw["cargo-wagon"]["cargo-wagon"])
 muCargoWagon.name = StaticData.mu_cargo_wagon.name
@@ -54,6 +57,8 @@ muCargoWagon.connection_snap_distance = StaticData.mu_cargo_wagon.connection_sna
 muCargoWagon.weight = 1
 muCargoWagon.max_health = muLoco.max_health
 muCargoWagon.inventory_size = muCargoWagon.inventory_size / 3
+table.insert(muLoco.flags, "not-blueprintable")
+table.insert(muLoco.flags, "not-deconstructable")
 
 local muPlacement = Utils.DeepCopy(data.raw.locomotive.locomotive)
 muPlacement.name = StaticData.mu_placement.name
@@ -63,38 +68,22 @@ muPlacement.joint_distance = StaticData.mu_placement.joint_distance
 muPlacement.connection_distance = StaticData.mu_placement.connection_distance
 muPlacement.connection_snap_distance = StaticData.mu_placement.connection_snap_distance
 muPlacement.wheels = EmptyRotatedSprite()
+table.insert(muLoco.flags, "not-blueprintable")
+table.insert(muLoco.flags, "not-deconstructable")
 
+local locoItem = data.raw["item-with-entity-data"]["locomotive"]
 data:extend(
     {
         muLoco,
-        --[[{
-            type = "item-with-entity-data",
-            name = StaticData.mu_locomotive.name,
-            icon = "__base__/graphics/icons/locomotive.png",
-            icon_size = 32,
-            subgroup = "transport",
-            order = "za1",
-            place_result = StaticData.mu_locomotive.name,
-            stack_size = 5
-        },]]
         muCargoWagon,
-        --[[{
-            type = "item-with-entity-data",
-            name = StaticData.mu_cargo_wagon.name,
-            icon = "__base__/graphics/icons/cargo-wagon.png",
-            icon_size = 32,
-            subgroup = "transport",
-            order = "za2",
-            place_result = StaticData.mu_cargo_wagon.name,
-            stack_size = 5
-        },]]
         muPlacement,
         {
             type = "item-with-entity-data",
             name = StaticData.mu_placement.name,
-            icon = "__base__/graphics/icons/locomotive.png",
-            icon_size = 32,
-            subgroup = "transport",
+            icon = locoItem.icon,
+            icon_size = locoItem.icon_size,
+            icon_mipmaps = locoItem.icon_mipmaps,
+            subgroup = locoItem.subgroup,
             order = "za0",
             place_result = StaticData.mu_placement.name,
             stack_size = 5
@@ -102,7 +91,7 @@ data:extend(
         {
             type = "recipe",
             name = StaticData.mu_placement.name,
-            energy_required = 4,
+            energy_required = 6,
             enabled = false,
             ingredients = {
                 {"engine-unit", 40},

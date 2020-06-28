@@ -103,6 +103,9 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
         wagon.connect_rolling_stock(defines.rail_direction.back)
     end
 
+    wagons.forwardLoco.backer_name = ""
+    wagons.rearLoco.backer_name = ""
+
     Entity.RecordSingleUnit(force, wagons)
 end
 

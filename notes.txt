@@ -9,10 +9,10 @@
     + Apply approperiate cargo size and train fuel inventory at 1/3 regular. Speed and weight, plus other factors at something between a singular loco and a loco pulling a wagon.
     + Crafting cost equal to 2 locos and a wagon.
 - Blueprint support:
-    - Prevent the trains being blueprinted for now.
+    + Prevent the trains being blueprinted for now.
     - If placed train is blueprinted convert BP item to the placable one or handle this scenario some other way.
 - Bot support:
-    - Prevent being marked for deconstruction for now.
+    + Prevent being marked for deconstruction for now.
     - Handle bot placement.
     - Handle bot mining.
     - Handle mod entity placement?
@@ -20,6 +20,7 @@
     - Make rough graphics for new vehicle.
     - Make rough single train wheel graphics to avoid the weirdness - make them stick out less from the centre so they fit under the MU body better and don't overlap so bad when joined up.
     - Make a unique minimap image.
+    - Put the color options on the cargo wagon as it has the graphics.
 
 - Future ideas:
     - Fluid train version.
