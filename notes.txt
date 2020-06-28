@@ -1,12 +1,15 @@
-make a placement vehicle that when placed becomes the 3 sub parts
-if placed train is blueprinted convert BP item to the placable one or handle this scenario some other way
-make rough graphics for new vehicle
-make rough single train wheel graphics to avoid the weirdness - make them stick out less from the centre so they fit under the MU body better and don't overlap so bad when joined up
-link damage between the 3 parts, should ahve health equal to 1 loco
-share color setting on the 2 locos and apply to combined graphics
-avoid the uncoupling of the inner cargo wagon from the locos. ideally the locos can detach from the loco of another connected combined unit
-apply approperiate cargo size, train fuel inventory, speed and weight to the sub parts so that they are equal to a regular loco pulling 1 wagon.
-apply impact damage equal to 1 loco and 1 wagon as it is heavy.
+- make a placement vehicle that when placed becomes the 3 sub parts:
+    + handle manual placement
+    - handle bot placement
+    - handle mod entity placement?
+- if placed train is blueprinted convert BP item to the placable one or handle this scenario some other way
+- make rough graphics for new vehicle
+- make rough single train wheel graphics to avoid the weirdness - make them stick out less from the centre so they fit under the MU body better and don't overlap so bad when joined up
+- link damage between the 3 parts, should have health equal to 1 loco
+- share color setting on the 2 locos and apply to combined graphics
+- avoid the uncoupling of the inner cargo wagon from the locos. ideally the locos can detach from the loco of another connected combined unit
+- apply approperiate cargo size, train fuel inventory, speed and weight to the sub parts so that they are equal to a regular loco pulling 1 wagon.
+- apply impact damage equal to 1 loco and 1 wagon as it is heavy.
 
 
-make a MU fluid train
+- make a MU fluid train
