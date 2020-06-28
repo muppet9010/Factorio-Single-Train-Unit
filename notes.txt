@@ -1,23 +1,26 @@
 + Make a placement vehicle that when placed becomes the 3 sub parts:
-    + Handle manual placement
-- Merged entities behavour:
-    - If one part is deconstructed the whole single train unit should be picked up.
-    - Link damage between the 3 parts, should have health equal to 1 loco
+    + Handle player placement.
+    + Handle player mining.
++ Merged entities behavour:
+    + If one part is deconstructed the whole single train unit should be picked up.
+    + Link damage between the 3 parts.
     + Avoid the uncoupling of the inner cargo wagon from the locos.
 - Balance:
     - Apply approperiate cargo size, train fuel inventory, speed and weight to the sub parts so that they are equal to half a regular loco pulling a single wagon.
     - Crafting cost equal to 2 locos and a wagon.
 - Blueprint support:
-    - If placed train is blueprinted convert BP item to the placable one or handle this scenario some other way
-    - Handle bot placement
+    - If placed train is blueprinted convert BP item to the placable one or handle this scenario some other way.
+- Bot support:
+    - Handle bot placement.
+    - Handle bot mining.
     - Handle mod entity placement?
 - Graphics:
-    - Make rough graphics for new vehicle
-    - Make rough single train wheel graphics to avoid the weirdness - make them stick out less from the centre so they fit under the MU body better and don't overlap so bad when joined up
+    - Make rough graphics for new vehicle.
+    - Make rough single train wheel graphics to avoid the weirdness - make them stick out less from the centre so they fit under the MU body better and don't overlap so bad when joined up.
     - Make a unique minimap image.
 
 - Future ideas:
-    - Fluid train version
+    - Fluid train version.
 
 - Not Possible:
     - Share color settings on the 2 locos and apply to combined graphics. No simple event to flag when color is changed so not sure how to detect this.

@@ -13,8 +13,9 @@ end
 Entity.CreateGlobals = function()
     global.entity = global.entity or {}
     global.entity.forces = global.entity.forces or {}
-    global.singleTrainUnitIdsWagonsIds = {}
-    global.wagonsIdsSingleTrainUnitIds = {}
+    --global.entity.forces[force.index].singleTrainUnits = {} -- Defined when first used and the force entry is generated.
+    global.entity.wagonsIdsSingleTrainUnitIds = {}
+    global.entity.minedWagonIds = {}
 end
 
 Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
@@ -112,17 +113,27 @@ Entity.RecordSingleUnit = function(force, wagons)
             singleTrainUnits = {}
         }
     local forcesEntry = global.entity.forces[force.index]
-
-    forcesEntry.singleTrainUnits[#forcesEntry.singleTrainUnits] = {
+    local singleTrainUnitId = #forcesEntry.singleTrainUnits
+    forcesEntry.singleTrainUnits[singleTrainUnitId] = {
         id = #forcesEntry.singleTrainUnits,
         wagons = wagons
     }
-
-    local singleTrainUnitId = #global.singleTrainUnitIdsWagonsIds
     for _, wagon in pairs(wagons) do
-        global.singleTrainUnitIdsWagonsIds[singleTrainUnitId] = wagon.unit_number
-        global.wagonsIdsSingleTrainUnitIds[wagon.unit_number] = singleTrainUnitId
+        global.entity.wagonsIdsSingleTrainUnitIds[wagon.unit_number] = forcesEntry.singleTrainUnits[singleTrainUnitId]
     end
+end
+
+Entity.DeleteSingleUnitRecord = function(force, singleTrainUnitId)
+    local forcesEntry = global.entity.forces[force.index]
+    if forcesEntry == nil or forcesEntry.singleTrainUnits[singleTrainUnitId] == nil then
+        return
+    end
+    for _, wagon in pairs(forcesEntry.singleTrainUnits[singleTrainUnitId].wagons) do
+        if wagon.valid then
+            global.entity.wagonsIdsSingleTrainUnitIds[wagon.unit_number] = nil
+        end
+    end
+    forcesEntry.singleTrainUnits[singleTrainUnitId] = nil
 end
 
 Entity.OnTrainCreated = function(event)
@@ -140,6 +151,48 @@ Entity.OnTrainCreated = function(event)
             wagon.connect_rolling_stock(defines.rail_direction.back)
         end
     end
+end
+
+Entity.OnPlayerMined_MUWagon = function(event)
+    local minedWagon, force, player = event.entity, event.entity.force, game.get_player(event.player_index)
+    local singleTrainUnit = global.entity.wagonsIdsSingleTrainUnitIds[minedWagon.unit_number]
+    global.entity.minedWagonIds[minedWagon.unit_number] = true
+
+    for _, wagon in pairs(singleTrainUnit.wagons) do
+        if wagon.valid and global.entity.minedWagonIds[wagon.unit_number] == nil then
+            global.entity.minedWagonIds[wagon.unit_number] = true
+            local minedSuccess = player.mine_entity(wagon, force)
+            if not minedSuccess then
+                game.print("TODO: failed to mine all the Single Unit Train in 1 go")
+            end
+        end
+    end
+
+    Entity.DeleteSingleUnitRecord(force, singleTrainUnit.id)
+end
+
+Entity.OnEntityDamaged_MUWagon = function(event)
+    local damagedWagon = event.entity
+    local singleTrainUnit = global.entity.wagonsIdsSingleTrainUnitIds[damagedWagon.unit_number]
+
+    for _, wagon in pairs(singleTrainUnit.wagons) do
+        if wagon.valid and wagon.unit_number ~= damagedWagon.unit_number then
+            wagon.health = wagon.health - event.final_damage_amount
+        end
+    end
+end
+
+Entity.OnEntityDied_MUWagon = function(event)
+    local damagedWagon = event.entity
+    local singleTrainUnit = global.entity.wagonsIdsSingleTrainUnitIds[damagedWagon.unit_number]
+
+    for _, wagon in pairs(singleTrainUnit.wagons) do
+        if wagon.valid and wagon.unit_number ~= damagedWagon.unit_number then
+            wagon.die()
+        end
+    end
+
+    Entity.DeleteSingleUnitRecord(event.force, singleTrainUnit.id)
 end
 
 return Entity
