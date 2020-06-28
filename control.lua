@@ -1,26 +1,23 @@
 local StaticData = require("static-data")
 local Entity = require("scripts/entity")
 
-local function UpdateSetting(settingName)
-    --if settingName == "xxxxx" or settingName == nil then
-    --	local x = tonumber(settings.global["xxxxx"].value)
-    --end
-end
-
 local function CreateGlobals()
 end
 
 local function OnLoad()
+    --Any Remote Interface registration calls can go in here or in root of control.lua
+end
+
+local function OnSettingChanged(event)
+    --if event == nil or event.setting == "xxxxx" then
+    --	local x = tonumber(settings.global["xxxxx"].value)
+    --end
 end
 
 local function OnStartup()
     CreateGlobals()
     OnLoad()
-    UpdateSetting(nil)
-end
-
-local function OnSettingChanged(event)
-    UpdateSetting(event.setting)
+    OnSettingChanged(nil)
 end
 
 script.on_init(OnStartup)

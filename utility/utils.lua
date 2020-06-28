@@ -2,12 +2,12 @@ local Utils = {}
 --local Logging = require("utility/logging")
 local factorioUtil = require("__core__/lualib/util")
 Utils.DeepCopy = factorioUtil.table.deepcopy
-Utils.TableMerge = factorioUtil.merge
+Utils.TableMerge = factorioUtil.merge -- takes an array of tables and returns a new table with copies of their contents
 
-function Utils.KillAllKillableObjectsInArea(surface, positionedBoundingBox, killerEntity, collisionBoxOnlyEntities)
+function Utils.KillAllKillableObjectsInArea(surface, positionedBoundingBox, killerEntity, collisionBoxOnlyEntities, force)
     local entitiesFound = surface.find_entities(positionedBoundingBox)
     for k, entity in pairs(entitiesFound) do
-        if entity.valid then
+        if entity.valid and (force == nil or entity.force == force) then
             if entity.health ~= nil and entity.destructible and ((collisionBoxOnlyEntities and Utils.IsCollisionBoxPopulated(entity.prototype.collision_box)) or (not collisionBoxOnlyEntities)) then
                 if killerEntity ~= nil then
                     entity.die("neutral", killerEntity)
@@ -19,10 +19,10 @@ function Utils.KillAllKillableObjectsInArea(surface, positionedBoundingBox, kill
     end
 end
 
-function Utils.KillAllObjectsInArea(surface, positionedBoundingBox, killerEntity)
+function Utils.KillAllObjectsInArea(surface, positionedBoundingBox, killerEntity, force)
     local entitiesFound = surface.find_entities(positionedBoundingBox)
     for k, entity in pairs(entitiesFound) do
-        if entity.valid then
+        if entity.valid and (force == nil or entity.force == force) then
             if entity.destructible then
                 if killerEntity ~= nil then
                     entity.die("neutral", killerEntity)
@@ -30,28 +30,28 @@ function Utils.KillAllObjectsInArea(surface, positionedBoundingBox, killerEntity
                     entity.die("neutral")
                 end
             else
-                entity.destroy({dp_cliff_correction = true, raise_destroy = false})
+                entity.destroy({dp_cliff_correction = true, raise_destroy = true})
             end
         end
     end
 end
 
-function Utils.DestroyAllKillableObjectsInArea(surface, positionedBoundingBox, collisionBoxOnlyEntities)
+function Utils.DestroyAllKillableObjectsInArea(surface, positionedBoundingBox, collisionBoxOnlyEntities, force)
     local entitiesFound = surface.find_entities(positionedBoundingBox)
     for k, entity in pairs(entitiesFound) do
-        if entity.valid then
+        if entity.valid and (force == nil or entity.force == force) then
             if entity.health ~= nil and entity.destructible and ((collisionBoxOnlyEntities and Utils.IsCollisionBoxPopulated(entity.prototype.collision_box)) or (not collisionBoxOnlyEntities)) then
-                entity.destroy({dp_cliff_correction = true, raise_destroy = false})
+                entity.destroy({dp_cliff_correction = true, raise_destroy = true})
             end
         end
     end
 end
 
-function Utils.DestroyAllObjectsInArea(surface, positionedBoundingBox)
+function Utils.DestroyAllObjectsInArea(surface, positionedBoundingBox, force)
     local entitiesFound = surface.find_entities(positionedBoundingBox)
     for k, entity in pairs(entitiesFound) do
-        if entity.valid then
-            entity.destroy({dp_cliff_correction = true, raise_destroy = false})
+        if entity.valid and (force == nil or entity.force == force) then
+            entity.destroy({dp_cliff_correction = true, raise_destroy = true})
         end
     end
 end
@@ -80,7 +80,7 @@ function Utils.TableToProperPosition(thing)
     elseif thing.x ~= nil and thing.y ~= nil then
         return {x = thing.x, y = thing.y}
     else
-        return {x = thing[1], y = thing[1]}
+        return {x = thing[1], y = thing[2]}
     end
 end
 
@@ -113,6 +113,10 @@ function Utils.ApplyBoundingBoxToPosition(centrePos, boundingBox, orientation)
     else
         game.print("Error: Diagonal orientations not supported by Utils.ApplyBoundingBoxToPosition()")
     end
+end
+
+function Utils.RoundPosition(pos, numDecimalPlaces)
+    return {x = Utils.RoundNumberToDecimalPlaces(pos.x, numDecimalPlaces), y = Utils.RoundNumberToDecimalPlaces(pos.y, numDecimalPlaces)}
 end
 
 function Utils.GetChunkPositionForTilePosition(pos)
@@ -212,6 +216,19 @@ function Utils.RoundNumberToDecimalPlaces(num, numDecimalPlaces)
     return result
 end
 
+function Utils.HandleFloatNumberAsChancedValue(value)
+    local intValue = math.floor(value)
+    local partialValue = value - intValue
+    local chancedValue = intValue
+    if partialValue ~= 0 then
+        local rand = math.random()
+        if rand >= partialValue then
+            chancedValue = chancedValue + 1
+        end
+    end
+    return chancedValue
+end
+
 --This doesn't guarentee correct on some of the edge cases, but is as close as possible assuming that 1/256 is the variance for the same number (Bilka, Dev on Discord)
 function Utils.FuzzyCompareDoubles(num1, logic, num2)
     local numDif = num1 - num2
@@ -255,20 +272,10 @@ function Utils.FuzzyCompareDoubles(num1, logic, num2)
     end
 end
 
-function Utils.GetTableLength(table)
+function Utils.GetTableNonNilLength(table)
     local count = 0
     for _ in pairs(table) do
         count = count + 1
-    end
-    return count
-end
-
-function Utils.GetTableNonNilLength(table)
-    local count = 0
-    for k, v in pairs(table) do
-        if v ~= nil then
-            count = count + 1
-        end
     end
     return count
 end
@@ -281,6 +288,16 @@ function Utils.GetMaxKey(table)
         end
     end
     return max_key
+end
+
+function Utils.GetTableValueByIndexCount(table, indexCount)
+    local count = 0
+    for _, v in pairs(table) do
+        count = count + 1
+        if count == indexCount then
+            return v
+        end
+    end
 end
 
 function Utils.CalculateBoundingBoxFromPositionAndRange(position, range)
@@ -352,10 +369,9 @@ end
 function Utils._TableContentsToJSON(target_table, name, tablesLogged, indent, stop_traversing)
     indent = indent or 1
     local indentstring = string.rep(" ", (indent * 4))
-    local table_id = string.gsub(tostring(target_table), "table: ", "")
-    tablesLogged[table_id] = "logged"
+    tablesLogged[target_table] = "logged"
     local table_contents = ""
-    if Utils.GetTableLength(target_table) > 0 then
+    if Utils.GetTableNonNilLength(target_table) > 0 then
         for k, v in pairs(target_table) do
             local key, value
             if type(k) == "string" or type(k) == "number" or type(k) == "boolean" then
@@ -363,12 +379,11 @@ function Utils._TableContentsToJSON(target_table, name, tablesLogged, indent, st
             elseif type(k) == "nil" then
                 key = '"nil"'
             elseif type(k) == "table" then
-                local sub_table_id = string.gsub(tostring(k), "table: ", "")
                 if stop_traversing == true then
-                    key = '"CIRCULAR LOOP TABLE'
+                    key = '"CIRCULAR LOOP TABLE"'
                 else
                     local sub_stop_traversing = nil
-                    if tablesLogged[sub_table_id] ~= nil then
+                    if tablesLogged[k] ~= nil then
                         sub_stop_traversing = true
                     end
                     key = "{\r\n" .. Utils._TableContentsToJSON(k, name, tablesLogged, indent + 1, sub_stop_traversing) .. "\r\n" .. indentstring .. "}"
@@ -383,12 +398,11 @@ function Utils._TableContentsToJSON(target_table, name, tablesLogged, indent, st
             elseif type(v) == "nil" then
                 value = '"nil"'
             elseif type(v) == "table" then
-                local sub_table_id = string.gsub(tostring(v), "table: ", "")
                 if stop_traversing == true then
-                    value = '"CIRCULAR LOOP TABLE'
+                    value = '"CIRCULAR LOOP TABLE"'
                 else
                     local sub_stop_traversing = nil
-                    if tablesLogged[sub_table_id] ~= nil then
+                    if tablesLogged[v] ~= nil then
                         sub_stop_traversing = true
                     end
                     value = "{\r\n" .. Utils._TableContentsToJSON(v, name, tablesLogged, indent + 1, sub_stop_traversing) .. "\r\n" .. indentstring .. "}"
@@ -431,6 +445,15 @@ function Utils.GetTableKeyWithValue(theTable, value)
     return nil
 end
 
+function Utils.GetTableKeyWithInnerKeyValue(theTable, key, value)
+    for i, innerTable in pairs(theTable) do
+        if innerTable[key] ~= nil and innerTable[key] == value then
+            return i
+        end
+    end
+    return nil
+end
+
 function Utils.GetRandomFloatInRange(lower, upper)
     return lower + math.random() * (upper - lower)
 end
@@ -443,68 +466,20 @@ function Utils.WasCreativeModeInstantDeconstructionUsed(event)
     end
 end
 
-function Utils.GetBiterType(modEnemyProbabilities, spawnerType, evolution)
-    --modEnemyProbabilities argument is a global variable the utility function can use. do not set in any way
-    modEnemyProbabilities = modEnemyProbabilities or {}
-    if modEnemyProbabilities[spawnerType] == nil then
-        modEnemyProbabilities[spawnerType] = {}
-    end
-    evolution = Utils.RoundNumberToDecimalPlaces(evolution, 2)
-    if modEnemyProbabilities[spawnerType].calculatedEvolution == nil or modEnemyProbabilities[spawnerType].calculatedEvolution == evolution then
-        modEnemyProbabilities[spawnerType].calculatedEvolution = evolution
-        modEnemyProbabilities[spawnerType].probabilities = Utils._CalculateSpecificBiterSelectionProbabilities(spawnerType, evolution)
-    end
-
-    return Utils.GetRandomEntryFromNormalisedDataSet(modEnemyProbabilities[spawnerType].probabilitie, "chance").unit
-end
-
-function Utils._CalculateSpecificBiterSelectionProbabilities(spawnerType, currentEvolution)
-    local rawUnitProbs = game.entity_prototypes[spawnerType].result_units
-    local currentEvolutionProbabilities = {}
-
-    for _, possibility in pairs(rawUnitProbs) do
-        local startSpawnPointIndex = nil
-        for spawnPointIndex, spawnPoint in pairs(possibility.spawn_points) do
-            if spawnPoint.evolution_factor <= currentEvolution then
-                startSpawnPointIndex = spawnPointIndex
-            end
-        end
-        if startSpawnPointIndex ~= nil then
-            local startSpawnPoint = possibility.spawn_points[startSpawnPointIndex]
-            local endSpawnPoint
-            if possibility.spawn_points[startSpawnPointIndex + 1] ~= nil then
-                endSpawnPoint = possibility.spawn_points[startSpawnPointIndex + 1]
-            else
-                endSpawnPoint = {evolution_factor = 1.0, weight = startSpawnPoint.weight}
-            end
-
-            local weight
-            if startSpawnPoint.evolution_factor ~= endSpawnPoint.evolution_factor then
-                local evoRange = endSpawnPoint.evolution_factor - startSpawnPoint.evolution_factor
-                local weightRange = endSpawnPoint.weight - startSpawnPoint.weight
-                local evoRangeMultiplier = (currentEvolution - startSpawnPoint.evolution_factor) / evoRange
-                weight = (weightRange * evoRangeMultiplier) + startSpawnPoint.weight
-            else
-                weight = startSpawnPoint.weight
-            end
-            table.insert(currentEvolutionProbabilities, {chance = weight, unit = possibility.unit})
-        end
-    end
-
-    local normalisedcurrentEvolutionProbabilities = Utils.NormalisedChanceList(currentEvolutionProbabilities, "chance")
-
-    return normalisedcurrentEvolutionProbabilities
-end
-
-function Utils.NormalisedChanceList(dataSet, chancePropertyName)
+function Utils.NormaliseChanceList(dataSet, chancePropertyName, skipFillingEmptyChance)
+    --By default the dataSet's total chance is manipulated in to a 0-1 range. But if optional skipFillingEmptyChance is set to true then total chance below 1 will not be scaled up, so that nil results can be had in random selection.
     local totalChance = 0
-    for k, v in pairs(dataSet) do
+    for _, v in pairs(dataSet) do
         totalChance = totalChance + v[chancePropertyName]
     end
-    local multiplier = 1 / totalChance
+    local multiplier = 1
+    if not skipFillingEmptyChance or (skipFillingEmptyChance and totalChance > 1) then
+        multiplier = 1 / totalChance
+    end
     for _, v in pairs(dataSet) do
         v[chancePropertyName] = v[chancePropertyName] * multiplier
     end
+    return dataSet
 end
 
 function Utils.GetRandomEntryFromNormalisedDataSet(dataSet, chancePropertyName)
@@ -518,6 +493,7 @@ function Utils.GetRandomEntryFromNormalisedDataSet(dataSet, chancePropertyName)
         end
         chanceRangeLow = chanceRangeHigh
     end
+    return nil
 end
 
 function Utils.DisableSiloScript()
@@ -573,6 +549,9 @@ function Utils.PadNumberToMinimumDigits(input, requiredLength)
 end
 
 function Utils.DisplayNumberPretty(number)
+    if number == nil then
+        return ""
+    end
     local formatted = number
     local k
     while true do
@@ -648,6 +627,7 @@ function Utils.DisplayTimeOfTicks(inputTicks, displayLargestTimeUnit, displaySma
 end
 
 function Utils._CreatePlacementTestEntityPrototype(entityToClone, newEntityName, subgroup, collisionMask)
+    --TODO: doesn't handle mipmaps at all presently. Also ignores any of the extra data in an icons table of "Types/IconData". Think this should just duplicate the target icons table entry.
     local clonedIcon = entityToClone.icon
     local clonedIconSize = entityToClone.icon_size
     if clonedIcon == nil then
@@ -743,6 +723,50 @@ function Utils.GetPositionForAngledDistance(startingPos, distance, angle)
         y = (distance * -math.cos(angleRad)) + startingPos.y
     }
     return newPos
+end
+
+function Utils.FindWhereLineCrossesCircle(radius, slope, yIntercept)
+    local centerPos = {x = 0, y = 0}
+    local A = 1 + slope * slope
+    local B = -2 * centerPos.x + 2 * slope * yIntercept - 2 * centerPos.y * slope
+    local C = centerPos.x * centerPos.x + yIntercept * yIntercept + centerPos.y * centerPos.y - 2 * centerPos.y * yIntercept - radius * radius
+    local delta = B * B - 4 * A * C
+
+    if delta < 0 then
+        return nil, nil
+    else
+        local x1 = (-B + math.sqrt(delta)) / (2 * A)
+
+        local x2 = (-B - math.sqrt(delta)) / (2 * A)
+
+        local y1 = slope * x1 + yIntercept
+
+        local y2 = slope * x2 + yIntercept
+
+        local pos1 = {x = x1, y = y1}
+        local pos2 = {x = x2, y = y2}
+        if pos1 == pos2 then
+            return pos1, nil
+        else
+            return pos1, pos2
+        end
+    end
+end
+
+function Utils.IsPositionWithinCircled(circleCenter, radius, position)
+    local deltaX = math.abs(position.x - circleCenter.x)
+    local deltaY = math.abs(position.y - circleCenter.y)
+    if deltaX + deltaY <= radius then
+        return true
+    elseif deltaX > radius then
+        return false
+    elseif deltaY > radius then
+        return false
+    elseif deltaX ^ 2 + deltaY ^ 2 <= radius ^ 2 then
+        return true
+    else
+        return false
+    end
 end
 
 return Utils
