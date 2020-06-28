@@ -216,6 +216,16 @@ function Utils.RoundNumberToDecimalPlaces(num, numDecimalPlaces)
     return result
 end
 
+function Utils.LoopIntValueWithinRange(value, min, max)
+    if value > max then
+        return min - (max - value) - 1
+    elseif value < min then
+        return max + (value - min) + 1
+    else
+        return value
+    end
+end
+
 function Utils.HandleFloatNumberAsChancedValue(value)
     local intValue = math.floor(value)
     local partialValue = value - intValue

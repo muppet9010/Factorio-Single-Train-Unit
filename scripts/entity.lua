@@ -3,22 +3,15 @@ local Utils = require("utility/utils")
 local Logging = require("utility/logging")
 local StaticData = require("static-data")
 
-local placementAttempCircles = false
+local placementAttemptCircles = false
 local writeAllWarnings = false
 
-local loopIntValueWithinRangeFrom0 = function(value, max)
-    local min = 0
-    if value > max then
-        return min - (max - value) - 1
-    elseif value < min then
-        return max + (value - min) + 1
-    else
-        return value
-    end
+local LoopDirectionValue = function(value)
+    return Utils.LoopIntValueWithinRange(value, 0, 7)
 end
 
 Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
-    if placementAttempCircles then
+    if placementAttemptCircles then
         rendering.draw_circle {
             color = {r = 0, g = 0, b = 1},
             radius = 0.1,
@@ -35,8 +28,19 @@ Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
     return wagon
 end
 
-Entity.PlaceOrionalLocoBack = function(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection)
-    placedEntityDirection = loopIntValueWithinRangeFrom0(placedEntityDirection + 4, 7)
+Entity.PlaceOrionalLocoBack = function(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, failedOnName, eventReplaced)
+    Logging.LogPrint("WARNING: " .. "failed placing " .. failedOnName, writeAllWarnings)
+    for _, wagon in pairs(wagons) do
+        if wagon ~= nil and wagon.valid then
+            wagon.destroy()
+        end
+    end
+    if eventReplaced ~= nil and eventReplaced then
+        Logging.LogPrint("ERROR: " .. "failed placing " .. failedOnName .. " for second orientation, so giving up")
+        return
+    end
+
+    placedEntityDirection = LoopDirectionValue(placedEntityDirection + 4)
     local placedLoco = surface.create_entity {name = placedEntityName, position = placedEntityPosition, force = force, snap_to_train_stop = false, direction = placedEntityDirection}
     if placedLoco == nil then
         Logging.LogPrint("ERROR: " .. "failed to placed origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection)
@@ -53,55 +57,39 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     local placedEntityName = entity.name
     local placedEntityPosition = entity.position
     local placedEntityOrientation = entity.orientation
-    local placedEntityDirection = loopIntValueWithinRangeFrom0(Utils.RoundNumberToDecimalPlaces(placedEntityOrientation * 8, 0), 7)
+    local placedEntityDirection = LoopDirectionValue(Utils.RoundNumberToDecimalPlaces(placedEntityOrientation * 8, 0))
     local locoDistance = (StaticData.mu_placement.joint_distance / 2) - (StaticData.mu_locomotive.joint_distance / 2)
     local forwardLocoOrientation = placedEntityOrientation
     local forwardLocoPosition = Utils.GetPositionForAngledDistance(placedEntityPosition, locoDistance, forwardLocoOrientation * 360)
     local forwardLocoDirection = placedEntityDirection
     local rearLocoOrientation = placedEntityOrientation - 0.5
     local rearLocoPosition = Utils.GetPositionForAngledDistance(placedEntityPosition, locoDistance, rearLocoOrientation * 360)
-    local rearLocoDirection = loopIntValueWithinRangeFrom0(placedEntityDirection + 4, 7)
+    local rearLocoDirection = LoopDirectionValue(placedEntityDirection + 4)
     local middleCargoDirection = placedEntityDirection
     local middleCargoPosition = placedEntityPosition
 
     entity.destroy()
-    local forwardLoco = Entity.PlaceWagon(StaticData.mu_locomotive.name, forwardLocoPosition, surface, force, forwardLocoDirection)
-    if forwardLoco == nil then
-        Logging.LogPrint("WARNING: " .. "failed placing forward loco", writeAllWarnings)
-        if event.replaced ~= nil and event.replaced then
-            Logging.LogPrint("ERROR: " .. "failed placing forward loco for second orientation, so giving up")
-            return
-        end
-        Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection)
+    local wagons = {forwardLoco = nil, middleCargo = nil, rearLoco = nil}
+
+    wagons.forwardLoco = Entity.PlaceWagon(StaticData.mu_locomotive.name, forwardLocoPosition, surface, force, forwardLocoDirection)
+    if wagons.forwardLoco == nil then
+        Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Front Loco", event.replaced)
         return
     end
 
-    local middleCargo = Entity.PlaceWagon(StaticData.mu_cargo_wagon.name, middleCargoPosition, surface, force, middleCargoDirection)
-    if middleCargo == nil then
-        Logging.LogPrint("WARNING: " .. "failed placing middle cargo wagon", writeAllWarnings)
-        forwardLoco.destroy()
-        if event.replaced ~= nil and event.replaced then
-            Logging.LogPrint("ERROR: " .. "failed placing middle cargo wagon for second orientation, so giving up")
-            return
-        end
-        Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection)
+    wagons.middleCargo = Entity.PlaceWagon(StaticData.mu_cargo_wagon.name, middleCargoPosition, surface, force, middleCargoDirection)
+    if wagons.middleCargo == nil then
+        Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Middle Cargo Wagon", event.replaced)
         return
     end
 
-    local rearLoco = Entity.PlaceWagon(StaticData.mu_locomotive.name, rearLocoPosition, surface, force, rearLocoDirection)
-    if rearLoco == nil then
-        Logging.LogPrint("WARNING: " .. "failed placing rear loco", writeAllWarnings)
-        forwardLoco.destroy()
-        middleCargo.destroy()
-        if event.replaced ~= nil and event.replaced then
-            Logging.LogPrint("ERROR: " .. "failed placing rear loco for second orientation, so giving up")
-            return
-        end
-        Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection)
+    wagons.rearLoco = Entity.PlaceWagon(StaticData.mu_locomotive.name, rearLocoPosition, surface, force, rearLocoDirection)
+    if wagons.rearLoco == nil then
+        Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Rear Loco", event.replaced)
         return
     end
 
-    for _, wagon in pairs({forwardLoco, middleCargo, rearLoco}) do
+    for _, wagon in pairs(wagons) do
         if wagon == nil then
             return
         end
