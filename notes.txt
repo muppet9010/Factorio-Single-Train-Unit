@@ -19,8 +19,9 @@
 - Graphics:
     - Make rough graphics for new vehicle (cargo wagon entity).
     - Make rough graphics for wheels both ends (wheels on locos) - Use half the wheel graphics with connctors facing outwards as will be 2 copies on each loco entity. Needs white space adding to the end of each sprite sheets when remade to space them. Can't be the loco entity picture as this can't have its render layer set and so wheels will overlap wagon in some orientations.
-    - Make a unique minimap image.
-    - Put the color options on the cargo wagon as it has the graphics.
+    + Make a unique minimap image.
+    + Diabled setting color on hidden loco's as they have no graphics.
+    - Allow color to be pasted on the cargo wagon as it has the graphics. Copy from WagonColors mod.
 
 - Future ideas:
     - Fluid train version, if possible.
