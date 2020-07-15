@@ -2,6 +2,11 @@
 
 A single train unit comprising of a small cargo wagon and a locomotives at both ends. Total size is of a standard locomotive or cargo wagon.
 
+Demo Mod - Don't play any long term games with it.
+============
+
+This is a concept demo mod and you shouldn't play any long term games with it. It may not be updated or supported in the future. However, by all means have an experiment with it and see if its a good idea or not.
+
 Overview
 ============
 
@@ -15,7 +20,7 @@ Overview
 Not Implimented Yet
 ================
 
-- Ability to blueprint and deconstruct the train via robot. At present the units aren't selectable for either.
+- Ability to blueprint and deconstruct the train via robot. At present the units aren't selectable for either action.
 - Proper modified graphics to account for the changes.
 - A fluid tanker version.
 - Coloring of the unit.
