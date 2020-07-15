@@ -1,8 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 18.0.1
+Date: 2020-07-15
+  Features:
+    - Initial Demo release
+  Changes:
+  Bugfixes:
+  Info:
+---------------------------------------------------------------------------------------------------
 Version: 18.0.0
 Date: 2020-06-27
   Features:
-    - Initial Release
+    - Initial POC
   Changes:
   Bugfixes:
   Info:
