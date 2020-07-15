@@ -1,14 +1,16 @@
 # Single Train Unit
 
-A single unit comprising of a small cargo wagon and locomotives at both ends. Total size is of a standard locomotive or cargo wagon.
+A single train unit comprising of a small cargo wagon and a locomotives at both ends. Total size is of a standard locomotive or cargo wagon.
 
 Overview
 ============
 
-- Place the dual headed cargo wagon in the usual manner and it will be replaced out for the 2 mini locos and cargo wagon. Can only be placed by the player. Intended for use as single unit trains, but can be joined togeather.
-- The unit can be mined by the player as a whole and will be damaged/destroyed as a whole.
-- The unit's first and last 2 tiles are for feeding fuel to the locos. The middle 3 tiles are for accessing the small cargo wagon.
+- Place the dual headed cargo wagon in the usual manner and it will be replaced out for the 2 mini locos and mini cargo wagon. - It can only be placed and picked up by the player, not bots.
+- Intended for use as single unit trains, but they be joined togeather or joined with other locomotives or wagons (see Limitations).
+- The unit will be mined by the player as a whole and will be damaged/destroyed as a whole, with damage shared across all parts.
+- The unit's first and last 2 tiles are for feeding fuel to the locos. The middle 3 tiles are for accessing the small cargo wagon. So all 7 tiles of the units length are usable by inserters.
 - The unit runs at a similar speed to a single loco and wagon, but using much less space. It consumes fuel at twice the usual loco rate to account for its compact dual direction nature.
+- The cargo wagon space is 1/3 of a standard cargo wagon.
 
 Not Implimented Yet
 ================

@@ -23,7 +23,7 @@
     - Put the color options on the cargo wagon as it has the graphics.
 
 - Future ideas:
-    - Fluid train version.
+    - Fluid train version, if possible.
 
 - Not Possible:
     - Share color settings on the 2 locos and apply to combined graphics. No simple event to flag when color is changed so not sure how to detect this.
