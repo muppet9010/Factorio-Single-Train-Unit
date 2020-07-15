@@ -5,7 +5,7 @@ A single train unit comprising of a small cargo wagon and a locomotives at both 
 Demo Mod - Don't play any long term games with it.
 ============
 
-This is a concept demo mod and you shouldn't play any long term games with it. It may not be updated or supported in the future. However, by all means have an experiment with it and see if its a good idea or not.
+This is a concept demo mod and you shouldn't play any long term games with it. It may not be updated or supported in the future. However, by all means have an experiment with it and see if its a good idea or not. See the known limitations and not implimented yet items below.
 
 Overview
 ============
@@ -16,6 +16,7 @@ Overview
 - The unit's first and last 2 tiles are for feeding fuel to the locos. The middle 3 tiles are for accessing the small cargo wagon. So all 7 tiles of the units length are usable by inserters.
 - The unit runs between the performance of a single loco & wagon and a dual headed train with a wagon. It consumes fuel at twice the usual loco rate to account for its compact dual direction nature.
 - The cargo wagon space is 1/2 of a standard cargo wagon.
+- The unit is unlocked with the standard Railway research.
 
 Not Implimented Yet
 ================
