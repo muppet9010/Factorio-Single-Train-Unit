@@ -2,6 +2,9 @@
 local Utils = require("utility/utils")
 local StaticData = require("static-data")
 
+local refLoco = data.raw.locomotive.locomotive
+local refCargoWagon = data.raw["cargo-wagon"]["cargo-wagon"]
+
 local function EmptyRotatedSprite()
     return {
         direction_count = 1,
@@ -11,7 +14,7 @@ local function EmptyRotatedSprite()
     }
 end
 
-local muLoco = Utils.DeepCopy(data.raw.locomotive.locomotive)
+local muLoco = Utils.DeepCopy(refLoco)
 muLoco.name = StaticData.mu_locomotive.name
 muLoco.localised_name = {"entity-name." .. StaticData.mu_placement.name}
 muLoco.minable.result = nil
@@ -30,18 +33,13 @@ muLoco.selection_box = StaticData.mu_locomotive.selection_box
 muLoco.joint_distance = StaticData.mu_locomotive.joint_distance
 muLoco.connection_distance = StaticData.mu_locomotive.connection_distance
 muLoco.connection_snap_distance = StaticData.mu_locomotive.connection_snap_distance
-muLoco.weight = muLoco.weight / 5
-local muLocoPowerValue, muLocoPowerUnit = Utils.GetValueAndUnitFromString(muLoco.max_power)
-muLoco.max_power = (muLocoPowerValue / 2) .. muLocoPowerUnit
-muLoco.reversing_power_modifier = 1
+muLoco.weight = (refLoco.weight + refCargoWagon.weight) / 1.75
 muLoco.burner.fuel_inventory_size = 1
 muLoco.burner.effectivity = 0.5
-muLoco.braking_force = muLoco.braking_force / 4
-muLoco.friction_force = muLoco.friction_force / 2
 table.insert(muLoco.flags, "not-blueprintable")
 table.insert(muLoco.flags, "not-deconstructable")
 
-local muCargoWagon = Utils.DeepCopy(data.raw["cargo-wagon"]["cargo-wagon"])
+local muCargoWagon = Utils.DeepCopy(refCargoWagon)
 muCargoWagon.name = StaticData.mu_cargo_wagon.name
 muCargoWagon.localised_name = {"entity-name." .. StaticData.mu_placement.name}
 muCargoWagon.minable.result = StaticData.mu_placement.name
@@ -56,11 +54,11 @@ muCargoWagon.connection_distance = StaticData.mu_cargo_wagon.connection_distance
 muCargoWagon.connection_snap_distance = StaticData.mu_cargo_wagon.connection_snap_distance
 muCargoWagon.weight = 1
 muCargoWagon.max_health = muLoco.max_health
-muCargoWagon.inventory_size = muCargoWagon.inventory_size / 3
+muCargoWagon.inventory_size = muCargoWagon.inventory_size / 2
 table.insert(muLoco.flags, "not-blueprintable")
 table.insert(muLoco.flags, "not-deconstructable")
 
-local muPlacement = Utils.DeepCopy(data.raw.locomotive.locomotive)
+local muPlacement = Utils.DeepCopy(refLoco)
 muPlacement.name = StaticData.mu_placement.name
 muPlacement.collision_box = StaticData.mu_placement.collision_box
 muPlacement.selection_box = StaticData.mu_placement.selection_box

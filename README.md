@@ -9,8 +9,8 @@ Overview
 - Intended for use as single unit trains, but they be joined togeather or joined with other locomotives or wagons (see Limitations).
 - The unit will be mined by the player as a whole and will be damaged/destroyed as a whole, with damage shared across all parts.
 - The unit's first and last 2 tiles are for feeding fuel to the locos. The middle 3 tiles are for accessing the small cargo wagon. So all 7 tiles of the units length are usable by inserters.
-- The unit runs at a similar speed to a single loco and wagon, but using much less space. It consumes fuel at twice the usual loco rate to account for its compact dual direction nature.
-- The cargo wagon space is 1/3 of a standard cargo wagon.
+- The unit runs between the performance of a single loco & wagon and a dual headed train with a wagon. It consumes fuel at twice the usual loco rate to account for its compact dual direction nature.
+- The cargo wagon space is 1/2 of a standard cargo wagon.
 
 Not Implimented Yet
 ================
