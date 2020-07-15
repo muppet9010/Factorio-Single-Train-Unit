@@ -14,8 +14,8 @@ Entity.CreateGlobals = function()
     global.entity = global.entity or {}
     global.entity.forces = global.entity.forces or {}
     --global.entity.forces[force.index].singleTrainUnits = {} -- Defined when first used and the force entry is generated.
-    global.entity.wagonsIdsSingleTrainUnitIds = {}
-    global.entity.minedWagonIds = {}
+    global.entity.wagonsIdsSingleTrainUnitIds = global.entity.wagonsIdsSingleTrainUnitIds or {}
+    global.entity.minedWagonIds = global.entity.minedWagonIds or {}
 end
 
 Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
@@ -116,9 +116,9 @@ Entity.RecordSingleUnit = function(force, wagons)
             singleTrainUnits = {}
         }
     local forcesEntry = global.entity.forces[force.index]
-    local singleTrainUnitId = #forcesEntry.singleTrainUnits
+    local singleTrainUnitId = #forcesEntry.singleTrainUnits + 1
     forcesEntry.singleTrainUnits[singleTrainUnitId] = {
-        id = #forcesEntry.singleTrainUnits,
+        id = singleTrainUnitId,
         wagons = wagons
     }
     for _, wagon in pairs(wagons) do
@@ -159,7 +159,7 @@ end
 Entity.OnPlayerMined_MUWagon = function(event)
     local minedWagon, force, player = event.entity, event.entity.force, game.get_player(event.player_index)
     local singleTrainUnit = global.entity.wagonsIdsSingleTrainUnitIds[minedWagon.unit_number]
-    global.entity.minedWagonIds[minedWagon.unit_number] = true
+    global.entity.minedWagonIds[minedWagon.unit_number] = true --This entity has been mined already as it triggered this event.
 
     for _, wagon in pairs(singleTrainUnit.wagons) do
         if wagon.valid and global.entity.minedWagonIds[wagon.unit_number] == nil then
