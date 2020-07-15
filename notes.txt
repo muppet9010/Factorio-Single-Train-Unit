@@ -17,8 +17,8 @@
     - Handle bot mining.
     - Handle mod entity placement?
 - Graphics:
-    - Make rough graphics for new vehicle.
-    - Make rough single train wheel graphics to avoid the weirdness - make them stick out less from the centre so they fit under the MU body better and don't overlap so bad when joined up.
+    - Make rough graphics for new vehicle (cargo wagon entity).
+    - Make rough graphics for wheels both ends (wheels on locos) - Use half the wheel graphics with connctors facing outwards as will be 2 copies on each loco entity. Needs white space adding to the end of each sprite sheets when remade to space them. Can't be the loco entity picture as this can't have its render layer set and so wheels will overlap wagon in some orientations.
     - Make a unique minimap image.
     - Put the color options on the cargo wagon as it has the graphics.
 

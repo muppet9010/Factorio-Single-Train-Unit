@@ -16,7 +16,7 @@ Not Implimented Yet
 ================
 
 - Ability to blueprint and deconstruct the train via robot. At present the units aren't selectable for either.
-- Proper modified graphics.
+- Proper modified graphics to account for the changes.
 - A fluid tanker version.
 - Coloring of the unit.
 - If players inventory is full when the unit is mined.
