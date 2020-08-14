@@ -18,7 +18,7 @@ end
 
 local function MakeMULocoPrototype(thisStaticData, wagonStaticType)
     local muLoco = Utils.DeepCopy(refLoco)
-    muLoco.name = thisStaticData.name .. "-" .. wagonStaticType.type
+    muLoco.name = thisStaticData.name
     muLoco.localised_name = {"entity-name." .. wagonStaticType.placementStaticData.name}
     muLoco.minable.result = nil
     muLoco.vertical_selection_shift = -0.5
@@ -90,9 +90,9 @@ end
 
 local function MakeMuWagonPlacementPrototype(thisStaticData)
     local muWagonPlacement
-    if thisStaticData.placedStaticData.type == "cargo_wagon" then
+    if thisStaticData.placedStaticDataWagon.type == "cargo_wagon" then
         muWagonPlacement = Utils.DeepCopy(refCargoWagon)
-    elseif thisStaticData.placedStaticData.type == "fluid_wagon" then
+    elseif thisStaticData.placedStaticDataWagon.type == "fluid_wagon" then
         muWagonPlacement = Utils.DeepCopy(refFluidWagon)
     end
     muWagonPlacement.name = thisStaticData.name
@@ -104,8 +104,6 @@ local function MakeMuWagonPlacementPrototype(thisStaticData)
     muWagonPlacement.wheels = EmptyRotatedSprite()
     table.insert(muWagonPlacement.flags, "not-blueprintable")
     table.insert(muWagonPlacement.flags, "not-deconstructable")
-    muWagonPlacement.minimap_representation = thisStaticData.placedStaticData.minimap_representation
-    muWagonPlacement.selected_minimap_representation = thisStaticData.placedStaticData.selected_minimap_representation
     return muWagonPlacement
 end
 
@@ -136,13 +134,13 @@ local function MakeMuWagonPlacementRecipePrototype(thisStaticData)
     return muWagonPlacementRecipe
 end
 
-local muCargoLoco = MakeMULocoPrototype(StaticData.mu_locomotive, StaticData.mu_cargo_wagon)
+local muCargoLoco = MakeMULocoPrototype(StaticData.mu_cargo_loco, StaticData.mu_cargo_wagon)
 local muCargoWagon = MakeMUWagonPrototype(StaticData.mu_cargo_wagon, muCargoLoco)
 local muCargoPlacement = MakeMuWagonPlacementPrototype(StaticData.mu_cargo_placement)
 local muCargoPlacementItem = MakeMuWagonPlacementItemPrototype(StaticData.mu_cargo_placement)
 local muCargoPlacementRecipe = MakeMuWagonPlacementRecipePrototype(StaticData.mu_cargo_placement)
 
-local muFluidLoco = MakeMULocoPrototype(StaticData.mu_locomotive, StaticData.mu_fluid_wagon)
+local muFluidLoco = MakeMULocoPrototype(StaticData.mu_fluid_loco, StaticData.mu_fluid_wagon)
 local muFluidWagon = MakeMUWagonPrototype(StaticData.mu_fluid_wagon, muFluidLoco)
 local muFluidPlacement = MakeMuWagonPlacementPrototype(StaticData.mu_fluid_placement)
 local muFluidPlacementItem = MakeMuWagonPlacementItemPrototype(StaticData.mu_fluid_placement)

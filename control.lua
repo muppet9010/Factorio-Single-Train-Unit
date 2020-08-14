@@ -1,4 +1,3 @@
-local StaticData = require("static-data")
 local Entity = require("scripts/entity")
 
 local function CreateGlobals()

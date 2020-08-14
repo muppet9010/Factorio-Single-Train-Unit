@@ -11,30 +11,35 @@ local LoopDirectionValue = function(value)
     return Utils.LoopIntValueWithinRange(value, 0, 7)
 end
 
-local MoveInventoryContents = function(sourceInventory, targetInventory, dropUnmovedOnGround)
-    local sourceOwner
+local TryMoveInventoryContents = function(sourceInventory, targetInventory, dropUnmovedOnGround)
+    local sourceOwner, itemsNotMoved = nil, false
     for name, count in pairs(sourceInventory.get_contents()) do
         local moved = targetInventory.insert({name = name, count = count})
         if moved > 0 then
             sourceInventory.remove({name = name, count = moved})
         end
+        local remaining = count - moved
+        if remaining > 0 then
+            itemsNotMoved = true
+        end
         if dropUnmovedOnGround then
             sourceOwner = sourceOwner or targetInventory.entity_owner
-            sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = name, count = count - moved}, true, sourceOwner.force, false)
+            sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = name, count = remaining}, true, sourceOwner.force, false)
         end
     end
+    return not itemsNotMoved
 end
 
 Entity.CreateGlobals = function()
     global.entity = global.entity or {}
-    Entity.UpgradeGlobals()
     global.entity.forces = global.entity.forces or {}
     --[[
     global.entity.forces[force.index].singleTrainUnits = {
         id = singleTrainUnitId,
         wagons = {
             forwardLoco = ENTITY, middleCargo = ENTITY, rearLoco = ENTITY
-        }
+        },
+        type = STATICDATA WAGON TYPE
     } -- Defined when first used and the force entry is generated.
     --]]
     global.entity.wagonIdToSingleTrainUnit = global.entity.wagonIdToSingleTrainUnit or {} -- WagonId to lobal.entity.forces[force.index].singleTrainUnits entry
@@ -42,7 +47,7 @@ Entity.CreateGlobals = function()
 end
 
 Entity.OnLoad = function()
-    local muWagonNamesFilter = {{filter = "name", name = StaticData.mu_locomotive.name}, {mode = "or", filter = "name", name = StaticData.mu_cargo_wagon.name}, {mode = "or", filter = "name", name = StaticData.mu_fluid_wagon.name}}
+    local muWagonNamesFilter = {{filter = "name", name = StaticData.mu_cargo_loco.name}, {mode = "or", filter = "name", name = StaticData.mu_cargo_wagon.name}, {mode = "or", filter = "name", name = StaticData.mu_fluid_loco.name}, {mode = "or", filter = "name", name = StaticData.mu_fluid_wagon.name}}
 
     Events.RegisterEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", {{filter = "name", name = StaticData.mu_cargo_placement.name}, {mode = "or", filter = "name", name = StaticData.mu_fluid_placement.name}})
     Events.RegisterHandler(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement)
@@ -56,14 +61,6 @@ Entity.OnLoad = function()
     Events.RegisterHandler(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", Entity.OnEntityDamaged_MUWagon)
     Events.RegisterEvent(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", muWagonNamesFilter)
     Events.RegisterHandler(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", Entity.OnEntityDied_MUWagon)
-end
-
-Entity.UpgradeGlobals = function()
-    --TODO: remove me after making new test map
-    if global.entity.wagonsIdsSingleTrainUnitIds ~= nil then
-        global.entity.wagonIdToSingleTrainUnit = global.entity.wagonsIdsSingleTrainUnitIds
-        global.entity.wagonsIdsSingleTrainUnitIds = nil
-    end
 end
 
 Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
@@ -109,13 +106,13 @@ end
 
 Entity.OnBuiltEntity_MUPlacement = function(event)
     local entity = event.created_entity
-    local surface = entity.surface
-    local force = entity.force
-    local placedEntityName = entity.name
-    local placedEntityPosition = entity.position
-    local placedEntityOrientation = entity.orientation
+    local surface, force, placedEntityName, placedEntityPosition, placedEntityOrientation = entity.surface, entity.force, entity.name, entity.position, entity.orientation
+    local placementStaticData = StaticData.entityNames[placedEntityName]
+    local wagonStaticData, locoStaticData = placementStaticData.placedStaticDataWagon, placementStaticData.placedStaticDataLoco
+
     local placedEntityDirection = LoopDirectionValue(Utils.RoundNumberToDecimalPlaces(placedEntityOrientation * 8, 0))
-    local locoDistance = (StaticData.mu_cargo_placement.joint_distance / 2) - (StaticData.mu_locomotive.joint_distance / 2)
+    local locoDistance = (placementStaticData.joint_distance / 2) - (locoStaticData.joint_distance / 2)
+
     local forwardLocoOrientation = placedEntityOrientation
     local forwardLocoPosition = Utils.GetPositionForAngledDistance(placedEntityPosition, locoDistance, forwardLocoOrientation * 360)
     local forwardLocoDirection = placedEntityDirection
@@ -128,19 +125,19 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     entity.destroy()
     local wagons = {forwardLoco = nil, middleCargo = nil, rearLoco = nil}
 
-    wagons.forwardLoco = Entity.PlaceWagon(StaticData.mu_locomotive.name, forwardLocoPosition, surface, force, forwardLocoDirection)
+    wagons.forwardLoco = Entity.PlaceWagon(locoStaticData.name, forwardLocoPosition, surface, force, forwardLocoDirection)
     if wagons.forwardLoco == nil then
         Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Front Loco", event.replaced)
         return
     end
 
-    wagons.middleCargo = Entity.PlaceWagon(StaticData.mu_cargo_wagon.name, middleCargoPosition, surface, force, middleCargoDirection)
+    wagons.middleCargo = Entity.PlaceWagon(wagonStaticData.name, middleCargoPosition, surface, force, middleCargoDirection)
     if wagons.middleCargo == nil then
         Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Middle Cargo Wagon", event.replaced)
         return
     end
 
-    wagons.rearLoco = Entity.PlaceWagon(StaticData.mu_locomotive.name, rearLocoPosition, surface, force, rearLocoDirection)
+    wagons.rearLoco = Entity.PlaceWagon(locoStaticData.name, rearLocoPosition, surface, force, rearLocoDirection)
     if wagons.rearLoco == nil then
         Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Rear Loco", event.replaced)
         return
@@ -154,7 +151,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     wagons.forwardLoco.backer_name = ""
     wagons.rearLoco.backer_name = ""
 
-    Entity.RecordSingleUnit(force, wagons)
+    Entity.RecordSingleUnit(force, wagons, wagonStaticData.type)
 end
 
 Entity.RecordSingleUnit = function(force, wagons)
@@ -167,7 +164,8 @@ Entity.RecordSingleUnit = function(force, wagons)
     local singleTrainUnitId = #forcesEntry.singleTrainUnits + 1
     forcesEntry.singleTrainUnits[singleTrainUnitId] = {
         id = singleTrainUnitId,
-        wagons = wagons
+        wagons = wagons,
+        type = type
     }
     for _, wagon in pairs(wagons) do
         global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = forcesEntry.singleTrainUnits[singleTrainUnitId]
@@ -197,7 +195,8 @@ Entity.OnTrainCreated = function(event)
     end
 
     for i, wagon in pairs(carriages) do
-        if wagon.name == StaticData.mu_cargo_wagon.name then
+        local wagonStaticData = StaticData.entityNames[wagon.name]
+        if wagonStaticData.placementStaticData ~= nil then
             wagon.connect_rolling_stock(defines.rail_direction.front)
             wagon.connect_rolling_stock(defines.rail_direction.back)
         end
@@ -212,7 +211,7 @@ Entity.OnPlayerMined_MUWagon = function(event)
     for _, wagon in pairs(singleTrainUnit.wagons) do
         if wagon.valid and global.entity.minedWagonIds[wagon.unit_number] == nil then
             global.entity.minedWagonIds[wagon.unit_number] = true
-            local minedSuccess = player.mine_entity(wagon, force)
+            player.mine_entity(wagon, force)
         end
     end
 
@@ -221,12 +220,14 @@ end
 
 Entity.OnPrePlayerMined_MUWagon = function(event)
     --This tries to take all the cargo items, then fuel before the actual MU Wagon entiies get mined. If the train contents are more than the players inventory space this will mean the players inventory fills up and then the game will naturally not try to mine the train entities themselves.
-    local minedWagon, force, player = event.entity, event.entity.force, game.get_player(event.player_index)
+    local minedWagon, player = event.entity, game.get_player(event.player_index)
     local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[minedWagon.unit_number]
     local playerInventory = player.get_main_inventory()
-    MoveInventoryContents(singleTrainUnit.wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon), playerInventory, false)
-    MoveInventoryContents(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory, false)
-    MoveInventoryContents(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), playerInventory, false)
+    if singleTrainUnit.type == "cargo_wagon" then
+        TryMoveInventoryContents(singleTrainUnit.wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon), playerInventory, false)
+    end
+    TryMoveInventoryContents(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory, false)
+    TryMoveInventoryContents(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), playerInventory, false)
 end
 
 Entity.OnEntityDamaged_MUWagon = function(event)

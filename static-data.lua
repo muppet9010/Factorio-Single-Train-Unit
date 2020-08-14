@@ -1,8 +1,10 @@
 local StaticData = {}
 local Constants = require("constants")
+local Utils = require("utility/utils")
 
-StaticData.mu_locomotive = {
-    name = "single_train_unit-double_end_loco",
+StaticData.entityNames = {}
+
+local locoDetails = {
     collision_box = {{-0.6, -0.6}, {0.6, 0.6}},
     selection_box = {{-1, -1}, {1, 1}},
     connection_distance = 1.8,
@@ -19,6 +21,8 @@ StaticData.mu_cargo_wagon = {
     joint_distance = 0.8,
     type = "cargo_wagon"
 }
+StaticData.mu_cargo_loco = Utils.DeepCopy(locoDetails)
+StaticData.mu_cargo_loco.name = "single_train_unit-double_end_cargo_loco"
 StaticData.mu_cargo_placement = {
     name = "single_train_unit-double_end_loco_cargo_wagon_placement",
     collision_box = {{-0.6, -3}, {0.6, 3}},
@@ -26,8 +30,8 @@ StaticData.mu_cargo_placement = {
     connection_distance = 1.8,
     connection_snap_distance = 4,
     joint_distance = 5.2,
-    placedStaticData = StaticData.mu_cargo_wagon,
-    type = "cargo_wagon",
+    placedStaticDataWagon = StaticData.mu_cargo_wagon,
+    placedStaticDataLoco = StaticData.mu_cargo_loco,
     itemOrder = "za0",
     icon = Constants.AssetModName .. "/graphics/icons/mu_cargo_wagon.png",
     iconSize = 64,
@@ -40,7 +44,11 @@ StaticData.mu_cargo_placement = {
         {"iron-plate", 10}
     }
 }
+
 StaticData.mu_cargo_wagon.placementStaticData = StaticData.mu_cargo_placement
+StaticData.entityNames[StaticData.mu_cargo_loco.name] = StaticData.mu_cargo_loco
+StaticData.entityNames[StaticData.mu_cargo_wagon.name] = StaticData.mu_cargo_wagon
+StaticData.entityNames[StaticData.mu_cargo_placement.name] = StaticData.mu_cargo_placement
 
 StaticData.mu_fluid_wagon = {
     name = "single_train_unit-double_end_fluid_wagon",
@@ -51,6 +59,8 @@ StaticData.mu_fluid_wagon = {
     joint_distance = 0.8,
     type = "fluid_wagon"
 }
+StaticData.mu_fluid_loco = Utils.DeepCopy(locoDetails)
+StaticData.mu_fluid_loco.name = "single_train_unit-double_end_fluid_loco"
 StaticData.mu_fluid_placement = {
     name = "single_train_unit-double_end_loco_fluid_wagon_placement",
     collision_box = {{-0.6, -3}, {0.6, 3}},
@@ -58,8 +68,8 @@ StaticData.mu_fluid_placement = {
     connection_distance = 1.8,
     connection_snap_distance = 4,
     joint_distance = 5.2,
-    placedStaticData = StaticData.mu_fluid_wagon,
-    type = "fluid_wagon",
+    placedStaticDataWagon = StaticData.mu_fluid_wagon,
+    placedStaticDataLoco = StaticData.mu_fluid_loco,
     itemOrder = "za1",
     icon = Constants.AssetModName .. "/graphics/icons/mu_fluid_wagon.png",
     iconSize = 64,
@@ -74,5 +84,8 @@ StaticData.mu_fluid_placement = {
     }
 }
 StaticData.mu_fluid_wagon.placementStaticData = StaticData.mu_fluid_placement
+StaticData.entityNames[StaticData.mu_fluid_loco.name] = StaticData.mu_fluid_loco
+StaticData.entityNames[StaticData.mu_fluid_wagon.name] = StaticData.mu_fluid_wagon
+StaticData.entityNames[StaticData.mu_fluid_placement.name] = StaticData.mu_fluid_placement
 
 return StaticData
