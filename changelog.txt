@@ -7,6 +7,7 @@ Date: xxx
   Bugfixes:
   Info:
     - Moved to min Factorio version 1.0
+    - Not compatible with older versions. See end of readme for details.
 ---------------------------------------------------------------------------------------------------
 Version: 18.0.1
 Date: 2020-07-15

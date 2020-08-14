@@ -16,184 +16,147 @@ local function EmptyRotatedSprite()
     }
 end
 
-local muLoco = Utils.DeepCopy(refLoco)
-muLoco.name = StaticData.mu_locomotive.name
-muLoco.localised_name = {"entity-name." .. StaticData.mu_cargo_placement.name}
-muLoco.minable.result = nil
-muLoco.vertical_selection_shift = -0.5
-muLoco.pictures = EmptyRotatedSprite()
-muLoco.back_light[1].shift[2] = 1.2
-muLoco.back_light[2].shift[2] = 1.2
-muLoco.front_light[1].shift[2] = -13.5
-muLoco.front_light[2].shift[2] = -13.5
-muLoco.corpse = nil
-muLoco.dying_explosion = nil
-muLoco.stop_trigger = nil
-muLoco.drive_over_tie_trigger = nil
-muLoco.collision_box = StaticData.mu_locomotive.collision_box
-muLoco.selection_box = StaticData.mu_locomotive.selection_box
-muLoco.allow_manual_color = false
-muLoco.joint_distance = StaticData.mu_locomotive.joint_distance
-muLoco.connection_distance = StaticData.mu_locomotive.connection_distance
-muLoco.connection_snap_distance = StaticData.mu_locomotive.connection_snap_distance
-muLoco.weight = (refLoco.weight + refCargoWagon.weight) / 1.75
-muLoco.burner.fuel_inventory_size = 1
-muLoco.burner.effectivity = 0.5
-muLoco.minimap_representation = nil
-muLoco.selected_minimap_representation = nil
-table.insert(muLoco.flags, "not-blueprintable")
-table.insert(muLoco.flags, "not-deconstructable")
+local function MakeMULocoPrototype(thisStaticData, wagonStaticType)
+    local muLoco = Utils.DeepCopy(refLoco)
+    muLoco.name = thisStaticData.name .. "-" .. wagonStaticType.type
+    muLoco.localised_name = {"entity-name." .. wagonStaticType.placementStaticData.name}
+    muLoco.minable.result = nil
+    muLoco.vertical_selection_shift = -0.5
+    muLoco.pictures = EmptyRotatedSprite()
+    muLoco.back_light[1].shift[2] = 1.2
+    muLoco.back_light[2].shift[2] = 1.2
+    muLoco.front_light[1].shift[2] = -13.5
+    muLoco.front_light[2].shift[2] = -13.5
+    muLoco.corpse = nil
+    muLoco.dying_explosion = nil
+    muLoco.stop_trigger = nil
+    muLoco.drive_over_tie_trigger = nil
+    muLoco.collision_box = thisStaticData.collision_box
+    muLoco.selection_box = thisStaticData.selection_box
+    muLoco.allow_manual_color = false
+    muLoco.joint_distance = thisStaticData.joint_distance
+    muLoco.connection_distance = thisStaticData.connection_distance
+    muLoco.connection_snap_distance = thisStaticData.connection_snap_distance
+    muLoco.weight = (refLoco.weight + refCargoWagon.weight) / 1.75
+    muLoco.burner.fuel_inventory_size = 1
+    muLoco.burner.effectivity = 0.5
+    muLoco.minimap_representation = nil
+    muLoco.selected_minimap_representation = nil
+    table.insert(muLoco.flags, "not-blueprintable")
+    table.insert(muLoco.flags, "not-deconstructable")
+    return muLoco
+end
 
-local muCargoWagon = Utils.DeepCopy(refCargoWagon)
-muCargoWagon.name = StaticData.mu_cargo_wagon.name
-muCargoWagon.localised_name = {"entity-name." .. StaticData.mu_cargo_placement.name}
-muCargoWagon.minable.result = StaticData.mu_cargo_placement.name
-muCargoWagon.vertical_selection_shift = -0.5
-muCargoWagon.wheels = EmptyRotatedSprite()
-muCargoWagon.back_light = nil
-muCargoWagon.stand_by_light = nil
-muCargoWagon.collision_box = StaticData.mu_cargo_wagon.collision_box
-muCargoWagon.selection_box = StaticData.mu_cargo_wagon.selection_box
-muCargoWagon.allow_manual_color = true
-muCargoWagon.joint_distance = StaticData.mu_cargo_wagon.joint_distance
-muCargoWagon.connection_distance = StaticData.mu_cargo_wagon.connection_distance
-muCargoWagon.connection_snap_distance = StaticData.mu_cargo_wagon.connection_snap_distance
-muCargoWagon.weight = 1
-muCargoWagon.max_health = muLoco.max_health
-muCargoWagon.inventory_size = muCargoWagon.inventory_size / 2
-table.insert(muLoco.flags, "not-blueprintable")
-table.insert(muLoco.flags, "not-deconstructable")
-muCargoWagon.minimap_representation = {
-    filename = Constants.AssetModName .. "/graphics/entity/" .. StaticData.mu_cargo_wagon.name .. "-minimap_representation.png",
-    flags = {"icon"},
-    size = {20, 70},
-    scale = 0.5
-}
-muCargoWagon.selected_minimap_representation = {
-    filename = Constants.AssetModName .. "/graphics/entity/" .. StaticData.mu_cargo_wagon.name .. "-selected_minimap_representation.png",
-    flags = {"icon"},
-    size = {20, 70},
-    scale = 0.5
-}
+local function MakeMUWagonPrototype(thisStaticData, locoPrototype)
+    local muWagon
+    if thisStaticData.type == "cargo_wagon" then
+        muWagon = Utils.DeepCopy(refCargoWagon)
+        muWagon.inventory_size = muWagon.inventory_size / 2
+    elseif thisStaticData.type == "fluid_wagon" then
+        muWagon = Utils.DeepCopy(refFluidWagon)
+        muWagon.capacity = muWagon.capacity / 2
+    end
+    muWagon.name = thisStaticData.name
+    muWagon.localised_name = {"entity-name." .. thisStaticData.placementStaticData.name}
+    muWagon.minable.result = thisStaticData.placementStaticData.name
+    muWagon.vertical_selection_shift = -0.5
+    muWagon.wheels = EmptyRotatedSprite()
+    muWagon.back_light = nil
+    muWagon.stand_by_light = nil
+    muWagon.collision_box = thisStaticData.collision_box
+    muWagon.selection_box = thisStaticData.selection_box
+    muWagon.allow_manual_color = true
+    muWagon.joint_distance = thisStaticData.joint_distance
+    muWagon.connection_distance = thisStaticData.connection_distance
+    muWagon.connection_snap_distance = thisStaticData.connection_snap_distance
+    muWagon.weight = 1
+    muWagon.max_health = locoPrototype.max_health
+    table.insert(muWagon.flags, "not-blueprintable")
+    table.insert(muWagon.flags, "not-deconstructable")
+    muWagon.minimap_representation = {
+        filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "-minimap_representation.png",
+        flags = {"icon"},
+        size = {20, 70},
+        scale = 0.5
+    }
+    muWagon.selected_minimap_representation = {
+        filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "-selected_minimap_representation.png",
+        flags = {"icon"},
+        size = {20, 70},
+        scale = 0.5
+    }
+    return muWagon
+end
 
-local muCargoPlacement = Utils.DeepCopy(refLoco)
-muCargoPlacement.name = StaticData.mu_cargo_placement.name
-muCargoPlacement.collision_box = StaticData.mu_cargo_placement.collision_box
-muCargoPlacement.selection_box = StaticData.mu_cargo_placement.selection_box
-muCargoPlacement.joint_distance = StaticData.mu_cargo_placement.joint_distance
-muCargoPlacement.connection_distance = StaticData.mu_cargo_placement.connection_distance
-muCargoPlacement.connection_snap_distance = StaticData.mu_cargo_placement.connection_snap_distance
-muCargoPlacement.wheels = EmptyRotatedSprite()
-table.insert(muLoco.flags, "not-blueprintable")
-table.insert(muLoco.flags, "not-deconstructable")
-muCargoPlacement.minimap_representation = muCargoWagon.minimap_representation
-muCargoPlacement.selected_minimap_representation = muCargoWagon.selected_minimap_representation
+local function MakeMuWagonPlacementPrototype(thisStaticData)
+    local muWagonPlacement
+    if thisStaticData.placedStaticData.type == "cargo_wagon" then
+        muWagonPlacement = Utils.DeepCopy(refCargoWagon)
+    elseif thisStaticData.placedStaticData.type == "fluid_wagon" then
+        muWagonPlacement = Utils.DeepCopy(refFluidWagon)
+    end
+    muWagonPlacement.name = thisStaticData.name
+    muWagonPlacement.collision_box = thisStaticData.collision_box
+    muWagonPlacement.selection_box = thisStaticData.selection_box
+    muWagonPlacement.joint_distance = thisStaticData.joint_distance
+    muWagonPlacement.connection_distance = thisStaticData.connection_distance
+    muWagonPlacement.connection_snap_distance = thisStaticData.connection_snap_distance
+    muWagonPlacement.wheels = EmptyRotatedSprite()
+    table.insert(muWagonPlacement.flags, "not-blueprintable")
+    table.insert(muWagonPlacement.flags, "not-deconstructable")
+    muWagonPlacement.minimap_representation = thisStaticData.placedStaticData.minimap_representation
+    muWagonPlacement.selected_minimap_representation = thisStaticData.placedStaticData.selected_minimap_representation
+    return muWagonPlacement
+end
 
-local muCargoPlacementItem = {
-    type = "item-with-entity-data",
-    name = StaticData.mu_cargo_placement.name,
-    icon = Constants.AssetModName .. "/graphics/icons/mu_cargo_wagon.png",
-    icon_size = 64,
-    icon_mipmaps = 4,
-    subgroup = "train-transport",
-    order = "za0",
-    place_result = StaticData.mu_cargo_placement.name,
-    stack_size = 5
-}
-local muCargoPlacementRecipe = {
-    type = "recipe",
-    name = StaticData.mu_cargo_placement.name,
-    energy_required = 6,
-    enabled = false,
-    ingredients = {
-        {"engine-unit", 40},
-        {"electronic-circuit", 20},
-        {"steel-plate", 30},
-        {"iron-gear-wheel", 5},
-        {"iron-plate", 10}
-    },
-    result = StaticData.mu_cargo_placement.name
-}
+local function MakeMuWagonPlacementItemPrototype(thisStaticData)
+    local muWagonPlacementItem = {
+        type = "item-with-entity-data",
+        name = thisStaticData.name,
+        icon = thisStaticData.icon,
+        icon_size = thisStaticData.iconSize,
+        icon_mipmaps = thisStaticData.iconMipmaps,
+        subgroup = "train-transport",
+        order = thisStaticData.itemOrder,
+        place_result = thisStaticData.name,
+        stack_size = 5
+    }
+    return muWagonPlacementItem
+end
 
-local muFluidWagon = Utils.DeepCopy(refFluidWagon)
-muFluidWagon.name = StaticData.mu_fluid_wagon.name
-muFluidWagon.localised_name = {"entity-name." .. StaticData.mu_fluid_placement.name}
-muFluidWagon.minable.result = StaticData.mu_fluid_placement.name
-muFluidWagon.vertical_selection_shift = -0.5
-muFluidWagon.wheels = EmptyRotatedSprite()
-muFluidWagon.back_light = nil
-muFluidWagon.stand_by_light = nil
-muFluidWagon.collision_box = StaticData.mu_fluid_wagon.collision_box
-muFluidWagon.selection_box = StaticData.mu_fluid_wagon.selection_box
-muFluidWagon.allow_manual_color = true
-muFluidWagon.joint_distance = StaticData.mu_fluid_wagon.joint_distance
-muFluidWagon.connection_distance = StaticData.mu_fluid_wagon.connection_distance
-muFluidWagon.connection_snap_distance = StaticData.mu_fluid_wagon.connection_snap_distance
-muFluidWagon.weight = 1
-muFluidWagon.max_health = muLoco.max_health
-muFluidWagon.capacity = muFluidWagon.capacity / 2
-table.insert(muLoco.flags, "not-blueprintable")
-table.insert(muLoco.flags, "not-deconstructable")
-muFluidWagon.minimap_representation = {
-    filename = Constants.AssetModName .. "/graphics/entity/" .. StaticData.mu_fluid_wagon.name .. "-minimap_representation.png",
-    flags = {"icon"},
-    size = {20, 70},
-    scale = 0.5
-}
-muFluidWagon.selected_minimap_representation = {
-    filename = Constants.AssetModName .. "/graphics/entity/" .. StaticData.mu_fluid_wagon.name .. "-selected_minimap_representation.png",
-    flags = {"icon"},
-    size = {20, 70},
-    scale = 0.5
-}
+local function MakeMuWagonPlacementRecipePrototype(thisStaticData)
+    local muWagonPlacementRecipe = {
+        type = "recipe",
+        name = thisStaticData.name,
+        energy_required = 6,
+        enabled = false,
+        ingredients = thisStaticData.recipeIngredients,
+        result = thisStaticData.name
+    }
+    return muWagonPlacementRecipe
+end
 
-local muFluidPlacement = Utils.DeepCopy(refLoco)
-muFluidPlacement.name = StaticData.mu_fluid_placement.name
-muFluidPlacement.collision_box = StaticData.mu_fluid_placement.collision_box
-muFluidPlacement.selection_box = StaticData.mu_fluid_placement.selection_box
-muFluidPlacement.joint_distance = StaticData.mu_fluid_placement.joint_distance
-muFluidPlacement.connection_distance = StaticData.mu_fluid_placement.connection_distance
-muFluidPlacement.connection_snap_distance = StaticData.mu_fluid_placement.connection_snap_distance
-muFluidPlacement.wheels = EmptyRotatedSprite()
-table.insert(muLoco.flags, "not-blueprintable")
-table.insert(muLoco.flags, "not-deconstructable")
-muFluidPlacement.minimap_representation = muFluidWagon.minimap_representation
-muFluidPlacement.selected_minimap_representation = muFluidWagon.selected_minimap_representation
+local muCargoLoco = MakeMULocoPrototype(StaticData.mu_locomotive, StaticData.mu_cargo_wagon)
+local muCargoWagon = MakeMUWagonPrototype(StaticData.mu_cargo_wagon, muCargoLoco)
+local muCargoPlacement = MakeMuWagonPlacementPrototype(StaticData.mu_cargo_placement)
+local muCargoPlacementItem = MakeMuWagonPlacementItemPrototype(StaticData.mu_cargo_placement)
+local muCargoPlacementRecipe = MakeMuWagonPlacementRecipePrototype(StaticData.mu_cargo_placement)
 
-local muFluidPlacementItem = {
-    type = "item-with-entity-data",
-    name = StaticData.mu_fluid_placement.name,
-    icon = Constants.AssetModName .. "/graphics/icons/mu_fluid_wagon.png",
-    icon_size = 64,
-    icon_mipmaps = 4,
-    subgroup = "train-transport",
-    order = "za1",
-    place_result = StaticData.mu_fluid_placement.name,
-    stack_size = 5
-}
-local muFluidPlacementRecipe = {
-    type = "recipe",
-    name = StaticData.mu_fluid_placement.name,
-    energy_required = 6,
-    enabled = false,
-    ingredients = {
-        {"engine-unit", 40},
-        {"electronic-circuit", 20},
-        {"steel-plate", 30},
-        {"iron-gear-wheel", 5},
-        {"iron-plate", 10}
-    },
-    result = StaticData.mu_fluid_placement.name
-}
+local muFluidLoco = MakeMULocoPrototype(StaticData.mu_locomotive, StaticData.mu_fluid_wagon)
+local muFluidWagon = MakeMUWagonPrototype(StaticData.mu_fluid_wagon, muFluidLoco)
+local muFluidPlacement = MakeMuWagonPlacementPrototype(StaticData.mu_fluid_placement)
+local muFluidPlacementItem = MakeMuWagonPlacementItemPrototype(StaticData.mu_fluid_placement)
+local muFluidPlacementRecipe = MakeMuWagonPlacementRecipePrototype(StaticData.mu_fluid_placement)
 
 data:extend(
     {
-        muLoco,
         muCargoWagon,
+        muCargoLoco,
         muCargoPlacement,
         muCargoPlacementItem,
         muCargoPlacementRecipe,
         muFluidWagon,
+        muFluidLoco,
         muFluidPlacement,
         muFluidPlacementItem,
         muFluidPlacementRecipe

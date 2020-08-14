@@ -2,6 +2,7 @@ local Entity = {}
 local Utils = require("utility/utils")
 local Logging = require("utility/logging")
 local StaticData = require("static-data")
+local Events = require("utility/events")
 
 local placementAttemptCircles = false
 local writeAllWarnings = false
@@ -40,7 +41,25 @@ Entity.CreateGlobals = function()
     global.entity.minedWagonIds = global.entity.minedWagonIds or {}
 end
 
+Entity.OnLoad = function()
+    local muWagonNamesFilter = {{filter = "name", name = StaticData.mu_locomotive.name}, {mode = "or", filter = "name", name = StaticData.mu_cargo_wagon.name}, {mode = "or", filter = "name", name = StaticData.mu_fluid_wagon.name}}
+
+    Events.RegisterEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", {{filter = "name", name = StaticData.mu_cargo_placement.name}, {mode = "or", filter = "name", name = StaticData.mu_fluid_placement.name}})
+    Events.RegisterHandler(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement)
+    Events.RegisterEvent(defines.events.on_train_created)
+    Events.RegisterHandler(defines.events.on_train_created, "Entity.OnTrainCreated", Entity.OnTrainCreated)
+    Events.RegisterEvent(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", muWagonNamesFilter)
+    Events.RegisterHandler(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", Entity.OnPlayerMined_MUWagon)
+    Events.RegisterEvent(defines.events.on_pre_player_mined_item, "Entity.OnPrePlayerMined_MUWagon", muWagonNamesFilter)
+    Events.RegisterHandler(defines.events.on_pre_player_mined_item, "Entity.OnPrePlayerMined_MUWagon", Entity.OnPrePlayerMined_MUWagon)
+    Events.RegisterEvent(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", muWagonNamesFilter)
+    Events.RegisterHandler(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", Entity.OnEntityDamaged_MUWagon)
+    Events.RegisterEvent(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", muWagonNamesFilter)
+    Events.RegisterHandler(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", Entity.OnEntityDied_MUWagon)
+end
+
 Entity.UpgradeGlobals = function()
+    --TODO: remove me after making new test map
     if global.entity.wagonsIdsSingleTrainUnitIds ~= nil then
         global.entity.wagonIdToSingleTrainUnit = global.entity.wagonsIdsSingleTrainUnitIds
         global.entity.wagonsIdsSingleTrainUnitIds = nil

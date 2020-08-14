@@ -27,3 +27,8 @@ Limitations
 - This is a concept mod and relies upon some emergent game behaviours. Should Factorio train placement change in the future it may not be possible to update and support it.
 - Don't build a train with multiple single train units in it out of order. Start at one end and place each one sequentially. As placing a middle single train unit between 2 other rail wagons may not place correctly.
 - There is no way to detach a single train unit from a larger train, it must be deconstructed. The disconnect wagon command will be effectively undone.
+
+Upgrading from v 18.x.x
+========================
+
+- You can not upgrade from the Proof Of Concept version of the mod, version 18.x.x. This version only had a handful of downloads and was a beta test. If you tried this version you'll need to start a new map to ge on the main release.
