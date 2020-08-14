@@ -1,3 +1,4 @@
+- Add a mod logo picture and a picture to the readme of it in use with fuel and unload inserters at a station.
 + Make a placement vehicle that when placed becomes the 3 sub parts:
     + Handle player placement.
     + Handle player mining.
