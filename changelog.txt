@@ -2,6 +2,7 @@
 Version: 19.0.2
 Date: xxx
   Features:
+    - Handle if players inventory is full when the unit is mined equally to a chest of items being mined.
   Changes:
   Bugfixes:
   Info:

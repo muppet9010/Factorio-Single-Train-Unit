@@ -4,6 +4,7 @@
     + Handle player mining.
 + Merged entities behavour:
     + If one part is deconstructed the whole single train unit should be picked up.
+    + Cargo and fuel is taken from train before entity is mined. So only a full player inventory and competely empty train (cargo & fuel) will now cause a droped train item on ground.
     + Link damage between the 3 parts.
     + Avoid the uncoupling of the inner cargo wagon from the locos.
 + Balance:

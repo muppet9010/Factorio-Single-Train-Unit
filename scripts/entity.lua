@@ -10,12 +10,41 @@ local LoopDirectionValue = function(value)
     return Utils.LoopIntValueWithinRange(value, 0, 7)
 end
 
+local MoveInventoryContents = function(sourceInventory, targetInventory, dropUnmovedOnGround)
+    local sourceOwner
+    for name, count in pairs(sourceInventory.get_contents()) do
+        local moved = targetInventory.insert({name = name, count = count})
+        if moved > 0 then
+            sourceInventory.remove({name = name, count = moved})
+        end
+        if dropUnmovedOnGround then
+            sourceOwner = sourceOwner or targetInventory.entity_owner
+            sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = name, count = count - moved}, true, sourceOwner.force, false)
+        end
+    end
+end
+
 Entity.CreateGlobals = function()
     global.entity = global.entity or {}
+    Entity.UpgradeGlobals()
     global.entity.forces = global.entity.forces or {}
-    --global.entity.forces[force.index].singleTrainUnits = {} -- Defined when first used and the force entry is generated.
-    global.entity.wagonsIdsSingleTrainUnitIds = global.entity.wagonsIdsSingleTrainUnitIds or {}
+    --[[
+    global.entity.forces[force.index].singleTrainUnits = {
+        id = singleTrainUnitId,
+        wagons = {
+            forwardLoco = ENTITY, middleCargo = ENTITY, rearLoco = ENTITY
+        }
+    } -- Defined when first used and the force entry is generated.
+    --]]
+    global.entity.wagonIdToSingleTrainUnit = global.entity.wagonIdToSingleTrainUnit or {} -- WagonId to lobal.entity.forces[force.index].singleTrainUnits entry
     global.entity.minedWagonIds = global.entity.minedWagonIds or {}
+end
+
+Entity.UpgradeGlobals = function()
+    if global.entity.wagonsIdsSingleTrainUnitIds ~= nil then
+        global.entity.wagonIdToSingleTrainUnit = global.entity.wagonsIdsSingleTrainUnitIds
+        global.entity.wagonsIdsSingleTrainUnitIds = nil
+    end
 end
 
 Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
@@ -122,7 +151,7 @@ Entity.RecordSingleUnit = function(force, wagons)
         wagons = wagons
     }
     for _, wagon in pairs(wagons) do
-        global.entity.wagonsIdsSingleTrainUnitIds[wagon.unit_number] = forcesEntry.singleTrainUnits[singleTrainUnitId]
+        global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = forcesEntry.singleTrainUnits[singleTrainUnitId]
     end
 end
 
@@ -133,7 +162,7 @@ Entity.DeleteSingleUnitRecord = function(force, singleTrainUnitId)
     end
     for _, wagon in pairs(forcesEntry.singleTrainUnits[singleTrainUnitId].wagons) do
         if wagon.valid then
-            global.entity.wagonsIdsSingleTrainUnitIds[wagon.unit_number] = nil
+            global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = nil
         end
     end
     forcesEntry.singleTrainUnits[singleTrainUnitId] = nil
@@ -158,25 +187,32 @@ end
 
 Entity.OnPlayerMined_MUWagon = function(event)
     local minedWagon, force, player = event.entity, event.entity.force, game.get_player(event.player_index)
-    local singleTrainUnit = global.entity.wagonsIdsSingleTrainUnitIds[minedWagon.unit_number]
+    local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[minedWagon.unit_number]
     global.entity.minedWagonIds[minedWagon.unit_number] = true --This entity has been mined already as it triggered this event.
 
     for _, wagon in pairs(singleTrainUnit.wagons) do
         if wagon.valid and global.entity.minedWagonIds[wagon.unit_number] == nil then
             global.entity.minedWagonIds[wagon.unit_number] = true
             local minedSuccess = player.mine_entity(wagon, force)
-            if not minedSuccess then
-                game.print("TODO: failed to mine all the Single Unit Train in 1 go")
-            end
         end
     end
 
     Entity.DeleteSingleUnitRecord(force, singleTrainUnit.id)
 end
 
+Entity.OnPrePlayerMined_MUWagon = function(event)
+    --This tries to take all the cargo items, then fuel before the actual MU Wagon entiies get mined. If the train contents are more than the players inventory space this will mean the players inventory fills up and then the game will naturally not try to mine the train entities themselves.
+    local minedWagon, force, player = event.entity, event.entity.force, game.get_player(event.player_index)
+    local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[minedWagon.unit_number]
+    local playerInventory = player.get_main_inventory()
+    MoveInventoryContents(singleTrainUnit.wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon), playerInventory, false)
+    MoveInventoryContents(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory, false)
+    MoveInventoryContents(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), playerInventory, false)
+end
+
 Entity.OnEntityDamaged_MUWagon = function(event)
     local damagedWagon = event.entity
-    local singleTrainUnit = global.entity.wagonsIdsSingleTrainUnitIds[damagedWagon.unit_number]
+    local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[damagedWagon.unit_number]
 
     for _, wagon in pairs(singleTrainUnit.wagons) do
         if wagon.valid and wagon.unit_number ~= damagedWagon.unit_number then
@@ -187,7 +223,7 @@ end
 
 Entity.OnEntityDied_MUWagon = function(event)
     local damagedWagon = event.entity
-    local singleTrainUnit = global.entity.wagonsIdsSingleTrainUnitIds[damagedWagon.unit_number]
+    local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[damagedWagon.unit_number]
 
     for _, wagon in pairs(singleTrainUnit.wagons) do
         if wagon.valid and wagon.unit_number ~= damagedWagon.unit_number then

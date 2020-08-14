@@ -25,7 +25,6 @@ Not Implimented Yet
 - Proper modified graphics to account for the changes.
 - A fluid tanker version.
 - Coloring of the unit.
-- If players inventory is full when the unit is mined.
 
 Limitations
 ================
