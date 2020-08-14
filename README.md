@@ -2,11 +2,6 @@
 
 A single train unit comprising of a small cargo wagon and a locomotives at both ends. Total size is of a standard locomotive or cargo wagon.
 
-Demo Mod - Don't play any long term games with it.
-============
-
-This is a concept demo mod and you shouldn't play any long term games with it. It may not be updated or supported in the future. However, by all means have an experiment with it and see if its a good idea or not. See the known limitations and not implimented yet items below.
-
 Overview
 ============
 
@@ -29,5 +24,6 @@ Not Implimented Yet
 Limitations
 ================
 
+- This is a concept mod and relies upon some emergent game behaviours. Should Factorio train placement change in the future it may not be possible to update and support it.
 - Don't build a train with multiple single train units in it out of order. Start at one end and place each one sequentially. As placing a middle single train unit between 2 other rail wagons may not place correctly.
 - There is no way to detach a single train unit from a larger train, it must be deconstructed. The disconnect wagon command will be effectively undone.
