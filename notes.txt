@@ -7,6 +7,9 @@
     + Cargo and fuel is taken from train before entity is mined. So only a full player inventory and competely empty train (cargo & fuel) will now cause a droped train item on ground, which is vanilla behaviour.
     + Link damage between the 3 parts.
     + Avoid the uncoupling of the inner cargo wagon from the locos.
++ Fluid Wagon variation:
+    + Add fluid wagon version, in addition to initial cargo wagon type.
+    + Trains line up correctly at stations for pumps to connect.
 + Balance:
     + Apply approperiate cargo size and train fuel inventory at 1/3 regular. Speed and weight, plus other factors at something between a singular loco and a loco pulling a wagon.
     + Crafting cost equal to 2 locos and a wagon.
@@ -24,10 +27,9 @@
     + Make a unique minimap image.
     + Diabled setting color on hidden loco's as they have no graphics.
     - Allow color to be pasted on the cargo wagon as it has the graphics. Copy from WagonColors mod.
-
-- Future ideas:
-    - Fluid train version, if possible.
+    - Vertical cargo and fluid unit's graphics aren't aligned correctly.
 
 - Not Possible:
-    - Share color settings on the 2 locos and apply to combined graphics. No simple event to flag when color is changed so not sure how to detect this.
+    - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this.
     - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it.
+    - Prevent the player from walking through a unit. As there needs to be gaps in the parts collision boes so it can turn corners.

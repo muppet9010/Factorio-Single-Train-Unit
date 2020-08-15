@@ -4,8 +4,8 @@ local Logging = require("utility/logging")
 local StaticData = require("static-data")
 local Events = require("utility/events")
 
-local placementAttemptCircles = false
-local writeAllWarnings = false
+local debug_placementAttemptCircles = false -- clear all on map via: /c rendering.clear("single_train_unit")
+local debug_writeAllWarnings = false
 
 local LoopDirectionValue = function(value)
     return Utils.LoopIntValueWithinRange(value, 0, 7)
@@ -62,47 +62,6 @@ Entity.OnLoad = function()
     Events.RegisterHandler(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", Entity.OnEntityDied_MUWagon)
 end
 
-Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
-    if placementAttemptCircles then
-        rendering.draw_circle {
-            color = {r = 0, g = 0, b = 1},
-            radius = 0.1,
-            filled = true,
-            target = position,
-            surface = surface
-        }
-    end
-    local wagon = surface.create_entity {name = prototypeName, position = position, force = force, snap_to_train_stop = false, direction = direction}
-    if wagon == nil then
-        Logging.LogPrint("WARNING: " .. prototypeName .. " failed to place at " .. Logging.PositionToString(position) .. " with direction: " .. direction, writeAllWarnings)
-        return
-    end
-    return wagon
-end
-
-Entity.PlaceOrionalLocoBack = function(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, failedOnName, eventReplaced)
-    -- As we failed to place all the expected parts remove any placed. Then place the origional loco placement entity back, but backwards. Calling the replacement process on this reversed placement loco generally works for any standard use cases because Factorio.
-    Logging.LogPrint("WARNING: " .. "failed placing " .. failedOnName, writeAllWarnings)
-    for _, wagon in pairs(wagons) do
-        if wagon ~= nil and wagon.valid then
-            wagon.destroy()
-        end
-    end
-    if eventReplaced ~= nil and eventReplaced then
-        Logging.LogPrint("ERROR: " .. "failed placing " .. failedOnName .. " for second orientation, so giving up")
-        return
-    end
-
-    placedEntityDirection = LoopDirectionValue(placedEntityDirection + 4)
-    local placedLoco = surface.create_entity {name = placedEntityName, position = placedEntityPosition, force = force, snap_to_train_stop = false, direction = placedEntityDirection}
-    if placedLoco == nil then
-        Logging.LogPrint("ERROR: " .. "failed to placed origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection)
-        return
-    end
-    Logging.LogPrint("WARNING: " .. "placed origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection, writeAllWarnings)
-    Entity.OnBuiltEntity_MUPlacement({created_entity = placedLoco, replaced = true})
-end
-
 Entity.OnBuiltEntity_MUPlacement = function(event)
     local entity = event.created_entity
     local surface, force, placedEntityName, placedEntityPosition, placedEntityOrientation = entity.surface, entity.force, entity.name, entity.position, entity.orientation
@@ -152,6 +111,47 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     wagons.rearLoco.backer_name = ""
 
     Entity.RecordSingleUnit(force, wagons, wagonStaticData.type)
+end
+
+Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
+    if debug_placementAttemptCircles then
+        rendering.draw_circle {
+            color = {r = 0, g = 0, b = 1},
+            radius = 0.1,
+            filled = true,
+            target = position,
+            surface = surface
+        }
+    end
+    local wagon = surface.create_entity {name = prototypeName, position = position, force = force, snap_to_train_stop = false, direction = direction}
+    if wagon == nil then
+        Logging.LogPrint("WARNING: " .. prototypeName .. " failed to place at " .. Logging.PositionToString(position) .. " with direction: " .. direction, debug_writeAllWarnings)
+        return
+    end
+    return wagon
+end
+
+Entity.PlaceOrionalLocoBack = function(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, failedOnName, eventReplaced)
+    -- As we failed to place all the expected parts remove any placed. Then place the origional loco placement entity back, but backwards. Calling the replacement process on this reversed placement loco generally works for any standard use cases because Factorio.
+    Logging.LogPrint("WARNING: " .. "failed placing " .. failedOnName, debug_writeAllWarnings)
+    for _, wagon in pairs(wagons) do
+        if wagon ~= nil and wagon.valid then
+            wagon.destroy()
+        end
+    end
+    if eventReplaced ~= nil and eventReplaced then
+        Logging.LogPrint("ERROR: " .. "failed placing " .. failedOnName .. " for second orientation, so giving up")
+        return
+    end
+
+    placedEntityDirection = LoopDirectionValue(placedEntityDirection + 4)
+    local placedLoco = surface.create_entity {name = placedEntityName, position = placedEntityPosition, force = force, snap_to_train_stop = false, direction = placedEntityDirection}
+    if placedLoco == nil then
+        Logging.LogPrint("ERROR: " .. "failed to placed origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection)
+        return
+    end
+    Logging.LogPrint("WARNING: " .. "placed origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection, debug_writeAllWarnings)
+    Entity.OnBuiltEntity_MUPlacement({created_entity = placedLoco, replaced = true})
 end
 
 Entity.RecordSingleUnit = function(force, wagons)
