@@ -17,17 +17,17 @@ Overview
 Not Implimented Yet
 ================
 
-- Ability to blueprint and deconstruct the train via robot. At present the units aren't selectable for either action.
 - Proper modified graphics to account for the changes.
 - Coloring of the unit.
 
-Limitations
+Limitations / Known Issues
 ================
 
 - This is a concept mod and relies upon some emergent game behaviours. Should Factorio train placement change in the future it may not be possible to update and support it. The Factorio developers have advised against using custom train lengths in the past, but what do they know :p
 - Don't build a train with multiple single train units in it out of order. Start at one end and place each one sequentially. As placing a middle single train unit between 2 other rail wagons may not place correctly.
 - There is no way to detach a single train unit from a larger train, it must be deconstructed. The disconnect wagon command will be effectively undone.
 - Single train units when being placed will only snap to a stations position if they are facing the right way. Theres no visual way to tell their direction at present, so just rotate them before placing if needed. Snapping on corners is very finikity.
+- Ghost placement can be fussy to place, but blueprints are fine. Ghost placement fussyness seems to be wose if you Quick Select (Q) on a loco end of a unit and then try to ghost with that.
 
 Upgrading from old POC mod verison
 ========================

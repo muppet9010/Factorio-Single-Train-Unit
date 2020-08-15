@@ -16,11 +16,12 @@
     + Crafting cost equal to 2 locos and a wagon.
 - Blueprint support:
     + Prevent the trains being blueprinted for now.
-    - If placed train is blueprinted convert BP item to the placable one or handle this scenario some other way.
+    - Entry of deconstruction planner filter is weird. Should hide all but the wagon types.
 - Bot support:
     + Prevent being marked for deconstruction for now.
-    - Handle bot placement.
-    - Handle bot mining.
+    + Handle bot placement of BP.
+    + Handle bot placement of ghost.
+    + Handle bot mining.
     - Handle mod entity placement?
 - Graphics:
     - Make rough graphics for new vehicle (cargo wagon entity).
@@ -28,7 +29,7 @@
     + Make a unique minimap image.
     + Diabled setting color on hidden loco's as they have no graphics.
     - Allow color to be pasted on the cargo wagon as it has the graphics. Copy from WagonColors mod.
-    - Vertical cargo and fluid unit's graphics aren't aligned correctly.
+    - Vertical cargo and fluid unit's graphics aren't aligned correctly. Most noticable that the pump doesn't align correctly on graphics.
 
 - Not Possible:
     - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this.

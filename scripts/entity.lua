@@ -45,10 +45,19 @@ Entity.CreateGlobals = function()
     global.entity.wagonIdToSingleTrainUnit = global.entity.wagonIdToSingleTrainUnit or {} -- WagonId to lobal.entity.forces[force.index].singleTrainUnits entry
 end
 
-Entity.OnLoad = function()
-    local muWagonNamesFilter = {{filter = "name", name = StaticData.mu_cargo_loco.name}, {mode = "or", filter = "name", name = StaticData.mu_cargo_wagon.name}, {mode = "or", filter = "name", name = StaticData.mu_fluid_loco.name}, {mode = "or", filter = "name", name = StaticData.mu_fluid_wagon.name}}
+local muWagonNamesFilter = {
+    {filter = "name", name = StaticData.mu_cargo_loco.name},
+    {mode = "or", filter = "name", name = StaticData.mu_cargo_wagon.name},
+    {mode = "or", filter = "name", name = StaticData.mu_fluid_loco.name},
+    {mode = "or", filter = "name", name = StaticData.mu_fluid_wagon.name}
+}
+local muWagonPlacementNameFilter = {
+    {filter = "name", name = StaticData.mu_cargo_placement.name},
+    {mode = "or", filter = "name", name = StaticData.mu_fluid_placement.name}
+}
 
-    Events.RegisterEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", {{filter = "name", name = StaticData.mu_cargo_placement.name}, {mode = "or", filter = "name", name = StaticData.mu_fluid_placement.name}})
+Entity.OnLoad = function()
+    Events.RegisterEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", muWagonPlacementNameFilter)
     Events.RegisterHandler(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement)
     Events.RegisterEvent(defines.events.on_train_created)
     Events.RegisterHandler(defines.events.on_train_created, "Entity.OnTrainCreated", Entity.OnTrainCreated)
@@ -60,14 +69,29 @@ Entity.OnLoad = function()
     Events.RegisterHandler(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", Entity.OnEntityDamaged_MUWagon)
     Events.RegisterEvent(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", muWagonNamesFilter)
     Events.RegisterHandler(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", Entity.OnEntityDied_MUWagon)
+    Events.RegisterEvent(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement_WagonEntities", muWagonNamesFilter)
+    Events.RegisterEvent(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement_PlacementEntities", muWagonPlacementNameFilter)
+    Events.RegisterHandler(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement)
+    Events.RegisterEvent(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", muWagonNamesFilter)
+    Events.RegisterHandler(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", Entity.OnRobotMinedEntity_MUWagons)
 end
 
 Entity.OnBuiltEntity_MUPlacement = function(event)
     local entity = event.created_entity
+    --Called from 2 different events with their own filter lists.
+    if not Utils.GetTableKeyWithInnerKeyValue(muWagonPlacementNameFilter, "name", entity.name) and not Utils.GetTableKeyWithInnerKeyValue(muWagonNamesFilter, "name", entity.name) then
+        return
+    end
+
     local surface, force, placedEntityName, placedEntityPosition, placedEntityOrientation = entity.surface, entity.force, entity.name, entity.position, entity.orientation
     local placementStaticData = StaticData.entityNames[placedEntityName]
-    local wagonStaticData, locoStaticData = placementStaticData.placedStaticDataWagon, placementStaticData.placedStaticDataLoco
 
+    -- Is a bot placing blueprint of the actual wagon, not the placement entity.
+    if placementStaticData.placedStaticDataWagon == nil then
+        placementStaticData = placementStaticData.placementStaticData
+    end
+
+    local wagonStaticData, locoStaticData = placementStaticData.placedStaticDataWagon, placementStaticData.placedStaticDataLoco
     local placedEntityDirection = LoopDirectionValue(Utils.RoundNumberToDecimalPlaces(placedEntityOrientation * 8, 0))
     local locoDistance = (placementStaticData.joint_distance / 2) - (locoStaticData.joint_distance / 2)
 
@@ -261,6 +285,28 @@ Entity.OnEntityDied_MUWagon = function(event)
     end
 
     Entity.DeleteSingleUnitRecord(event.force, singleTrainUnit.id)
+end
+
+Entity.OnRobotMinedEntity_MUWagons = function(event)
+    -- Try to move the fuel contents in to the robot picking up the item. In some cases the items will fall on the ground from the construction robot, but marked for decon, etc. This is vanilla behaviour, i.e rocks.
+    local minedWagon, buffer = event.entity, event.buffer
+    local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[minedWagon.unit_number]
+    if singleTrainUnit == nil then
+        return
+    end
+
+    TryMoveInventoryContents(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), buffer, false)
+    TryMoveInventoryContents(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), buffer, false)
+
+    local thisUnitsWagons, force = Utils.DeepCopy(singleTrainUnit.wagons), minedWagon.force
+    Entity.DeleteSingleUnitRecord(force, singleTrainUnit.id)
+    local thisWagonId = minedWagon.unit_number
+
+    for _, wagon in pairs(thisUnitsWagons) do
+        if wagon.valid and wagon.unit_number ~= thisWagonId then
+            wagon.destroy()
+        end
+    end
 end
 
 return Entity

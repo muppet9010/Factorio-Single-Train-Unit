@@ -43,6 +43,7 @@ local function MakeMULocoPrototype(thisStaticData)
     muLoco.minimap_representation = nil
     muLoco.selected_minimap_representation = nil
     muLoco.placeable_by = {item = thisStaticData.placementStaticData.name, count = 1}
+    muLoco.alert_when_damaged = false
     table.insert(muLoco.flags, "not-blueprintable")
     table.insert(muLoco.flags, "not-deconstructable")
     data:extend({muLoco})
@@ -75,8 +76,6 @@ local function MakeMUWagonPrototype(thisStaticData)
     muWagon.weight = 1
     muWagon.max_health = itsLocoPrototype.max_health
     muWagon.placeable_by = {item = thisStaticData.placementStaticData.name, count = 1}
-    table.insert(muWagon.flags, "not-blueprintable")
-    table.insert(muWagon.flags, "not-deconstructable")
     muWagon.minimap_representation = {
         filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "-minimap_representation.png",
         flags = {"icon"},
@@ -104,8 +103,6 @@ local function MakeMuWagonPlacementPrototype(thisStaticData)
     muWagonPlacement.connection_snap_distance = thisStaticData.connection_snap_distance
     muWagonPlacement.wheels = EmptyRotatedSprite()
     muWagonPlacement.pictures = itsWagonPrototype.pictures
-    table.insert(muWagonPlacement.flags, "not-blueprintable")
-    table.insert(muWagonPlacement.flags, "not-deconstructable")
     data:extend({muWagonPlacement})
 end
 
