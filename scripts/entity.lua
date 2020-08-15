@@ -40,7 +40,7 @@ Entity.CreateGlobals = function()
             forwardLoco = ENTITY, middleCargo = ENTITY, rearLoco = ENTITY
         },
         type = STATICDATA WAGON TYPE
-    } -- Defined when first used and the force entry is generated.
+    } -- Force index entries are defined when first used and the intial force entry is generated.
     --]]
     global.entity.wagonIdToSingleTrainUnit = global.entity.wagonIdToSingleTrainUnit or {} -- WagonId to lobal.entity.forces[force.index].singleTrainUnits entry
 end
