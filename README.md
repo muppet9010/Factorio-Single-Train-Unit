@@ -12,6 +12,7 @@ Overview
 - The unit is unlocked with the standard Railway research.
 - Place the dual headed cargo/fluid wagon in the usual manner and it will be replaced out for the 2 mini locos and a mini cargo wagon.
 - The unit will be mined by the player as a whole and will be damaged/destroyed as a whole, with damage shared across all parts.
+- While the graphics look as one, there are actually 2 seperate locomotives and a wagon there. So you must fuel both locomotives seperately and select the right part of the Single Train Unit for giving orders, entering to drive it, etc.
 
 Not Implimented Yet
 ================

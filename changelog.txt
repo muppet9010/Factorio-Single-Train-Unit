@@ -2,8 +2,11 @@
 Version: 19.0.2
 Date: xxx
   Features:
+    - Add fluid wagon type
     - Handle if players inventory is full when the unit is mined equally to a chest of items being mined.
   Changes:
+    - Size of train unit changed for fluid wagon type, but means so only 6 inserters now (2-2-2).
+    - Quick Select (Q) works.
   Bugfixes:
   Info:
     - Moved to min Factorio version 1.0

@@ -2,6 +2,7 @@
 + Make a placement vehicle that when placed becomes the 3 sub parts:
     + Handle player placement.
     + Handle player mining.
+    + Handles Quick Select (Q button).
 + Merged entities behavour:
     + If one part is deconstructed the whole single train unit should be picked up.
     + Cargo and fuel is taken from train before entity is mined. So only a full player inventory and competely empty train (cargo & fuel) will now cause a droped train item on ground, which is vanilla behaviour.

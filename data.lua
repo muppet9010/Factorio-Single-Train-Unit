@@ -42,6 +42,7 @@ local function MakeMULocoPrototype(thisStaticData)
     muLoco.burner.effectivity = 0.5
     muLoco.minimap_representation = nil
     muLoco.selected_minimap_representation = nil
+    muLoco.placeable_by = {item = thisStaticData.placementStaticData.name, count = 1}
     table.insert(muLoco.flags, "not-blueprintable")
     table.insert(muLoco.flags, "not-deconstructable")
     data:extend({muLoco})
@@ -73,6 +74,7 @@ local function MakeMUWagonPrototype(thisStaticData)
     muWagon.connection_snap_distance = thisStaticData.connection_snap_distance
     muWagon.weight = 1
     muWagon.max_health = itsLocoPrototype.max_health
+    muWagon.placeable_by = {item = thisStaticData.placementStaticData.name, count = 1}
     table.insert(muWagon.flags, "not-blueprintable")
     table.insert(muWagon.flags, "not-deconstructable")
     muWagon.minimap_representation = {
