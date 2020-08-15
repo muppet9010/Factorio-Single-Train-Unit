@@ -16,10 +16,10 @@ local function EmptyRotatedSprite()
     }
 end
 
-local function MakeMULocoPrototype(thisStaticData, wagonStaticType)
+local function MakeMULocoPrototype(thisStaticData)
     local muLoco = Utils.DeepCopy(refLoco)
     muLoco.name = thisStaticData.name
-    muLoco.localised_name = {"entity-name." .. wagonStaticType.placementStaticData.name}
+    muLoco.localised_name = {"entity-name." .. thisStaticData.placementStaticData.name}
     muLoco.minable.result = nil
     muLoco.vertical_selection_shift = -0.5
     muLoco.pictures = EmptyRotatedSprite()
@@ -44,17 +44,19 @@ local function MakeMULocoPrototype(thisStaticData, wagonStaticType)
     muLoco.selected_minimap_representation = nil
     table.insert(muLoco.flags, "not-blueprintable")
     table.insert(muLoco.flags, "not-deconstructable")
-    return muLoco
+    data:extend({muLoco})
 end
 
-local function MakeMUWagonPrototype(thisStaticData, locoPrototype)
+local function MakeMUWagonPrototype(thisStaticData)
+    local itsLocoPrototype = data.raw["locomotive"][thisStaticData.placementStaticData.placedStaticDataLoco.name]
     local muWagon
-    if thisStaticData.type == "cargo_wagon" then
+    if thisStaticData.type == "cargo-wagon" then
         muWagon = Utils.DeepCopy(refCargoWagon)
         muWagon.inventory_size = muWagon.inventory_size / 2
-    elseif thisStaticData.type == "fluid_wagon" then
+    elseif thisStaticData.type == "fluid-wagon" then
         muWagon = Utils.DeepCopy(refFluidWagon)
         muWagon.capacity = muWagon.capacity / 2
+        muWagon.tank_count = 1
     end
     muWagon.name = thisStaticData.name
     muWagon.localised_name = {"entity-name." .. thisStaticData.placementStaticData.name}
@@ -70,7 +72,7 @@ local function MakeMUWagonPrototype(thisStaticData, locoPrototype)
     muWagon.connection_distance = thisStaticData.connection_distance
     muWagon.connection_snap_distance = thisStaticData.connection_snap_distance
     muWagon.weight = 1
-    muWagon.max_health = locoPrototype.max_health
+    muWagon.max_health = itsLocoPrototype.max_health
     table.insert(muWagon.flags, "not-blueprintable")
     table.insert(muWagon.flags, "not-deconstructable")
     muWagon.minimap_representation = {
@@ -85,16 +87,13 @@ local function MakeMUWagonPrototype(thisStaticData, locoPrototype)
         size = {20, 70},
         scale = 0.5
     }
-    return muWagon
+    data:extend({muWagon})
 end
 
 local function MakeMuWagonPlacementPrototype(thisStaticData)
+    local itsWagonPrototype = data.raw[thisStaticData.placedStaticDataWagon.type][thisStaticData.placedStaticDataWagon.name]
     local muWagonPlacement
-    if thisStaticData.placedStaticDataWagon.type == "cargo_wagon" then
-        muWagonPlacement = Utils.DeepCopy(refCargoWagon)
-    elseif thisStaticData.placedStaticDataWagon.type == "fluid_wagon" then
-        muWagonPlacement = Utils.DeepCopy(refFluidWagon)
-    end
+    muWagonPlacement = Utils.DeepCopy(refLoco) -- Loco type snaps to stations, whereas cargo types don't.
     muWagonPlacement.name = thisStaticData.name
     muWagonPlacement.collision_box = thisStaticData.collision_box
     muWagonPlacement.selection_box = thisStaticData.selection_box
@@ -102,9 +101,10 @@ local function MakeMuWagonPlacementPrototype(thisStaticData)
     muWagonPlacement.connection_distance = thisStaticData.connection_distance
     muWagonPlacement.connection_snap_distance = thisStaticData.connection_snap_distance
     muWagonPlacement.wheels = EmptyRotatedSprite()
+    muWagonPlacement.pictures = itsWagonPrototype.pictures
     table.insert(muWagonPlacement.flags, "not-blueprintable")
     table.insert(muWagonPlacement.flags, "not-deconstructable")
-    return muWagonPlacement
+    data:extend({muWagonPlacement})
 end
 
 local function MakeMuWagonPlacementItemPrototype(thisStaticData)
@@ -119,7 +119,7 @@ local function MakeMuWagonPlacementItemPrototype(thisStaticData)
         place_result = thisStaticData.name,
         stack_size = 5
     }
-    return muWagonPlacementItem
+    data:extend({muWagonPlacementItem})
 end
 
 local function MakeMuWagonPlacementRecipePrototype(thisStaticData)
@@ -131,35 +131,20 @@ local function MakeMuWagonPlacementRecipePrototype(thisStaticData)
         ingredients = thisStaticData.recipeIngredients,
         result = thisStaticData.name
     }
-    return muWagonPlacementRecipe
+    data:extend({muWagonPlacementRecipe})
 end
 
-local muCargoLoco = MakeMULocoPrototype(StaticData.mu_cargo_loco, StaticData.mu_cargo_wagon)
-local muCargoWagon = MakeMUWagonPrototype(StaticData.mu_cargo_wagon, muCargoLoco)
-local muCargoPlacement = MakeMuWagonPlacementPrototype(StaticData.mu_cargo_placement)
-local muCargoPlacementItem = MakeMuWagonPlacementItemPrototype(StaticData.mu_cargo_placement)
-local muCargoPlacementRecipe = MakeMuWagonPlacementRecipePrototype(StaticData.mu_cargo_placement)
+MakeMULocoPrototype(StaticData.mu_cargo_loco)
+MakeMUWagonPrototype(StaticData.mu_cargo_wagon)
+MakeMuWagonPlacementPrototype(StaticData.mu_cargo_placement)
+MakeMuWagonPlacementItemPrototype(StaticData.mu_cargo_placement)
+MakeMuWagonPlacementRecipePrototype(StaticData.mu_cargo_placement)
 
-local muFluidLoco = MakeMULocoPrototype(StaticData.mu_fluid_loco, StaticData.mu_fluid_wagon)
-local muFluidWagon = MakeMUWagonPrototype(StaticData.mu_fluid_wagon, muFluidLoco)
-local muFluidPlacement = MakeMuWagonPlacementPrototype(StaticData.mu_fluid_placement)
-local muFluidPlacementItem = MakeMuWagonPlacementItemPrototype(StaticData.mu_fluid_placement)
-local muFluidPlacementRecipe = MakeMuWagonPlacementRecipePrototype(StaticData.mu_fluid_placement)
-
-data:extend(
-    {
-        muCargoWagon,
-        muCargoLoco,
-        muCargoPlacement,
-        muCargoPlacementItem,
-        muCargoPlacementRecipe,
-        muFluidWagon,
-        muFluidLoco,
-        muFluidPlacement,
-        muFluidPlacementItem,
-        muFluidPlacementRecipe
-    }
-)
+MakeMULocoPrototype(StaticData.mu_fluid_loco)
+MakeMUWagonPrototype(StaticData.mu_fluid_wagon)
+MakeMuWagonPlacementPrototype(StaticData.mu_fluid_placement)
+MakeMuWagonPlacementItemPrototype(StaticData.mu_fluid_placement)
+MakeMuWagonPlacementRecipePrototype(StaticData.mu_fluid_placement)
 
 table.insert(
     data.raw["technology"]["railway"].effects,

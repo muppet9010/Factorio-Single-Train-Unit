@@ -147,6 +147,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
         wagon.connect_rolling_stock(defines.rail_direction.back)
     end
 
+    -- Set to blank as cargo & fluid wagons can't have names. We want all parts of the unit to have the same on-hover name.
     wagons.forwardLoco.backer_name = ""
     wagons.rearLoco.backer_name = ""
 
@@ -231,7 +232,7 @@ Entity.OnPrePlayerMined_MUWagon = function(event)
 
     local player = game.get_player(event.player_index)
     local playerInventory = player.get_main_inventory()
-    if singleTrainUnit.type == "cargo_wagon" then
+    if singleTrainUnit.type == "cargo-wagon" then
         TryMoveInventoryContents(singleTrainUnit.wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon), playerInventory, false)
     end
     TryMoveInventoryContents(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory, false)

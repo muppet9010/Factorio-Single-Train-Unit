@@ -12,6 +12,10 @@ local locoDetails = {
     joint_distance = 0.4
 }
 
+--[[
+    middle wagons and locos reference their placement via "placementStaticData"
+    placement references wagons and locos via "placedStaticDataWagon" and "placedStaticDataLoco"
+]]
 StaticData.mu_cargo_wagon = {
     name = "single_train_unit-double_end_cargo_wagon",
     collision_box = {{-0.6, -1}, {0.6, 1}},
@@ -19,7 +23,7 @@ StaticData.mu_cargo_wagon = {
     connection_distance = 1.8,
     connection_snap_distance = 2,
     joint_distance = 0.8,
-    type = "cargo_wagon"
+    type = "cargo-wagon"
 }
 StaticData.mu_cargo_loco = Utils.DeepCopy(locoDetails)
 StaticData.mu_cargo_loco.name = "single_train_unit-double_end_cargo_loco"
@@ -44,8 +48,8 @@ StaticData.mu_cargo_placement = {
         {"iron-plate", 10}
     }
 }
-
 StaticData.mu_cargo_wagon.placementStaticData = StaticData.mu_cargo_placement
+StaticData.mu_cargo_loco.placementStaticData = StaticData.mu_cargo_placement
 StaticData.entityNames[StaticData.mu_cargo_loco.name] = StaticData.mu_cargo_loco
 StaticData.entityNames[StaticData.mu_cargo_wagon.name] = StaticData.mu_cargo_wagon
 StaticData.entityNames[StaticData.mu_cargo_placement.name] = StaticData.mu_cargo_placement
@@ -57,7 +61,7 @@ StaticData.mu_fluid_wagon = {
     connection_distance = 1.8,
     connection_snap_distance = 2,
     joint_distance = 0.8,
-    type = "fluid_wagon"
+    type = "fluid-wagon"
 }
 StaticData.mu_fluid_loco = Utils.DeepCopy(locoDetails)
 StaticData.mu_fluid_loco.name = "single_train_unit-double_end_fluid_loco"
@@ -84,6 +88,7 @@ StaticData.mu_fluid_placement = {
     }
 }
 StaticData.mu_fluid_wagon.placementStaticData = StaticData.mu_fluid_placement
+StaticData.mu_fluid_loco.placementStaticData = StaticData.mu_fluid_placement
 StaticData.entityNames[StaticData.mu_fluid_loco.name] = StaticData.mu_fluid_loco
 StaticData.entityNames[StaticData.mu_fluid_wagon.name] = StaticData.mu_fluid_wagon
 StaticData.entityNames[StaticData.mu_fluid_placement.name] = StaticData.mu_fluid_placement
