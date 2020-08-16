@@ -37,4 +37,3 @@
     - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it.
     - Prevent the player from walking through a unit. As there needs to be gaps in the parts collision boes so it can turn corners.
     - An event that damages multiple parts of a unit will accumilate damage too fast. i.e. a grenade hitting all 3 parts will do triple damage to the unit parts due to damage sharing vs a normal train being hit by a grenade.
-    - Entry on deconstruction planner filter is weird. As I want to filter deconstruct the cargo wagon part, but filter request the placement version. So both show in the deconstruction filter.

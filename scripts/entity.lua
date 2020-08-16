@@ -109,19 +109,19 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
 
     wagons.forwardLoco = Entity.PlaceWagon(locoStaticData.name, forwardLocoPosition, surface, force, forwardLocoDirection)
     if wagons.forwardLoco == nil then
-        Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Front Loco", event.replaced)
+        Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Front Loco", event.replaced, event)
         return
     end
 
     wagons.middleCargo = Entity.PlaceWagon(wagonStaticData.name, middleCargoPosition, surface, force, middleCargoDirection)
     if wagons.middleCargo == nil then
-        Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Middle Cargo Wagon", event.replaced)
+        Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Middle Cargo Wagon", event.replaced, event)
         return
     end
 
     wagons.rearLoco = Entity.PlaceWagon(locoStaticData.name, rearLocoPosition, surface, force, rearLocoDirection)
     if wagons.rearLoco == nil then
-        Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Rear Loco", event.replaced)
+        Entity.PlaceOrionalLocoBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Rear Loco", event.replaced, event)
         return
     end
 
@@ -155,8 +155,10 @@ Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
     return wagon
 end
 
-Entity.PlaceOrionalLocoBack = function(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, failedOnName, eventReplaced)
+Entity.PlaceOrionalLocoBack = function(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, failedOnName, eventReplaced, event)
     -- As we failed to place all the expected parts remove any placed. Then place the origional loco placement entity back, but backwards. Calling the replacement process on this reversed placement loco generally works for any standard use cases because Factorio.
+    local builder = event.robot or game.get_player(event.player_index)
+
     Logging.LogPrint("WARNING: " .. "failed placing " .. failedOnName, debug_writeAllWarnings)
     for _, wagon in pairs(wagons) do
         if wagon ~= nil and wagon.valid then
@@ -165,17 +167,28 @@ Entity.PlaceOrionalLocoBack = function(surface, placedEntityName, placedEntityPo
     end
     if eventReplaced ~= nil and eventReplaced then
         Logging.LogPrint("ERROR: " .. "failed placing " .. failedOnName .. " for second orientation, so giving up")
+        builder.insert({name = placedEntityName, count = 1})
         return
     end
 
     placedEntityDirection = LoopDirectionValue(placedEntityDirection + 4)
     local placedLoco = surface.create_entity {name = placedEntityName, position = placedEntityPosition, force = force, snap_to_train_stop = false, direction = placedEntityDirection}
     if placedLoco == nil then
-        Logging.LogPrint("ERROR: " .. "failed to placed origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection)
+        Logging.LogPrint("ERROR: " .. "failed to place origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection)
+        local builderInventory
+        if builder.is_player() then
+            builderInventory = builder
+        elseif builder.type ~= nil and builder.type == "construction-robot" then
+            builderInventory = builder.get_inventory(defines.inventory.robot_cargo)
+        else
+            builderInventory = builder
+        end
+        builderInventory.insert({name = placedEntityName, count = 1})
         return
     end
     Logging.LogPrint("WARNING: " .. "placed origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection, debug_writeAllWarnings)
-    Entity.OnBuiltEntity_MUPlacement({created_entity = placedLoco, replaced = true})
+
+    Entity.OnBuiltEntity_MUPlacement({created_entity = placedLoco, replaced = true, robot = event.robot, player_index = event.player_index})
 end
 
 Entity.RecordSingleUnit = function(force, wagons)

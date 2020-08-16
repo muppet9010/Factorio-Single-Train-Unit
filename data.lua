@@ -47,6 +47,7 @@ local function MakeMULocoPrototype(thisStaticData)
     muLoco.alert_when_damaged = false
     table.insert(muLoco.flags, "not-blueprintable")
     table.insert(muLoco.flags, "not-deconstructable")
+    table.insert(muLoco.flags, "placeable-off-grid")
     data:extend({muLoco})
 end
 
@@ -93,6 +94,7 @@ local function MakeMUWagonPrototype(thisStaticData)
     muWagon.icon = placementStaticData.icon
     muWagon.icon_size = placementStaticData.iconSize
     muWagon.icon_mipmaps = placementStaticData.iconMipmaps
+    table.insert(muWagon.flags, "placeable-off-grid")
     data:extend({muWagon})
 end
 
@@ -112,6 +114,8 @@ local function MakeMuWagonPlacementPrototype(thisStaticData)
     muWagonPlacement.icon = thisStaticData.icon
     muWagonPlacement.icon_size = thisStaticData.iconSize
     muWagonPlacement.icon_mipmaps = thisStaticData.iconMipmaps
+    table.insert(muWagonPlacement.flags, "not-deconstructable")
+    table.insert(muWagonPlacement.flags, "placeable-off-grid")
     data:extend({muWagonPlacement})
 end
 

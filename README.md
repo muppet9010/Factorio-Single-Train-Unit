@@ -28,10 +28,8 @@ Limitations / Known Issues
 - Don't build a train with multiple single train units in it out of order. Start at one end and place each one sequentially. As placing a middle single train unit between 2 other rail wagons may not place correctly.
 - There is no way to detach a single train unit from a larger train, it must be deconstructed. The disconnect wagon command will be effectively undone.
 - Single train units when being placed will only snap to a stations position if they are facing the right way. Theres no visual way to tell their direction at present, so just rotate them before placing if needed. Snapping on corners is very finikity.
-- Ghost placement can be fussy to place, but blueprints are fine. Ghost placement fussyness seems to be wose if you Quick Select (Q) on a loco end of a unit and then try to ghost with that.
 - An event that damages multiple parts of a unit will accumilate damage too fast. i.e. a grenade hitting all 3 parts will do triple damage to the unit parts due to damage sharing vs a normal train being hit by a grenade.
-- Deconstruction planner filter will show 2 entries for each single train unit type. This is due to how they are placed and blueprinted. Enable both identical icons in deconstruction planners when desired, as only 1 of them will actually find the train units on the map.
-- Presently the placement of siangle train units by other mods or scripts won't work. I can't see any need for this, but shout if you find one.
+- Presently the placement of single train units by other mods or scripts won't work. I can't see any need for this, but shout if you find one.
 
 Upgrading from old POC mod verison
 ========================
