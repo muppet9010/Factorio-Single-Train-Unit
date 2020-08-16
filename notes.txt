@@ -14,15 +14,13 @@
 + Balance:
     + Apply approperiate cargo size and train fuel inventory at 1/3 regular. Speed and weight, plus other factors at something between a singular loco and a loco pulling a wagon.
     + Crafting cost equal to 2 locos and a wagon.
-- Blueprint support:
++ Blueprint support:
     + Prevent the trains being blueprinted for now.
-    - Entry of deconstruction planner filter is weird. Should hide all but the wagon types.
-- Bot support:
++ Bot support:
     + Prevent being marked for deconstruction for now.
     + Handle bot placement of BP.
     + Handle bot placement of ghost.
     + Handle bot mining.
-    - Handle mod entity placement?
 - Graphics:
     - Make rough graphics for new vehicle (cargo wagon entity).
     - Make rough graphics for wheels both ends (wheels on locos) - Use half the wheel graphics with connctors facing outwards as will be 2 copies on each loco entity. Needs white space adding to the end of each sprite sheets when remade to space them. Can't be the loco entity picture as this can't have its render layer set and so wheels will overlap wagon in some orientations.
@@ -32,7 +30,11 @@
     - Allow color to be pasted on the cargo wagon as it has the graphics. Copy from WagonColors mod.
     - Vertical cargo and fluid unit's graphics aren't aligned correctly. Most noticable that the pump doesn't align correctly on graphics.
 
-- Not Possible:
+- Deferred:
+    - Handle mod entity placement.
+- Not Possible (presently):
     - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?
     - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it.
     - Prevent the player from walking through a unit. As there needs to be gaps in the parts collision boes so it can turn corners.
+    - An event that damages multiple parts of a unit will accumilate damage too fast. i.e. a grenade hitting all 3 parts will do triple damage to the unit parts due to damage sharing vs a normal train being hit by a grenade.
+    - Entry on deconstruction planner filter is weird. As I want to filter deconstruct the cargo wagon part, but filter request the placement version. So both show in the deconstruction filter.

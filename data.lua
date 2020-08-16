@@ -17,9 +17,10 @@ local function EmptyRotatedSprite()
 end
 
 local function MakeMULocoPrototype(thisStaticData)
+    local placementStaticData = thisStaticData.placementStaticData
     local muLoco = Utils.DeepCopy(refLoco)
     muLoco.name = thisStaticData.name
-    muLoco.localised_name = {"entity-name." .. thisStaticData.placementStaticData.name}
+    muLoco.localised_name = {"entity-name." .. placementStaticData.name}
     muLoco.minable.result = nil
     muLoco.vertical_selection_shift = -0.5
     muLoco.pictures = EmptyRotatedSprite()
@@ -42,7 +43,7 @@ local function MakeMULocoPrototype(thisStaticData)
     muLoco.burner.effectivity = 0.5
     muLoco.minimap_representation = nil
     muLoco.selected_minimap_representation = nil
-    muLoco.placeable_by = {item = thisStaticData.placementStaticData.name, count = 1}
+    muLoco.placeable_by = {item = placementStaticData.name, count = 1}
     muLoco.alert_when_damaged = false
     table.insert(muLoco.flags, "not-blueprintable")
     table.insert(muLoco.flags, "not-deconstructable")
@@ -50,7 +51,8 @@ local function MakeMULocoPrototype(thisStaticData)
 end
 
 local function MakeMUWagonPrototype(thisStaticData)
-    local itsLocoPrototype = data.raw["locomotive"][thisStaticData.placementStaticData.placedStaticDataLoco.name]
+    local placementStaticData = thisStaticData.placementStaticData
+    local itsLocoPrototype = data.raw["locomotive"][placementStaticData.placedStaticDataLoco.name]
     local muWagon
     if thisStaticData.type == "cargo-wagon" then
         muWagon = Utils.DeepCopy(refCargoWagon)
@@ -61,8 +63,8 @@ local function MakeMUWagonPrototype(thisStaticData)
         muWagon.tank_count = 1
     end
     muWagon.name = thisStaticData.name
-    muWagon.localised_name = {"entity-name." .. thisStaticData.placementStaticData.name}
-    muWagon.minable.result = thisStaticData.placementStaticData.name
+    muWagon.localised_name = {"entity-name." .. placementStaticData.name}
+    muWagon.minable.result = placementStaticData.name
     muWagon.vertical_selection_shift = -0.5
     muWagon.wheels = EmptyRotatedSprite()
     muWagon.back_light = nil
@@ -75,7 +77,7 @@ local function MakeMUWagonPrototype(thisStaticData)
     muWagon.connection_snap_distance = thisStaticData.connection_snap_distance
     muWagon.weight = 1
     muWagon.max_health = itsLocoPrototype.max_health
-    muWagon.placeable_by = {item = thisStaticData.placementStaticData.name, count = 1}
+    muWagon.placeable_by = {item = placementStaticData.name, count = 1}
     muWagon.minimap_representation = {
         filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "-minimap_representation.png",
         flags = {"icon"},
@@ -88,11 +90,15 @@ local function MakeMUWagonPrototype(thisStaticData)
         size = {20, 70},
         scale = 0.5
     }
+    muWagon.icon = placementStaticData.icon
+    muWagon.icon_size = placementStaticData.iconSize
+    muWagon.icon_mipmaps = placementStaticData.iconMipmaps
     data:extend({muWagon})
 end
 
 local function MakeMuWagonPlacementPrototype(thisStaticData)
-    local itsWagonPrototype = data.raw[thisStaticData.placedStaticDataWagon.type][thisStaticData.placedStaticDataWagon.name]
+    local placedStaticDataWagon = thisStaticData.placedStaticDataWagon
+    local itsWagonPrototype = data.raw[placedStaticDataWagon.type][placedStaticDataWagon.name]
     local muWagonPlacement
     muWagonPlacement = Utils.DeepCopy(refLoco) -- Loco type snaps to stations, whereas cargo types don't.
     muWagonPlacement.name = thisStaticData.name

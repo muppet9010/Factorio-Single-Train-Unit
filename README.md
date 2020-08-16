@@ -13,6 +13,7 @@ Overview
 - Place the dual headed cargo/fluid wagon in the usual manner and it will be replaced out for the 2 mini locos and a mini cargo wagon.
 - The unit will be mined by the player as a whole and will be damaged/destroyed as a whole, with damage shared across all parts.
 - While the graphics look as one, there are actually 2 seperate locomotives and a wagon there. So you must fuel both locomotives seperately and select the right part of the Single Train Unit for giving orders, entering to drive it, etc.
+- UPS effecient as there is no continously running active code in the mod, so no ongoing CPU load added to the game.
 
 Not Implimented Yet
 ================
@@ -28,6 +29,9 @@ Limitations / Known Issues
 - There is no way to detach a single train unit from a larger train, it must be deconstructed. The disconnect wagon command will be effectively undone.
 - Single train units when being placed will only snap to a stations position if they are facing the right way. Theres no visual way to tell their direction at present, so just rotate them before placing if needed. Snapping on corners is very finikity.
 - Ghost placement can be fussy to place, but blueprints are fine. Ghost placement fussyness seems to be wose if you Quick Select (Q) on a loco end of a unit and then try to ghost with that.
+- An event that damages multiple parts of a unit will accumilate damage too fast. i.e. a grenade hitting all 3 parts will do triple damage to the unit parts due to damage sharing vs a normal train being hit by a grenade.
+- Deconstruction planner filter will show 2 entries for each single train unit type. This is due to how they are placed and blueprinted. Enable both identical icons in deconstruction planners when desired, as only 1 of them will actually find the train units on the map.
+- Presently the placement of siangle train units by other mods or scripts won't work. I can't see any need for this, but shout if you find one.
 
 Upgrading from old POC mod verison
 ========================
