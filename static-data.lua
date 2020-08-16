@@ -8,7 +8,7 @@ local locoDetails = {
     collision_box = {{-0.6, -0.8}, {0.6, 0.8}},
     selection_box = {{-1, -1}, {1, 1}},
     connection_distance = 3,
-    connection_snap_distance = 3,
+    connection_snap_distance = 2,
     joint_distance = 0.3
 }
 
@@ -16,7 +16,7 @@ local centreWagonDetails = {
     collision_box = {{-0.6, -0.9}, {0.6, 0.9}},
     selection_box = {{-1, -1}, {1, 1}},
     connection_distance = 0,
-    connection_snap_distance = 3,
+    connection_snap_distance = 2,
     joint_distance = 0.4
 }
 

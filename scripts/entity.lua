@@ -223,7 +223,14 @@ Entity.DeleteSingleUnitRecord = function(force, singleTrainUnitId)
 end
 
 Entity.OnTrainCreated = function(event)
+    -- This is just to protect against the user disconnecting the parts of the single trian unit. It does tend to loop a bit, but as long as no infinite loops we are all good.
+
+    if event.old_train_id_1 ~= nil and event.old_train_id_2 ~= nil then
+        -- Is the joining of 2 trains togeather.
+        return
+    end
     if event.old_train_id_1 == nil and event.old_train_id_2 == nil then
+        -- Is the creation of a single new trian.
         return
     end
     local carriages = event.train.carriages
