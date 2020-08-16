@@ -5,6 +5,7 @@ Date: xxx
     - Add fluid wagon type
     - Handle if players inventory is full when the unit is mined equally to a chest of items being mined.
     - Blueprint, Ghosting & Deconstruction all supported.
+    - Added rough icon graphics.
   Changes:
     - Size of train unit changed for fluid wagon type, but means so only 6 inserters now (2-2-2).
     - Quick Select (Q) works.

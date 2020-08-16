@@ -17,8 +17,8 @@ Overview
 Not Implimented Yet
 ================
 
-- Proper modified graphics to account for the changes.
-- Coloring of the unit.
+- Modified graphics to account for the changes.
+- Coloring of the train unit.
 
 Limitations / Known Issues
 ================

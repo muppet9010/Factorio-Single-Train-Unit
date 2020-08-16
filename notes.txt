@@ -26,12 +26,13 @@
 - Graphics:
     - Make rough graphics for new vehicle (cargo wagon entity).
     - Make rough graphics for wheels both ends (wheels on locos) - Use half the wheel graphics with connctors facing outwards as will be 2 copies on each loco entity. Needs white space adding to the end of each sprite sheets when remade to space them. Can't be the loco entity picture as this can't have its render layer set and so wheels will overlap wagon in some orientations.
+    + Make rough icon graphics for the single unit cargo & fluid wagons.
     + Make a unique minimap image.
     + Diabled setting color on hidden loco's as they have no graphics.
     - Allow color to be pasted on the cargo wagon as it has the graphics. Copy from WagonColors mod.
     - Vertical cargo and fluid unit's graphics aren't aligned correctly. Most noticable that the pump doesn't align correctly on graphics.
 
 - Not Possible:
-    - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this.
+    - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?
     - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it.
     - Prevent the player from walking through a unit. As there needs to be gaps in the parts collision boes so it can turn corners.

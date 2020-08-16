@@ -103,6 +103,9 @@ local function MakeMuWagonPlacementPrototype(thisStaticData)
     muWagonPlacement.connection_snap_distance = thisStaticData.connection_snap_distance
     muWagonPlacement.wheels = EmptyRotatedSprite()
     muWagonPlacement.pictures = itsWagonPrototype.pictures
+    muWagonPlacement.icon = thisStaticData.icon
+    muWagonPlacement.icon_size = thisStaticData.iconSize
+    muWagonPlacement.icon_mipmaps = thisStaticData.iconMipmaps
     data:extend({muWagonPlacement})
 end
 
