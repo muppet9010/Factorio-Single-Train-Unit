@@ -94,6 +94,25 @@ local function MakeMUWagonPrototype(thisStaticData)
     muWagon.icon = placementStaticData.icon
     muWagon.icon_size = placementStaticData.iconSize
     muWagon.icon_mipmaps = placementStaticData.iconMipmaps
+    muWagon.pictures = Utils.DeepCopy(refLoco).pictures
+    muWagon.pictures.layers[1].hr_version.filenames = {
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-1.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-2.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-3.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-4.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-5.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-6.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-7.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-8.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-9.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-10.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-11.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-12.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-13.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-14.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-15.png",
+        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-16.png"
+    }
     table.insert(muWagon.flags, "placeable-off-grid")
     data:extend({muWagon})
 end
