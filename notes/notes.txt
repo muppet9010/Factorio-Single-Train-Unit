@@ -29,6 +29,7 @@
     + Diabled setting color on hidden loco's as they have no graphics.
     - Allow color to be pasted on the cargo wagon as it has the graphics. Copy from WagonColors mod.
     - Vertical cargo and fluid unit's graphics aren't aligned correctly. Most noticable that the pump doesn't align correctly on graphics.
+	- Add a second graphic option to use a tram render suggested by Klonan: https://sketchfab.com/3d-models/tatra-t3-76aa08d7c06340fc89229551c45e3c3a
 
 - Deferred:
     - Handle mod entity placement.
