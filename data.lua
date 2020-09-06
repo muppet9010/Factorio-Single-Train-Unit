@@ -80,13 +80,13 @@ local function MakeMUWagonPrototype(thisStaticData)
     muWagon.max_health = itsLocoPrototype.max_health
     muWagon.placeable_by = {item = placementStaticData.name, count = 1}
     muWagon.minimap_representation = {
-        filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "-minimap_representation.png",
+        filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "/" .. thisStaticData.name .. "-minimap_representation.png",
         flags = {"icon"},
         size = {20, 70},
         scale = 0.5
     }
     muWagon.selected_minimap_representation = {
-        filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "-selected_minimap_representation.png",
+        filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "/" .. thisStaticData.name .. "-selected_minimap_representation.png",
         flags = {"icon"},
         size = {20, 70},
         scale = 0.5
@@ -94,25 +94,101 @@ local function MakeMUWagonPrototype(thisStaticData)
     muWagon.icon = placementStaticData.icon
     muWagon.icon_size = placementStaticData.iconSize
     muWagon.icon_mipmaps = placementStaticData.iconMipmaps
-    muWagon.pictures = Utils.DeepCopy(refLoco).pictures
-    muWagon.pictures.layers[1].hr_version.filenames = {
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-1.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-2.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-3.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-4.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-5.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-6.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-7.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-8.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-9.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-10.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-11.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-12.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-13.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-14.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-15.png",
-        Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/hr-diesel-locomotive-16.png"
-    }
+    if thisStaticData.type == "cargo-wagon" and settings.startup["single_train_unit-use_wip_graphics"].value then
+        local filenameFolder = Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/"
+        muWagon.pictures = {
+            layers = {
+                {
+                    priority = "very-low",
+                    dice = 4,
+                    width = 474,
+                    height = 458,
+                    direction_count = 128,
+                    allow_low_quality_rotation = true,
+                    back_equals_front = true,
+                    filenames = {
+                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_1.png",
+                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_2.png",
+                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_3.png",
+                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_4.png",
+                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_5.png",
+                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_6.png",
+                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_7.png",
+                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_8.png"
+                    },
+                    line_length = 4,
+                    lines_per_file = 4,
+                    shift = {0.0, -0.5},
+                    scale = 0.5
+                },
+                {
+                    flags = {"shadow"},
+                    priority = "very-low",
+                    dice = 4,
+                    width = 490,
+                    height = 401,
+                    back_equals_front = true,
+                    draw_as_shadow = true,
+                    direction_count = 128,
+                    allow_low_quality_rotation = true,
+                    filenames = {
+                        "__base__/graphics/entity/cargo-wagon/hr-cargo-wagon-shadow-1.png",
+                        "__base__/graphics/entity/cargo-wagon/hr-cargo-wagon-shadow-2.png",
+                        "__base__/graphics/entity/cargo-wagon/hr-cargo-wagon-shadow-3.png",
+                        "__base__/graphics/entity/cargo-wagon/hr-cargo-wagon-shadow-4.png"
+                    },
+                    line_length = 4,
+                    lines_per_file = 8,
+                    shift = util.by_pixel(32, -2.25),
+                    scale = 0.5
+                }
+            }
+        }
+        muWagon.horizontal_doors = {
+            layers = {
+                {
+                    filename = filenameFolder .. "single_train_unit-double_end_cargo_wagon-horizontal_side.png",
+                    line_length = 1,
+                    width = 368,
+                    height = 76,
+                    frame_count = 8,
+                    shift = util.by_pixel(0, -24.5),
+                    scale = 0.5
+                },
+                {
+                    filename = filenameFolder .. "single_train_unit-double_end_cargo_wagon-horizontal_top.png",
+                    line_length = 1,
+                    width = 369,
+                    height = 54,
+                    frame_count = 8,
+                    shift = util.by_pixel(0.75, -35.5),
+                    scale = 0.5
+                }
+            }
+        }
+        muWagon.vertical_doors = {
+            layers = {
+                {
+                    filename = filenameFolder .. "single_train_unit-double_end_cargo_wagon-vertical_side.png",
+                    line_length = 8,
+                    width = 127,
+                    height = 337,
+                    frame_count = 8,
+                    shift = util.by_pixel(0.25, -32.75),
+                    scale = 0.5
+                },
+                {
+                    filename = filenameFolder .. "single_train_unit-double_end_cargo_wagon-vertical_top.png",
+                    line_length = 8,
+                    width = 64,
+                    height = 337,
+                    frame_count = 8,
+                    shift = util.by_pixel(0, -35.75),
+                    scale = 0.5
+                }
+            }
+        }
+    end
     table.insert(muWagon.flags, "placeable-off-grid")
     data:extend({muWagon})
 end
