@@ -1,4 +1,20 @@
 ---------------------------------------------------------------------------------------------------
+Version: 19.0.2
+Date: 2020-09-06
+  Features:
+    - Add fluid wagon type
+    - Handle if players inventory is full when the unit is mined equally to a chest of items being mined.
+    - Blueprint, Ghosting & Deconstruction all supported.
+    - Added item icon graphics.
+    - Added Work In Progress train graphics that are correct when stopped in stations for the cargo wagon. Startup setting to enable/disable.
+  Changes:
+    - Size of train unit changed since POC release (18.0.1) to only 6 inserters long (2-2-2). Was requiired as part of adding fluid wagons.
+    - Quick Select (Q) works.
+  Bugfixes:
+  Info:
+    - Moved to min Factorio version 1.0
+    - Not compatible with older versions. See end of readme for details.
+---------------------------------------------------------------------------------------------------
 Version: 18.0.1
 Date: 2020-07-15
   Features:

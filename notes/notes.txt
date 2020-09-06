@@ -1,0 +1,46 @@
++ Add a mod logo picture and a picture to the readme of it in use with fuel and unload inserters at a station.
++ Make a placement vehicle that when placed becomes the 3 sub parts:
+    + Handle player placement.
+    + Handle player mining.
+    + Handles Quick Select (Q button).
++ Merged entities behavour:
+    + If one part is deconstructed the whole single train unit should be picked up.
+    + Cargo and fuel is taken from train before entity is mined. So only a full player inventory and competely empty train (cargo & fuel) will now cause a droped train item on ground, which is vanilla behaviour.
+    + Link damage between the 3 parts.
+    + Avoid the uncoupling of the inner cargo wagon from the locos.
++ Fluid Wagon variation:
+    + Add fluid wagon version, in addition to initial cargo wagon type.
+    + Trains line up correctly at stations for pumps to connect.
++ Balance:
+    + Apply approperiate cargo size and train fuel inventory at 1/3 regular. Speed and weight, plus other factors at something between a singular loco and a loco pulling a wagon.
+    + Crafting cost equal to 2 locos and a wagon.
++ Blueprint support:
+    + Prevent the trains being blueprinted for now.
++ Bot support:
+    + Prevent being marked for deconstruction for now.
+    + Handle bot placement of BP.
+    + Handle bot placement of ghost.
+    + Handle bot mining.
+- Graphics:
+    - Make graphics for new vehicle (cargo wagon entity).
+    - Make graphics for wheels both ends (wheels on locos) - Use half the wheel graphics with connctors facing outwards as will be 2 copies on each loco entity. Needs white space adding to the end of each sprite sheets when remade to space them. Can't be the loco entity picture as this can't have its render layer set and so wheels will overlap wagon in some orientations.
+    + Make icon graphics for the single unit cargo & fluid wagons.
+    + Make a unique minimap image.
+    + Diabled setting color on hidden loco's as they have no graphics.
+    - Allow color to be pasted on the cargo wagon as it has the graphics. Copy from WagonColors mod.
+    - Vertical cargo and fluid unit's graphics aren't aligned correctly. Most noticable that the pump doesn't align correctly on graphics.
+	- Add a second graphic option to use a tram render suggested by Klonan: https://sketchfab.com/3d-models/tatra-t3-76aa08d7c06340fc89229551c45e3c3a
+
+- Deferred:
+    - Handle mod entity placement.
+
+- Not Possible (presently):
+    - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?
+    - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it.
+    - Prevent the player from walking through a unit. As there needs to be gaps in the parts collision boes so it can turn corners.
+    - An event that damages multiple parts of a unit will accumilate damage too fast. i.e. a grenade hitting all 3 parts will do triple damage to the unit parts due to damage sharing vs a normal train being hit by a grenade.
+
+
+https://ezgif.com/sprite-cutter
+Locomotive HR Spritesheet: 474 x 458
+Cargo Wagon HR Spritesheet: 442 x 407

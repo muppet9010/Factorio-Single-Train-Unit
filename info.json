@@ -1,13 +1,13 @@
 {
     "name": "single_train_unit",
-    "version": "18.0.1",
+    "version": "19.0.2",
     "title": "Single Train Unit",
     "author": "Muppet9010",
     "contact": "",
     "homepage": "https://mods.factorio.com/mod/single_train_unit",
-    "factorio_version": "0.18",
+    "factorio_version": "1.0",
     "dependencies": [
-        "base >= 0.18.34"
+        "base >= 1.0.0"
     ],
     "description": "Adds a single train unit that is the standard length, but include storage and can travel in both directions"
 }
