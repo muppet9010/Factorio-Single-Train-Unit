@@ -23,6 +23,11 @@ Graphics Work In Progress
 The graphics are a work in progress and there is a mod setting to turn them off and just use the vanilla game's cargo wagon and fluid tanker graphics.
 At present the cargo wagon has graphics when stopped at a station and for some of the rotations, at other tiems its graphics will change to a vanilla locomotive. The fluid wagon has no custom graphics yet. The train wheels may show as doubled up.
 
+
+If you can help with the graphics please see: https://forums.factorio.com/viewtopic.php?f=15&t=89145
+===========
+
+
 Not Implimented Yet
 ================
 
