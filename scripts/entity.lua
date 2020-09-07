@@ -30,6 +30,17 @@ local TryMoveInventoryContents = function(sourceInventory, targetInventory, drop
     return not itemsNotMoved
 end
 
+local muWagonNamesFilter = {
+    {filter = "name", name = StaticData.mu_cargo_loco.name},
+    {mode = "or", filter = "name", name = StaticData.mu_cargo_wagon.name},
+    {mode = "or", filter = "name", name = StaticData.mu_fluid_loco.name},
+    {mode = "or", filter = "name", name = StaticData.mu_fluid_wagon.name}
+}
+local muWagonPlacementNameFilter = {
+    {filter = "name", name = StaticData.mu_cargo_placement.name},
+    {mode = "or", filter = "name", name = StaticData.mu_fluid_placement.name}
+}
+
 Entity.CreateGlobals = function()
     global.entity = global.entity or {}
     global.entity.forces = global.entity.forces or {}
@@ -44,17 +55,6 @@ Entity.CreateGlobals = function()
     --]]
     global.entity.wagonIdToSingleTrainUnit = global.entity.wagonIdToSingleTrainUnit or {} -- WagonId to lobal.entity.forces[force.index].singleTrainUnits entry
 end
-
-local muWagonNamesFilter = {
-    {filter = "name", name = StaticData.mu_cargo_loco.name},
-    {mode = "or", filter = "name", name = StaticData.mu_cargo_wagon.name},
-    {mode = "or", filter = "name", name = StaticData.mu_fluid_loco.name},
-    {mode = "or", filter = "name", name = StaticData.mu_fluid_wagon.name}
-}
-local muWagonPlacementNameFilter = {
-    {filter = "name", name = StaticData.mu_cargo_placement.name},
-    {mode = "or", filter = "name", name = StaticData.mu_fluid_placement.name}
-}
 
 Entity.OnLoad = function()
     Events.RegisterEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", muWagonPlacementNameFilter)

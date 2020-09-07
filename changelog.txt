@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 19.0.3
+Date: 2020-09-07
+  Features:
+  Changes:
+    - WIP graphics are turned off by default, as they are jarring when they flash between states.
+  Bugfixes:
+    - Fixed loading mod on to existing MP game save.
+  Info:
+---------------------------------------------------------------------------------------------------
 Version: 19.0.2
 Date: 2020-09-06
   Features:
