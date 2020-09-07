@@ -3,6 +3,7 @@ Version: 19.0.3
 Date: xxxx
   Features:
   Changes:
+    - WIP graphics are turned off by default, as they are jarring when they flash between states.
   Bugfixes:
   Info:
 ---------------------------------------------------------------------------------------------------
