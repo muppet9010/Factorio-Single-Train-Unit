@@ -49,3 +49,11 @@ Upgrading from old POC mod verison
 ========================
 
 - You can not upgrade from the Proof Of Concept version of the mod, version 18.x.x. This old version only had a handful of downloads and was a beta test. If you tried this version you'll need to start a new map to ge on the main release.
+
+Other Mods
+============
+
+Signalized Couplers
+-------------
+
+As the single train unit is made up of 3 train parts internally you need to account for this in the signals used. i.e. to decouple a single train unit at the end of a train use -3 as the decouple signal, not the standard -1 for a vanilla cargo wagon.
