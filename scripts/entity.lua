@@ -233,16 +233,31 @@ Entity.OnTrainCreated = function(event)
         -- Is the creation of a single new trian.
         return
     end
-    local carriages = event.train.carriages
-    if carriages == nil or #carriages == 0 then
+
+    local frontCarriage = event.train.front_stock
+    local backCarriage = event.train.back_stock
+    if frontCarriage == nil or backCarriage == nil then
         return
     end
 
-    for i, wagon in pairs(carriages) do
-        local wagonStaticData = StaticData.entityNames[wagon.name]
-        if wagonStaticData ~= nil and wagonStaticData.placementStaticData ~= nil then
-            wagon.connect_rolling_stock(defines.rail_direction.front)
-            wagon.connect_rolling_stock(defines.rail_direction.back)
+    -- Connects to the front or back of the rolling stock direction, not the train direction. The reverse of the connect direction based on the other end of the trains wagon seems to work in testing, but feels a bit janky.
+    local frontWagonStaticData = StaticData.entityNames[frontCarriage.name]
+    if frontWagonStaticData ~= nil and (frontWagonStaticData.type == "cargo-wagon" or frontWagonStaticData.type == "fluid-wagon") then
+        local orientationDif = math.abs(frontCarriage.orientation - backCarriage.orientation)
+        if orientationDif < 0.25 then
+            frontCarriage.connect_rolling_stock(defines.rail_direction.front)
+        else
+            frontCarriage.connect_rolling_stock(defines.rail_direction.back)
+        end
+    end
+
+    local backWagonStaticData = StaticData.entityNames[backCarriage.name]
+    if backWagonStaticData ~= nil and (backWagonStaticData.type == "cargo-wagon" or backWagonStaticData.type == "fluid-wagon") then
+        local orientationDif = math.abs(frontCarriage.orientation - backCarriage.orientation)
+        if orientationDif < 0.25 then
+            backCarriage.connect_rolling_stock(defines.rail_direction.back)
+        else
+            backCarriage.connect_rolling_stock(defines.rail_direction.front)
         end
     end
 end

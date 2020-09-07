@@ -4,6 +4,7 @@ Date: XXXXX
   Features:
   Changes:
   Bugfixes:
+    - Improved behaviour of anti disconnecting logic to not affect other wagon types in a common train.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.3

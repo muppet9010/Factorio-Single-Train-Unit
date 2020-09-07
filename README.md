@@ -39,7 +39,7 @@ Limitations / Known Issues
 
 - This is a concept mod and relies upon some emergent game behaviours. Should Factorio train placement change in the future it may not be possible to update and support it. The Factorio developers have advised against using custom train lengths in the past, but what do they know :p
 - Don't build a train with multiple single train units in it out of order. Start at one end and place each one sequentially. As placing a middle single train unit between 2 other rail wagons may not place correctly.
-- There is no way to detach a single train unit from a larger train, it must be deconstructed. The disconnect wagon command will be effectively undone.
+- You can not detach a single train unit from other carriages as the parts all face inwards and there is protection i the mod to prevent a single train unit beign broken up. However, you can detach regular carriages (cargo, loco, fluid) from a single train unit. If you need to detach a single train unit from another its often easiest to just mine one of them. There is a risk this logic isn't perfect in some edge cases.
 - Single train units when being placed will only snap to a stations position if they are facing the right way. Theres no visual way to tell their direction at present, so just rotate them before placing if needed. Snapping on corners is very finikity.
 - An event that damages multiple parts of a unit will accumilate damage too fast. i.e. a grenade hitting all 3 parts will do triple damage to the unit parts due to damage sharing vs a normal train being hit by a grenade.
 - Presently the placement of single train units by other mods or scripts won't work. I can't see any need for this, but shout if you find one.
