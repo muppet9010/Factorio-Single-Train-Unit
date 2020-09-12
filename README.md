@@ -1,6 +1,6 @@
 # Single Train Unit
 
-A single train unit comprising of a small cargo/fluid wagon and a locomotives at both ends. Total size is of a standard  wagon. There are seperate cargo and fluid wagon versions.
+Adds a single train unit comprising of a small cargo/fluid wagon and a locomotives at both ends. Total size is of a standard  wagon. There are seperate cargo and fluid wagon versions.
 
 ![Single Train Unit Examples](https://thumbs.gfycat.com/DependableMixedBarasinga-size_restricted.gif)
 
@@ -16,12 +16,13 @@ Overview
 - The unit will be mined by the player as a whole and will be damaged/destroyed as a whole, with damage shared across all parts.
 - While the graphics look as one, there are actually 2 seperate locomotives and a wagon there. So you must fuel both locomotives seperately and select the right part of the Single Train Unit for giving orders, entering to drive it, etc.
 - UPS effecient as there is no continously running active code in the mod, so no ongoing CPU load added to the game.
+- The origional trains and wagons are unaffected by this mod.
 
 Graphics Work In Progress
 =================
 
-The graphics are a work in progress and there is a mod setting to turn them off and just use the vanilla game's cargo wagon and fluid tanker graphics.
-At present the cargo wagon has graphics when stopped at a station and for some of the rotations, at other tiems its graphics will change to a vanilla locomotive. The fluid wagon has no custom graphics yet. The train wheels may show as doubled up.
+The graphics are a work in progress and there is a mod setting to turn them on. By default the vanilla game's cargo wagon and fluid tanker graphics are used.
+At present the cargo wagon has WIP graphics when stopped at a station and for some of the rotations, at other items its graphics will change to a vanilla locomotive. The fluid wagon has no custom graphics yet. The train wheels may show as doubled up.
 
 
 If you can help with the graphics please see: https://forums.factorio.com/viewtopic.php?f=15&t=89145
@@ -57,3 +58,8 @@ Signalized Couplers
 -------------
 
 As the single train unit is made up of 3 train parts internally you need to account for this in the signals used. i.e. to decouple a single train unit at the end of a train use -3 as the decouple signal, not the standard -1 for a vanilla cargo wagon.
+
+Bulk Rail Loader
+-------------
+
+At present the Bulk Rail Loader can't work with the single train units as the Bulk Rail Loader only tries to take cargo items from one end of the wagon, which is a locomotive in the single train units case. This has been raised with the mod author to see if there's a solution. I haven't marked the mod as incompatible as you can use the Bulk Loader mod with normal trains without issues.

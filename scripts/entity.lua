@@ -21,10 +21,28 @@ local TryMoveInventoryContents = function(sourceInventory, targetInventory, drop
         local remaining = count - moved
         if remaining > 0 then
             itemsNotMoved = true
+            if dropUnmovedOnGround then
+                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = name, count = remaining}, true, sourceOwner.force, false)
+            end
         end
-        if dropUnmovedOnGround then
-            sourceOwner = sourceOwner or targetInventory.entity_owner
-            sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = name, count = remaining}, true, sourceOwner.force, false)
+    end
+    return not itemsNotMoved
+end
+
+local TryTakeGridContents = function(sourceGrid, targetInventory, dropUnmovedOnGround)
+    local sourceOwner, itemsNotMoved = nil, false
+    for _, equipment in pairs(sourceGrid.equipment) do
+        local moved = targetInventory.insert({name = equipment.name, count = 1})
+        if moved > 0 then
+            sourceGrid.take({equipment = equipment})
+        end
+        if moved == 0 then
+            itemsNotMoved = true
+            if dropUnmovedOnGround then
+                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = equipment.name, count = 1}, true, sourceOwner.force, false)
+            end
         end
     end
     return not itemsNotMoved
@@ -296,6 +314,12 @@ Entity.OnPrePlayerMined_MUWagon = function(event)
     end
     TryMoveInventoryContents(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory, false)
     TryMoveInventoryContents(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), playerInventory, false)
+    for _, wagon in pairs(singleTrainUnit.wagons) do
+        local wagonGrid = wagon.grid
+        if wagonGrid ~= nil then
+            TryTakeGridContents(wagonGrid, playerInventory, false)
+        end
+    end
 end
 
 Entity.OnEntityDamaged_MUWagon = function(event)
@@ -332,6 +356,12 @@ Entity.OnRobotMinedEntity_MUWagons = function(event)
 
     TryMoveInventoryContents(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), buffer, false)
     TryMoveInventoryContents(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), buffer, false)
+    for _, wagon in pairs(singleTrainUnit.wagons) do
+        local wagonGrid = wagon.grid
+        if wagonGrid ~= nil then
+            TryTakeGridContents(wagonGrid, buffer, false)
+        end
+    end
 
     local thisUnitsWagons, force = Utils.DeepCopy(singleTrainUnit.wagons), minedWagon.force
     Entity.DeleteSingleUnitRecord(force, singleTrainUnit.id)

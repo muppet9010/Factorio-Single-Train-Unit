@@ -5,6 +5,7 @@ Date: XXXXX
   Changes:
   Bugfixes:
     - Improved behaviour of anti disconnecting logic to not affect other wagon types in a common train.
+    - Mining a single train unit with an equipment grid now gives you the items in the equipment grid. Before they were lost.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.3
