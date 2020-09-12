@@ -4,6 +4,7 @@ Adds a single train unit comprising of a small cargo/fluid wagon and a locomotiv
 
 ![Single Train Unit Examples](https://thumbs.gfycat.com/DependableMixedBarasinga-size_restricted.gif)
 
+
 Overview
 ============
 
@@ -17,6 +18,7 @@ Overview
 - While the graphics look as one, there are actually 2 seperate locomotives and a wagon there. So you must fuel both locomotives seperately and select the right part of the Single Train Unit for giving orders, entering to drive it, etc.
 - UPS effecient as there is no continously running active code in the mod, so no ongoing CPU load added to the game.
 - The origional trains and wagons are unaffected by this mod.
+
 
 Graphics Work In Progress
 =================
@@ -35,6 +37,7 @@ Not Implimented Yet
 - Graphics are a WIP: cargo unit, fluid unit, train wheels.
 - Coloring of the train unit.
 
+
 Limitations / Known Issues
 ================
 
@@ -46,20 +49,34 @@ Limitations / Known Issues
 - Presently the placement of single train units by other mods or scripts won't work. I can't see any need for this, but shout if you find one.
 - Other other mods that try to manipulate the train unit may have issues. Please report anything so I can review it.
 
-Upgrading from old POC mod verison
-========================
-
-- You can not upgrade from the Proof Of Concept version of the mod, version 18.x.x. This old version only had a handful of downloads and was a beta test. If you tried this version you'll need to start a new map to ge on the main release.
 
 Other Mods
 ============
 
+I have not blocked any other mods unless they hard break this mod, however some won't work with this mod. This decision is to allow their use with other (regular) type trains in games. These mods are listed below as well as any specific other mod integrations.
+
 Signalized Couplers
 -------------
 
-As the single train unit is made up of 3 train parts internally you need to account for this in the signals used. i.e. to decouple a single train unit at the end of a train use -3 as the decouple signal, not the standard -1 for a vanilla cargo wagon.
+As the single train unit is made up of 3 train parts internally you need to account for this in the signals used. i.e. to decouple a single train unit at the end of a train use -3 as the decouple signal, not the standard -1 for a vanilla cargo wagon or locomotive.
 
 Bulk Rail Loader
 -------------
 
-At present the Bulk Rail Loader can't work with the single train units as the Bulk Rail Loader only tries to take cargo items from one end of the wagon, which is a locomotive in the single train units case. This has been raised with the mod author to see if there's a solution. I haven't marked the mod as incompatible as you can use the Bulk Loader mod with normal trains without issues.
+At present the Bulk Rail Loader can't work with the single train units as the Bulk Rail Loader only tries to take cargo items from one end of the wagon, which is a locomotive in the single train units case. This has been raised with the mod author to see if there's a solution. https://mods.factorio.com/mod/railloader/discussion/5f59068dab70d5cb80c7e723
+
+Multiple Unit Train Control
+----------------------
+
+The Multiple Unit Train Control mod doesn't appear to get applied to Single Train Units by default. Probably due to single train units being placed via script. This is desired behavior as Single Train Units are already balanced for their dual direction nature.
+
+Noxys Multidirectional Trains
+----------------------
+
+The Noxys Multidirectional Trains mod doesn't appear to get applied to Single Train Units by default. Probably due to single train units being placed via script. This is desired behavior as Single Train Units are already balanced for their dual direction nature.
+
+
+Upgrading from old POC mod verison
+========================
+
+- You can not upgrade from the Proof Of Concept version of the mod, version 18.x.x. This old version only had a handful of downloads and was a beta test. If you tried this version you'll need to start a new map to ge on the main release.

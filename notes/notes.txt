@@ -1,10 +1,12 @@
 - TODO:
 	- Check theres no way to hide the loco health bars when damaged. Maybe keep them as full health and just trasnfer the damage to the center.
-	- Look for Factorio Extended integration.
+	- Look at Factorio Extended integration. Probbaly just add my own varieties when Factorio Extended is present or maybe a config option.
     - When you hover over the loco you see just the wheel graphics, can I set or hide this entirely.
     - When you hover ove the cargo wagon part it shows the cargo wagon zoomed in really far.
     - Check mining a damaged train and placing it back down.
+    - Fill4Me mod inserts fuel directly in to the dummy wagon. Spread this to the parts created and do soemthign sensible with any remaining. https://mods.factorio.com/mod/single_train_unit/discussion/5f576d8894a19c270192d9bd
     - Try to support blueprinting a train with fuel and converting the fule request between the entity swap so you end up with fuel requests on the bog built train.
+    - Support modified versions of my placement and part entities. They often seem to add a suffix to my entity names for eletric trains, other mods and this one specificly https://mods.factorio.com/mod/single_train_unit/discussion/5f576f615f5888c2fb8a5b1b
 
 - Graphics:
     - Make graphics for new vehicle (cargo wagon entity).
