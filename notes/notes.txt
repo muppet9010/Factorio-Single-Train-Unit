@@ -5,7 +5,6 @@
     - When you hover ove the cargo wagon part it shows the cargo wagon zoomed in really far.
     - Check mining a damaged train and placing it back down.
     - Try to support blueprinting a train with fuel and converting the fule request between the entity swap so you end up with fuel requests on the bog built train.
-    - Mine a train and control Z (undo) - mod error on robot placing ghost.
 
 - Graphics:
     - Make graphics for new vehicle (cargo wagon entity).
