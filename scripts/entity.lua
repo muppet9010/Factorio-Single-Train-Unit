@@ -11,10 +11,11 @@ local LoopDirectionValue = function(value)
     return Utils.LoopIntValueWithinRange(value, 0, 7)
 end
 
-local TryMoveInventoryContents = function(sourceInventory, targetInventory, dropUnmovedOnGround)
+local TryMoveInventoryContents = function(sourceInventory, targetInventory, dropUnmovedOnGround, ratioToMove)
     local sourceOwner, itemsNotMoved = nil, false
     for name, count in pairs(sourceInventory.get_contents()) do
-        local moved = targetInventory.insert({name = name, count = count})
+        local toMove = math.ceil(count * ratioToMove)
+        local moved = targetInventory.insert({name = name, count = toMove})
         if moved > 0 then
             sourceInventory.remove({name = name, count = moved})
         end
@@ -46,6 +47,39 @@ local TryTakeGridContents = function(sourceGrid, targetInventory, dropUnmovedOnG
         end
     end
     return not itemsNotMoved
+end
+
+local TryInsertContents = function(contents, targetInventory, dropUnmovedOnGround, ratioToMove)
+    if contents == nil then
+        return
+    end
+    local sourceOwner, itemsNotMoved = nil, false
+    for name, count in pairs(contents) do
+        local toMove = math.ceil(count * ratioToMove)
+        local moved = targetInventory.insert({name = name, count = toMove})
+        local remaining = count - moved
+        if moved > 0 then
+            contents[name] = remaining
+        end
+        if remaining > 0 then
+            itemsNotMoved = true
+            if dropUnmovedOnGround then
+                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = name, count = remaining}, true, sourceOwner.force, false)
+            end
+        end
+    end
+    return not itemsNotMoved
+end
+
+local GetBuilderInventory = function(builder)
+    if builder.is_player() then
+        return builder.get_main_inventory()
+    elseif builder.type ~= nil and builder.type == "construction-robot" then
+        return builder.get_inventory(defines.inventory.robot_cargo)
+    else
+        return builder
+    end
 end
 
 local muWagonNamesFilter = {
@@ -123,24 +157,28 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     local middleCargoDirection = placedEntityDirection
     local middleCargoPosition = placedEntityPosition
 
+    local fuelInventory, fuelInventoryContents = entity.get_fuel_inventory(), nil
+    if fuelInventory ~= nil then
+        fuelInventoryContents = fuelInventory.get_contents()
+    end
     entity.destroy()
     local wagons = {forwardLoco = nil, middleCargo = nil, rearLoco = nil}
 
     wagons.forwardLoco = Entity.PlaceWagon(locoStaticData.name, forwardLocoPosition, surface, force, forwardLocoDirection)
     if wagons.forwardLoco == nil then
-        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Front Loco", event.replaced, event)
+        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Front Loco", event.replaced, event, fuelInventoryContents)
         return
     end
 
     wagons.middleCargo = Entity.PlaceWagon(wagonStaticData.name, middleCargoPosition, surface, force, middleCargoDirection)
     if wagons.middleCargo == nil then
-        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Middle Cargo Wagon", event.replaced, event)
+        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Middle Cargo Wagon", event.replaced, event, fuelInventoryContents)
         return
     end
 
     wagons.rearLoco = Entity.PlaceWagon(locoStaticData.name, rearLocoPosition, surface, force, rearLocoDirection)
     if wagons.rearLoco == nil then
-        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Rear Loco", event.replaced, event)
+        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Rear Loco", event.replaced, event, fuelInventoryContents)
         return
     end
 
@@ -152,6 +190,16 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     -- Set to blank as cargo & fluid wagons can't have names. We want all parts of the unit to have the same on-hover name.
     wagons.forwardLoco.backer_name = ""
     wagons.rearLoco.backer_name = ""
+
+    local fuelAllMoved = TryInsertContents(fuelInventoryContents, wagons.forwardLoco.get_fuel_inventory(), false, 0.5)
+    if not fuelAllMoved then
+        fuelAllMoved = TryInsertContents(fuelInventoryContents, wagons.rearLoco.get_fuel_inventory(), false, 0.5)
+    end
+    if not fuelAllMoved then
+        local builder = event.robot or game.get_player(event.player_index)
+        local builderInventory = GetBuilderInventory(builder)
+        TryInsertContents(fuelInventoryContents, builderInventory, true, 1)
+    end
 
     Entity.RecordSingleUnit(force, wagons, wagonStaticData.type)
 end
@@ -174,9 +222,10 @@ Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
     return wagon
 end
 
-Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, failedOnName, eventReplaced, event)
+Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, failedOnName, eventReplaced, event, fuelInventoryContents)
     -- As we failed to place all the expected parts remove any placed. Then place the origional wagon placement entity back, but backwards. Calling the replacement process on this reversed placement wagon generally works for any standard use cases because Factorio.
     local builder = event.robot or game.get_player(event.player_index)
+    local builderInventory = GetBuilderInventory(builder)
 
     Logging.LogPrint("WARNING: " .. "failed placing " .. failedOnName, debug_writeAllWarnings)
     for _, wagon in pairs(wagons) do
@@ -186,23 +235,19 @@ Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityP
     end
     if eventReplaced ~= nil and eventReplaced then
         Logging.LogPrint("ERROR: " .. "failed placing " .. failedOnName .. " for second orientation, so giving up")
-        builder.insert({name = placedEntityName, count = 1})
+        TryInsertContents({[placedEntityName] = 1}, builderInventory, true, 1)
+        TryInsertContents(fuelInventoryContents, builderInventory, true, 1)
         return
     end
 
     placedEntityDirection = LoopDirectionValue(placedEntityDirection + 4)
     local placedWagon = surface.create_entity {name = placedEntityName, position = placedEntityPosition, force = force, snap_to_train_stop = false, direction = placedEntityDirection}
-    if placedWagon == nil then
+    if placedWagon ~= nil then
+        TryInsertContents(fuelInventoryContents, placedWagon.get_fuel_inventory(), true, 1)
+    else
         Logging.LogPrint("ERROR: " .. "failed to place origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection)
-        local builderInventory
-        if builder.is_player() then
-            builderInventory = builder
-        elseif builder.type ~= nil and builder.type == "construction-robot" then
-            builderInventory = builder.get_inventory(defines.inventory.robot_cargo)
-        else
-            builderInventory = builder
-        end
-        builderInventory.insert({name = placedEntityName, count = 1})
+        TryInsertContents({[placedEntityName] = 1}, builderInventory, true, 1)
+        TryInsertContents(fuelInventoryContents, builderInventory, true, 1)
         return
     end
     Logging.LogPrint("WARNING: " .. "placed origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection, debug_writeAllWarnings)
@@ -311,10 +356,10 @@ Entity.OnPrePlayerMined_MUWagon = function(event)
     local player = game.get_player(event.player_index)
     local playerInventory = player.get_main_inventory()
     if singleTrainUnit.type == "cargo-wagon" then
-        TryMoveInventoryContents(singleTrainUnit.wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon), playerInventory, false)
+        TryMoveInventoryContents(singleTrainUnit.wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon), playerInventory, false, 1)
     end
-    TryMoveInventoryContents(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory, false)
-    TryMoveInventoryContents(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), playerInventory, false)
+    TryMoveInventoryContents(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory, false, 1)
+    TryMoveInventoryContents(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), playerInventory, false, 1)
     for _, wagon in pairs(singleTrainUnit.wagons) do
         local wagonGrid = wagon.grid
         if wagonGrid ~= nil then
@@ -355,8 +400,8 @@ Entity.OnRobotMinedEntity_MUWagons = function(event)
         return
     end
 
-    TryMoveInventoryContents(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), buffer, false)
-    TryMoveInventoryContents(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), buffer, false)
+    TryMoveInventoryContents(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), buffer, false, 1)
+    TryMoveInventoryContents(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), buffer, false, 1)
     for _, wagon in pairs(singleTrainUnit.wagons) do
         local wagonGrid = wagon.grid
         if wagonGrid ~= nil then

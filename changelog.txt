@@ -5,8 +5,9 @@ Date: XXXXX
   Changes:
   Bugfixes:
     - Improved behaviour of anti disconnecting logic to not affect other wagon types in a common train.
-    - Mining a single train unit with an equipment grid now gives you the items in the equipment grid. Before they were lost.
+    - Mining a single train unit returns any grid equipment it had to your inventory. Previously they were lost.
     - If a mined single unit train was undone and the bot placement failed due to being blocked the single unit train is returned by the bot and standard placement information chat message shown. Before the mod hard errored.
+    - Any fuel placed in to the placement wagons will be distributed across the 2 ends of the single train unit. Previously it was lost.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.3
