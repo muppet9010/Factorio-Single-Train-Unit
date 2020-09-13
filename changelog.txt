@@ -2,12 +2,13 @@
 Version: 19.0.4
 Date: XXXXX
   Features:
+    - Add specific support for the Fill4Me mod. When it places fuel in the single train unit placement wagon from your inventory, the same type of fuel is placed in both ends of the single train unit from your inventory.
   Changes:
   Bugfixes:
     - Improved behaviour of anti disconnecting logic to not affect other wagon types in a common train.
     - Mining a single train unit returns any grid equipment it had to your inventory. Previously they were lost.
     - If a mined single unit train was undone and the bot placement failed due to being blocked the single unit train is returned by the bot and standard placement information chat message shown. Before the mod hard errored.
-    - Any fuel placed in to the placement wagons will be distributed across the 2 ends of the single train unit. Previously it was lost.
+    - Any fuel placed in to the placement wagons by mods (other than Fill4Me) will be distributed equally across the 2 ends of the single train unit. Any spare fuel is returned to the builder. Previously it was lost.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.3

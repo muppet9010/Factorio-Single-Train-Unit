@@ -55,6 +55,11 @@ Other Mods
 
 I have not blocked any other mods unless they hard break this mod, however some won't work with this mod. This decision is to allow their use with other (regular) type trains in games. These mods are listed below as well as any specific other mod integrations.
 
+Fill4Me
+-------------
+
+The Fill4Me mod's auto insertion of fuel is applied to both locomotive ends of the single train unit. If you don't have enough fuel then as much as is available will be spread between the 2 locomotives.
+
 Signalized Couplers
 -------------
 

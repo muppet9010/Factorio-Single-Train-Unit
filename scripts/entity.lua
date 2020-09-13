@@ -137,6 +137,8 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
 
     local surface, force, placedEntityName, placedEntityPosition, placedEntityOrientation = entity.surface, entity.force, entity.name, entity.position, entity.orientation
     local placementStaticData = StaticData.entityNames[placedEntityName]
+    local builder = event.robot or game.get_player(event.player_index)
+    local builderInventory = GetBuilderInventory(builder)
 
     -- Is a bot placing blueprint of the actual wagon, not the placement entity.
     if placementStaticData.placedStaticDataWagon == nil then
@@ -191,14 +193,39 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     wagons.forwardLoco.backer_name = ""
     wagons.rearLoco.backer_name = ""
 
-    local fuelAllMoved = TryInsertContents(fuelInventoryContents, wagons.forwardLoco.get_fuel_inventory(), false, 0.5)
-    if not fuelAllMoved then
-        fuelAllMoved = TryInsertContents(fuelInventoryContents, wagons.rearLoco.get_fuel_inventory(), false, 0.5)
-    end
-    if not fuelAllMoved then
-        local builder = event.robot or game.get_player(event.player_index)
-        local builderInventory = GetBuilderInventory(builder)
-        TryInsertContents(fuelInventoryContents, builderInventory, true, 1)
+    -- Handle Fuel
+    if fuelInventoryContents ~= nil then
+        if game.active_mods["Fill4Me"] then
+            -- Will insert the same amount of fuel in to both end locos as was placed in to the placement loco assuming fuel in builder inventory allowing. Otherwise will use all available and split between.
+            local fuelName, fuelCount = next(fuelInventoryContents, nil)
+            if fuelName ~= nil and fuelCount ~= nil and fuelCount > 0 then
+                local fuelAvailable = builderInventory.get_item_count(fuelName) + fuelCount
+                local fuelToInsert = math.ceil(math.min(fuelAvailable / 2, fuelCount))
+                local fuelInserted = 0
+                if fuelToInsert > 0 then
+                    fuelInserted = fuelInserted + wagons.forwardLoco.get_fuel_inventory().insert({name = fuelName, count = fuelToInsert})
+                end
+                fuelToInsert = math.floor(math.min(fuelAvailable / 2, fuelCount))
+                if fuelToInsert > 0 then
+                    fuelInserted = fuelInserted + wagons.rearLoco.get_fuel_inventory().insert({name = fuelName, count = fuelToInsert})
+                end
+                local fuelUsedFromBuilder = fuelInserted - fuelCount
+                if fuelUsedFromBuilder > 0 then
+                    builderInventory.remove({name = fuelName, count = fuelUsedFromBuilder})
+                elseif fuelUsedFromBuilder < 0 then
+                    TryInsertContents({[fuelName] = 0 - fuelUsedFromBuilder}, builderInventory, true, 1)
+                end
+            end
+        else
+            -- Will spread the fuel from the placement loco across the 2 end locos.
+            local fuelAllMoved = TryInsertContents(fuelInventoryContents, wagons.forwardLoco.get_fuel_inventory(), false, 0.5)
+            if not fuelAllMoved then
+                fuelAllMoved = TryInsertContents(fuelInventoryContents, wagons.rearLoco.get_fuel_inventory(), false, 0.5)
+            end
+            if not fuelAllMoved then
+                TryInsertContents(fuelInventoryContents, builderInventory, true, 1)
+            end
+        end
     end
 
     Entity.RecordSingleUnit(force, wagons, wagonStaticData.type)

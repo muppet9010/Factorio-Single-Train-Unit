@@ -7,7 +7,8 @@
     "homepage": "https://mods.factorio.com/mod/single_train_unit",
     "factorio_version": "1.0",
     "dependencies": [
-        "base >= 1.0.0"
+        "base >= 1.0.0",
+        "? Fill4Me"
     ],
     "description": "Adds a single train unit that is the standard length, but include storage and can travel in both directions"
 }
