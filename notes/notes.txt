@@ -1,8 +1,5 @@
 - TODO:
 	- Check theres no way to hide the loco health bars when damaged. Maybe keep them as full health and just trasnfer the damage to the center.
-	- Look at Factorio Extended integration. Probbaly just add my own varieties when Factorio Extended is present or maybe a config option.
-    - When you hover over the loco you see just the wheel graphics, can I set or hide this entirely.
-    - When you hover ove the cargo wagon part it shows the cargo wagon zoomed in really far.
     - Check mining a damaged train and placing it back down.
     - Try to support blueprinting a train with fuel and converting the fule request between the entity swap so you end up with fuel requests on the bog built train.
     - Support modified versions of my placement and part entities. They often seem to add a suffix to my entity names for eletric trains, other mods and this one specificly https://mods.factorio.com/mod/single_train_unit/discussion/5f576f615f5888c2fb8a5b1b
@@ -17,6 +14,12 @@
 
 - Deferred:
     - Handle mod entity placement.
+	- Look at Factorio Extended mods integration - Needs tintable graphics.
+        - Probably just add my own varieties when either FactorioExtended and FactorioExtended Plus (2 seperate mods) is present.
+        - Have different recipes based on the mods increase ratios.
+        - Have different train values based on the mods increase ratios.
+        - Have different cargo values based on the mods increase ratios.
+        - Need the graphics to be tintable for the higher tiers.
 
 - Not Possible (presently):
     - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?

@@ -24,6 +24,7 @@ local function MakeMULocoPrototype(thisStaticData)
     muLoco.minable.result = nil
     muLoco.vertical_selection_shift = -0.5
     muLoco.pictures = EmptyRotatedSprite()
+    muLoco.drawing_box = {{-4, -4}, {-3, -3}} -- see nothing of the wheels
     muLoco.back_light[1].shift[2] = 1.2
     muLoco.back_light[2].shift[2] = 1.2
     muLoco.front_light[1].shift[2] = -13.5
@@ -94,13 +95,13 @@ local function MakeMUWagonPrototype(thisStaticData)
     muWagon.icon = placementStaticData.icon
     muWagon.icon_size = placementStaticData.iconSize
     muWagon.icon_mipmaps = placementStaticData.iconMipmaps
+    muWagon.drawing_box = {{-1, -4}, {1, 3}} -- same as locomotive
     if thisStaticData.type == "cargo-wagon" and settings.startup["single_train_unit-use_wip_graphics"].value then
         local filenameFolder = Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/"
         muWagon.pictures = {
             layers = {
                 {
                     priority = "very-low",
-                    dice = 4,
                     width = 474,
                     height = 458,
                     direction_count = 128,
@@ -124,7 +125,6 @@ local function MakeMUWagonPrototype(thisStaticData)
                 {
                     flags = {"shadow"},
                     priority = "very-low",
-                    dice = 4,
                     width = 490,
                     height = 401,
                     back_equals_front = true,
