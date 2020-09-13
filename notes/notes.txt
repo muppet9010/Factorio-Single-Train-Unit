@@ -1,5 +1,4 @@
 - TODO:
-	- Check theres no way to hide the loco health bars when damaged. Maybe keep them as full health and just trasnfer the damage to the center.
     - Check mining a damaged train and placing it back down.
     - Try to support blueprinting a train with fuel and converting the fule request between the entity swap so you end up with fuel requests on the bog built train.
     - Support modified versions of my placement and part entities. They often seem to add a suffix to my entity names for eletric trains, other mods and this one specificly https://mods.factorio.com/mod/single_train_unit/discussion/5f576f615f5888c2fb8a5b1b
@@ -25,8 +24,6 @@
     - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?
     - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it.
     - Prevent the player from walking through a unit. As there needs to be gaps in the parts collision boes so it can turn corners.
-    - An event that damages multiple parts of a unit will accumilate damage too fast. i.e. a grenade hitting all 3 parts will do triple damage to the unit parts due to damage sharing vs a normal train being hit by a grenade.
-
 
 https://ezgif.com/sprite-cutter
 Locomotive HR Spritesheet: 474 x 458

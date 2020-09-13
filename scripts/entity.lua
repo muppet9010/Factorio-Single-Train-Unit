@@ -106,6 +106,8 @@ Entity.CreateGlobals = function()
     } -- Force index entries are defined when first used and the intial force entry is generated.
     --]]
     global.entity.wagonIdToSingleTrainUnit = global.entity.wagonIdToSingleTrainUnit or {} -- WagonId to lobal.entity.forces[force.index].singleTrainUnits entry
+    global.entity.damageSourcesTick = global.entity.damageSourcesTick or 0
+    global.entity.damageSourcesThisTick = global.entity.damageSourcesThisTick or {}
 end
 
 Entity.OnLoad = function()
@@ -395,15 +397,50 @@ Entity.OnPrePlayerMined_MUWagon = function(event)
     end
 end
 
+Entity.GetDamageCauseString = function(event)
+    local causeString
+    if event.cause == nil then
+        causeString = "unknown"
+    else
+        causeString = event.cause.name
+        if event.cause.player then
+            causeString = causeString .. "_" .. event.cause.player.name
+        end
+        if event.cause.unit_number then
+            causeString = causeString .. "_" .. event.cause.unit_number
+        end
+    end
+    causeString = causeString .. "-" .. event.damage_type.name
+    return causeString
+end
+
 Entity.OnEntityDamaged_MUWagon = function(event)
     local damagedWagon = event.entity
     local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[damagedWagon.unit_number]
+    local cargoWagon = singleTrainUnit.wagons.middleCargo
 
-    for _, wagon in pairs(singleTrainUnit.wagons) do
-        if wagon.valid and wagon.unit_number ~= damagedWagon.unit_number then
-            wagon.health = wagon.health - event.final_damage_amount
+    if global.entity.damageSourcesTick ~= event.tick then
+        global.entity.damageSourcesTick = event.tick
+        global.entity.damageSourcesThisTick = {}
+    end
+    local damageName = Entity.GetDamageCauseString(event)
+    local damageToDo = event.final_damage_amount
+    -- This damageToDo is to handle variable damage from the same thing affecting multiple parts, however, it does mean that dual damaging weapons (explosive rockets, cluster grenades, etc) will only do their single most max damage and not the damage from each part.
+    if global.entity.damageSourcesThisTick[damageName] == nil then
+        global.entity.damageSourcesThisTick[damageName] = damageToDo
+    else
+        if global.entity.damageSourcesThisTick[damageName] < event.final_damage_amount then
+            damageToDo = event.final_damage_amount - global.entity.damageSourcesThisTick[damageName]
+            global.entity.damageSourcesThisTick[damageName] = event.final_damage_amount
+        else
+            damageToDo = 0
         end
     end
+
+    if damagedWagon.unit_number ~= cargoWagon.unit_number then
+        cargoWagon.health = cargoWagon.health - damageToDo
+    end
+    damagedWagon.health = damagedWagon.health + event.final_damage_amount
 end
 
 Entity.OnEntityDied_MUWagon = function(event)

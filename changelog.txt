@@ -5,12 +5,15 @@ Date: XXXXX
     - Add specific support for the Fill4Me mod. When it places fuel in the single train unit placement wagon from your inventory, the same type of fuel is placed in both ends of the single train unit from your inventory.
   Changes:
     - Locomotive parts Info GUI drawing is now just a blank image, rather than being of the wheels (on hover tooltip image shown).
+    - Only 1 health bar per single train unit now. Single train unit parts health will now keep the locos at full health and transfer all damage to the cargo wagon part. This does mean train collisions against a damaged signle train unit will take too much speed from the ramming train, but should have no other negative effects. Does mean that bots only repair one part of the train now as well as the single health bar.
   Bugfixes:
     - Improved behaviour of anti disconnecting logic to not affect other wagon types in a common train.
     - Mining a single train unit returns any grid equipment it had to your inventory. Previously they were lost.
     - If a mined single unit train was undone and the bot placement failed due to being blocked the single unit train is returned by the bot and standard placement information chat message shown. Before the mod hard errored.
     - Any fuel placed in to the placement wagons by mods (other than Fill4Me) will be distributed equally across the 2 ends of the single train unit. Any spare fuel is returned to the builder. Previously it was lost.
     - Fixed Cargo & Fluid wagon parts Info GUI drawing is now the full image (on hover tooltip image shown).
+    - An event that damages multiple parts of a unit will no longer accumilate damage too fast. i.e. a grenade hitting all 3 parts used to do triple damage to the overal single train units health. However, doing multiple damages from 1 event (explosive rocket) only do the single max damage ad not the impact plus blast damage. Is less of an issue than before.
+
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.3
