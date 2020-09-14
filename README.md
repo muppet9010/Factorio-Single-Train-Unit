@@ -55,7 +55,8 @@ Limitations / Known Issues
 Other Mods
 ============
 
-I have not blocked any other mods unless they hard break this mod, however some won't work with this mod. This decision is to allow their use with other (regular) type trains in games. These mods are listed below as well as any specific other mod integrations.
+I have not blocked any other mods unless they hard break this mod, however some won't work with the single train units added by this mod. All train related mods for known support, issues or just tested are listed below.
+This decision to not block mods that don't work with single train units is to allow their use with other (regular) type trains in the game.
 
 Fill4Me
 -------------
