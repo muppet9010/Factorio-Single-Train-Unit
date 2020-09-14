@@ -1,5 +1,4 @@
 - TODO:
-    - Check mining a damaged train and placing it back down.
     - Try to support blueprinting a train with fuel and converting the fule request between the entity swap so you end up with fuel requests on the bog built train.
     - Support modified versions of my placement and part entities. They often seem to add a suffix to my entity names for eletric trains, other mods and this one specificly https://mods.factorio.com/mod/single_train_unit/discussion/5f576f615f5888c2fb8a5b1b
     - Review compatibility with Train Construction Site mod and deal with anything.
