@@ -437,9 +437,7 @@ Entity.OnEntityDamaged_MUWagon = function(event)
         end
     end
 
-    if damagedWagon.unit_number ~= cargoWagon.unit_number then
-        cargoWagon.health = cargoWagon.health - damageToDo
-    end
+    cargoWagon.health = cargoWagon.health - damageToDo
     damagedWagon.health = damagedWagon.health + event.final_damage_amount
 end
 
