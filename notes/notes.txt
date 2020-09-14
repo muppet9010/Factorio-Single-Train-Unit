@@ -1,5 +1,4 @@
 - TODO:
-    - Try to support blueprinting a train with fuel and converting the fule request between the entity swap so you end up with fuel requests on the bog built train.
     - Support modified versions of my placement and part entities. They often seem to add a suffix to my entity names for eletric trains, other mods and this one specificly https://mods.factorio.com/mod/single_train_unit/discussion/5f576f615f5888c2fb8a5b1b
     - Review compatibility with Train Construction Site mod and deal with anything.
 
@@ -18,6 +17,17 @@
         - Have different train values based on the mods increase ratios.
         - Have different cargo values based on the mods increase ratios.
         - Need the graphics to be tintable for the higher tiers.
+    - Try to support blueprinting a train with fuel and converting the fule request between the entity swap so you end up with fuel requests on the bog built train. Needs to replace the locos with fuel request hidden entities. But keep track of these to the wargo part ghost so if the cargo is removed the requests go also. When the cargo is built the hidden entities are "triggered" and make the real fuel requests to the loco parts. Also have to make the loco blueprintable. Sample code for reacting to BP being made:
+                    Events.RegisterHandler(
+                        defines.events.on_player_setup_blueprint,
+                        "test1",
+                        function(event)
+                            local player = game.get_player(event.player_index)
+                            local blueprint = player.blueprint_to_setup
+                            local entities = blueprint.get_blueprint_entities()
+                            blueprint.set_blueprint_entities(entities)
+                        end
+                    )
 
 - Not Possible (presently):
     - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?

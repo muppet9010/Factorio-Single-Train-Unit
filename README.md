@@ -46,6 +46,7 @@ Limitations / Known Issues
 - You can not detach a single train unit from other carriages as the parts all face inwards and there is protection in the mod to prevent a single train unit being broken up. However, you can detach regular carriages (cargo, loco, fluid) from a single train unit. If you need to detach a single train unit from another, its often easiest to just mine one of them.
 - Single train units when being placed will only snap to a stations position if they are facing the right way. Theres no visual way to tell their direction at present, so just rotate them before placing if needed. Snapping on corners can be finikity.
 - A single event that does multiple damages at a time (i.e. explosive rocket) will only do the single max damage and not the total cumilative damage. In the case of explosive rockets this means it will lose the lower impact damage, but get the correct higher blast damage. This is the least balance impacting solution I can find so far.
+- Not able to blueprint the single train units with fuel in them. This may be added in future, but isn't simple.
 - Presently the placement of single train units by other mods or scripts won't work. I can't see any need for this, but shout if you find one.
 - Other other mods that try to manipulate the train unit may have issues. Please report anything so I can review it.
 
