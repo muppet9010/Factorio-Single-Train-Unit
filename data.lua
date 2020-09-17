@@ -1,4 +1,3 @@
---From Utils while POC
 local Utils = require("utility/utils")
 local StaticData = require("static-data")
 local Constants = require("constants")
@@ -52,7 +51,7 @@ local function MakeMULocoPrototype(thisStaticData)
     data:extend({muLoco})
 end
 
-local function MakeMUWagonPrototype(thisStaticData)
+local function MakeMUWagonPrototype(thisStaticData, prototypeData)
     local placementStaticData = thisStaticData.placementStaticData
     local itsLocoPrototype = data.raw["locomotive"][placementStaticData.placedStaticDataLoco.name]
     local muWagon
@@ -92,9 +91,9 @@ local function MakeMUWagonPrototype(thisStaticData)
         size = {20, 70},
         scale = 0.5
     }
-    muWagon.icon = placementStaticData.icon
-    muWagon.icon_size = placementStaticData.iconSize
-    muWagon.icon_mipmaps = placementStaticData.iconMipmaps
+    muWagon.icon = prototypeData.icon
+    muWagon.icon_size = prototypeData.iconSize
+    muWagon.icon_mipmaps = prototypeData.iconMipmaps
     muWagon.drawing_box = {{-1, -4}, {1, 3}} -- same as locomotive
     if thisStaticData.type == "cargo-wagon" and settings.startup["single_train_unit-use_wip_graphics"].value then
         local filenameFolder = Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/"
@@ -193,7 +192,7 @@ local function MakeMUWagonPrototype(thisStaticData)
     data:extend({muWagon})
 end
 
-local function MakeMuWagonPlacementPrototype(thisStaticData)
+local function MakeMuWagonPlacementPrototype(thisStaticData, prototypeData)
     local placedStaticDataWagon = thisStaticData.placedStaticDataWagon
     local itsWagonPrototype = data.raw[placedStaticDataWagon.type][placedStaticDataWagon.name]
     local muWagonPlacement
@@ -206,52 +205,79 @@ local function MakeMuWagonPlacementPrototype(thisStaticData)
     muWagonPlacement.connection_snap_distance = thisStaticData.connection_snap_distance
     muWagonPlacement.wheels = EmptyRotatedSprite()
     muWagonPlacement.pictures = itsWagonPrototype.pictures
-    muWagonPlacement.icon = thisStaticData.icon
-    muWagonPlacement.icon_size = thisStaticData.iconSize
-    muWagonPlacement.icon_mipmaps = thisStaticData.iconMipmaps
+    muWagonPlacement.icon = prototypeData.icon
+    muWagonPlacement.icon_size = prototypeData.iconSize
+    muWagonPlacement.icon_mipmaps = prototypeData.iconMipmaps
     table.insert(muWagonPlacement.flags, "not-deconstructable")
     table.insert(muWagonPlacement.flags, "placeable-off-grid")
     data:extend({muWagonPlacement})
 end
 
-local function MakeMuWagonPlacementItemPrototype(thisStaticData)
+local function MakeMuWagonPlacementItemPrototype(thisStaticData, prototypeData)
     local muWagonPlacementItem = {
         type = "item-with-entity-data",
         name = thisStaticData.name,
-        icon = thisStaticData.icon,
-        icon_size = thisStaticData.iconSize,
-        icon_mipmaps = thisStaticData.iconMipmaps,
+        icon = prototypeData.icon,
+        icon_size = prototypeData.iconSize,
+        icon_mipmaps = prototypeData.iconMipmaps,
         subgroup = "train-transport",
-        order = thisStaticData.itemOrder,
+        order = prototypeData.itemOrder,
         place_result = thisStaticData.name,
         stack_size = 5
     }
     data:extend({muWagonPlacementItem})
 end
 
-local function MakeMuWagonPlacementRecipePrototype(thisStaticData)
+local function MakeMuWagonPlacementRecipePrototype(thisStaticData, prototypeData)
     local muWagonPlacementRecipe = {
         type = "recipe",
         name = thisStaticData.name,
         energy_required = 6,
         enabled = false,
-        ingredients = thisStaticData.recipeIngredients,
+        ingredients = prototypeData.recipeIngredients,
         result = thisStaticData.name
     }
     data:extend({muWagonPlacementRecipe})
 end
 
+local mu_cargo_placement_prototypedata = {
+    itemOrder = "za0",
+    icon = Constants.AssetModName .. "/graphics/icons/mu_cargo_wagon.png",
+    iconSize = 64,
+    iconMipmaps = 4,
+    recipeIngredients = {
+        {"engine-unit", 40},
+        {"electronic-circuit", 20},
+        {"steel-plate", 30},
+        {"iron-gear-wheel", 5},
+        {"iron-plate", 10}
+    }
+}
 MakeMULocoPrototype(StaticData.mu_cargo_loco)
-MakeMUWagonPrototype(StaticData.mu_cargo_wagon)
-MakeMuWagonPlacementPrototype(StaticData.mu_cargo_placement)
-MakeMuWagonPlacementItemPrototype(StaticData.mu_cargo_placement)
-MakeMuWagonPlacementRecipePrototype(StaticData.mu_cargo_placement)
+MakeMUWagonPrototype(StaticData.mu_cargo_wagon, mu_cargo_placement_prototypedata)
+MakeMuWagonPlacementPrototype(StaticData.mu_cargo_placement, mu_cargo_placement_prototypedata)
+MakeMuWagonPlacementItemPrototype(StaticData.mu_cargo_placement, mu_cargo_placement_prototypedata)
+MakeMuWagonPlacementRecipePrototype(StaticData.mu_cargo_placement, mu_cargo_placement_prototypedata)
 
+local mu_fluid_placement_prototypedata = {
+    itemOrder = "za1",
+    icon = Constants.AssetModName .. "/graphics/icons/mu_fluid_wagon.png",
+    iconSize = 64,
+    iconMipmaps = 4,
+    recipeIngredients = {
+        {"engine-unit", 40},
+        {"electronic-circuit", 20},
+        {"steel-plate", 30},
+        {"iron-gear-wheel", 5},
+        {"pipe", 4},
+        {"storage-tank", 1}
+    }
+}
 MakeMULocoPrototype(StaticData.mu_fluid_loco)
-MakeMUWagonPrototype(StaticData.mu_fluid_wagon)
-MakeMuWagonPlacementPrototype(StaticData.mu_fluid_placement)
-MakeMuWagonPlacementItemPrototype(StaticData.mu_fluid_placement)
-MakeMuWagonPlacementRecipePrototype(StaticData.mu_fluid_placement)
+MakeMUWagonPrototype(StaticData.mu_fluid_wagon, mu_fluid_placement_prototypedata)
+MakeMuWagonPlacementPrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata)
+MakeMuWagonPlacementItemPrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata)
+MakeMuWagonPlacementRecipePrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata)
 
 table.insert(
     data.raw["technology"]["railway"].effects,

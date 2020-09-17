@@ -29,8 +29,9 @@ local placementDetails = {
 }
 
 --[[
-    middle wagons and locos reference their placement via "placementStaticData"
-    placement references wagons and locos via "placedStaticDataWagon" and "placedStaticDataLoco"
+    middle wagons and locos reference their placement via "placementStaticData".
+    placement references wagons and locos via "placedStaticDataWagon" and "placedStaticDataLoco".
+    All final parts have a "type".
 ]]
 StaticData.mu_cargo_wagon = {
     name = "single_train_unit-double_end_cargo_wagon",
@@ -41,10 +42,18 @@ StaticData.mu_cargo_wagon = {
     joint_distance = centreWagonDetails.joint_distance,
     type = "cargo-wagon"
 }
+StaticData.entityNames[StaticData.mu_cargo_wagon.name] = StaticData.mu_cargo_wagon
 
-StaticData.mu_cargo_loco = Utils.DeepCopy(locoDetails)
-StaticData.mu_cargo_loco.name = "single_train_unit-double_end_cargo_loco"
-StaticData.mu_cargo_loco.type = "locomotive"
+StaticData.mu_cargo_loco = {
+    name = "single_train_unit-double_end_cargo_loco",
+    collision_box = locoDetails.collision_box,
+    selection_box = locoDetails.selection_box,
+    connection_distance = locoDetails.connection_distance,
+    connection_snap_distance = locoDetails.connection_snap_distance,
+    joint_distance = locoDetails.joint_distance,
+    type = "locomotive"
+}
+StaticData.entityNames[StaticData.mu_cargo_loco.name] = StaticData.mu_cargo_loco
 
 StaticData.mu_cargo_placement = {
     name = "single_train_unit-double_end_loco_cargo_wagon_placement",
@@ -54,25 +63,12 @@ StaticData.mu_cargo_placement = {
     connection_snap_distance = placementDetails.connection_snap_distance,
     joint_distance = placementDetails.joint_distance,
     placedStaticDataWagon = StaticData.mu_cargo_wagon,
-    placedStaticDataLoco = StaticData.mu_cargo_loco,
-    itemOrder = "za0",
-    icon = Constants.AssetModName .. "/graphics/icons/mu_cargo_wagon.png",
-    iconSize = 64,
-    iconMipmaps = 4,
-    recipeIngredients = {
-        {"engine-unit", 40},
-        {"electronic-circuit", 20},
-        {"steel-plate", 30},
-        {"iron-gear-wheel", 5},
-        {"iron-plate", 10}
-    }
+    placedStaticDataLoco = StaticData.mu_cargo_loco
 }
+StaticData.entityNames[StaticData.mu_cargo_placement.name] = StaticData.mu_cargo_placement
 
 StaticData.mu_cargo_wagon.placementStaticData = StaticData.mu_cargo_placement
 StaticData.mu_cargo_loco.placementStaticData = StaticData.mu_cargo_placement
-StaticData.entityNames[StaticData.mu_cargo_loco.name] = StaticData.mu_cargo_loco
-StaticData.entityNames[StaticData.mu_cargo_wagon.name] = StaticData.mu_cargo_wagon
-StaticData.entityNames[StaticData.mu_cargo_placement.name] = StaticData.mu_cargo_placement
 
 StaticData.mu_fluid_wagon = {
     name = "single_train_unit-double_end_fluid_wagon",
@@ -83,10 +79,18 @@ StaticData.mu_fluid_wagon = {
     joint_distance = centreWagonDetails.joint_distance,
     type = "fluid-wagon"
 }
+StaticData.entityNames[StaticData.mu_fluid_wagon.name] = StaticData.mu_fluid_wagon
 
-StaticData.mu_fluid_loco = Utils.DeepCopy(locoDetails)
-StaticData.mu_fluid_loco.name = "single_train_unit-double_end_fluid_loco"
-StaticData.mu_fluid_loco.type = "locomotive"
+StaticData.mu_fluid_loco = {
+    name = "single_train_unit-double_end_fluid_loco",
+    collision_box = locoDetails.collision_box,
+    selection_box = locoDetails.selection_box,
+    connection_distance = locoDetails.connection_distance,
+    connection_snap_distance = locoDetails.connection_snap_distance,
+    joint_distance = locoDetails.joint_distance,
+    type = "locomotive"
+}
+StaticData.entityNames[StaticData.mu_fluid_loco.name] = StaticData.mu_fluid_loco
 
 StaticData.mu_fluid_placement = {
     name = "single_train_unit-double_end_loco_fluid_wagon_placement",
@@ -96,25 +100,11 @@ StaticData.mu_fluid_placement = {
     connection_snap_distance = placementDetails.connection_snap_distance,
     joint_distance = placementDetails.joint_distance,
     placedStaticDataWagon = StaticData.mu_fluid_wagon,
-    placedStaticDataLoco = StaticData.mu_fluid_loco,
-    itemOrder = "za1",
-    icon = Constants.AssetModName .. "/graphics/icons/mu_fluid_wagon.png",
-    iconSize = 64,
-    iconMipmaps = 4,
-    recipeIngredients = {
-        {"engine-unit", 40},
-        {"electronic-circuit", 20},
-        {"steel-plate", 30},
-        {"iron-gear-wheel", 5},
-        {"pipe", 4},
-        {"storage-tank", 1}
-    }
+    placedStaticDataLoco = StaticData.mu_fluid_loco
 }
+StaticData.entityNames[StaticData.mu_fluid_placement.name] = StaticData.mu_fluid_placement
 
 StaticData.mu_fluid_wagon.placementStaticData = StaticData.mu_fluid_placement
 StaticData.mu_fluid_loco.placementStaticData = StaticData.mu_fluid_placement
-StaticData.entityNames[StaticData.mu_fluid_loco.name] = StaticData.mu_fluid_loco
-StaticData.entityNames[StaticData.mu_fluid_wagon.name] = StaticData.mu_fluid_wagon
-StaticData.entityNames[StaticData.mu_fluid_placement.name] = StaticData.mu_fluid_placement
 
 return StaticData

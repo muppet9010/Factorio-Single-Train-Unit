@@ -342,7 +342,7 @@ Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityP
     Entity.OnBuiltEntity_MUPlacement({created_entity = placedWagon, replaced = true, robot = event.robot, player_index = event.player_index})
 end
 
-Entity.RecordSingleUnit = function(force, wagons)
+Entity.RecordSingleUnit = function(force, wagons, type)
     global.entity.forces[force.index] =
         global.entity.forces[force.index] or
         {
@@ -353,7 +353,7 @@ Entity.RecordSingleUnit = function(force, wagons)
     forcesEntry.singleTrainUnits[singleTrainUnitId] = {
         id = singleTrainUnitId,
         wagons = wagons,
-        type = StaticData.entityNames[wagons.middleCargo.name].type
+        type = type
     }
     for _, wagon in pairs(wagons) do
         global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = forcesEntry.singleTrainUnits[singleTrainUnitId]
