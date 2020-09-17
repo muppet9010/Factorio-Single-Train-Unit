@@ -1,6 +1,4 @@
 local StaticData = {}
-local Constants = require("constants")
-local Utils = require("utility/utils")
 
 StaticData.entityNames = {}
 
