@@ -7,7 +7,6 @@
         - Have different train values based on the mods increase ratios.
         - Have different cargo values based on the mods increase ratios.
         - Just tint the icons and whole spritesheets for now as a simple fix.
-    - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it. Maybe I check what wagon you are in and if there is an adjacant non single train unit wagon I detach that?
 
 - Graphics:
     - Make graphics for new vehicle (cargo wagon entity).
@@ -33,6 +32,7 @@
 - Not Possible (presently):
     - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?
     - Prevent the player from walking through a unit. As there needs to be gaps in the parts collision boes so it can turn corners.
+    - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it. I currently track whne the unit is broken up and rejoin the correct bit. I would then need to track the joined event and somehow track which the old end of train unit part was and then detach the next non unit part of the train. Can't do it in the origonal event so will get very messy.
 
 https://ezgif.com/sprite-cutter
 Locomotive HR Spritesheet: 474 x 458

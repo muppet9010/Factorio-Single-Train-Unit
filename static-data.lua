@@ -41,8 +41,11 @@ StaticData.mu_cargo_wagon = {
     joint_distance = centreWagonDetails.joint_distance,
     type = "cargo-wagon"
 }
+
 StaticData.mu_cargo_loco = Utils.DeepCopy(locoDetails)
 StaticData.mu_cargo_loco.name = "single_train_unit-double_end_cargo_loco"
+StaticData.mu_cargo_loco.type = "locomotive"
+
 StaticData.mu_cargo_placement = {
     name = "single_train_unit-double_end_loco_cargo_wagon_placement",
     collision_box = placementDetails.collision_box,
@@ -64,6 +67,7 @@ StaticData.mu_cargo_placement = {
         {"iron-plate", 10}
     }
 }
+
 StaticData.mu_cargo_wagon.placementStaticData = StaticData.mu_cargo_placement
 StaticData.mu_cargo_loco.placementStaticData = StaticData.mu_cargo_placement
 StaticData.entityNames[StaticData.mu_cargo_loco.name] = StaticData.mu_cargo_loco
@@ -79,8 +83,11 @@ StaticData.mu_fluid_wagon = {
     joint_distance = centreWagonDetails.joint_distance,
     type = "fluid-wagon"
 }
+
 StaticData.mu_fluid_loco = Utils.DeepCopy(locoDetails)
 StaticData.mu_fluid_loco.name = "single_train_unit-double_end_fluid_loco"
+StaticData.mu_fluid_loco.type = "locomotive"
+
 StaticData.mu_fluid_placement = {
     name = "single_train_unit-double_end_loco_fluid_wagon_placement",
     collision_box = placementDetails.collision_box,
@@ -103,6 +110,7 @@ StaticData.mu_fluid_placement = {
         {"storage-tank", 1}
     }
 }
+
 StaticData.mu_fluid_wagon.placementStaticData = StaticData.mu_fluid_placement
 StaticData.mu_fluid_loco.placementStaticData = StaticData.mu_fluid_placement
 StaticData.entityNames[StaticData.mu_fluid_loco.name] = StaticData.mu_fluid_loco
