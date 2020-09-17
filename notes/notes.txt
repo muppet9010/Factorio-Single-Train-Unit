@@ -1,6 +1,6 @@
 - TODO:
-    - Support modified versions of my placement and part entities. They often seem to add a suffix to my entity names for eletric trains, other mods and this one specificly https://mods.factorio.com/mod/single_train_unit/discussion/5f576f615f5888c2fb8a5b1b
-    - Review compatibility with Train Construction Site mod and deal with anything. Think this needs to add reacting to mod placement ???
+    - Support modified versions of my placement and part entities. They often seem to add a prefix or suffix to my entity names. Mods to  investigate and plan support for:
+        - Battery Pack
 	- Look at Factorio Extended mods integration
         - Probably just add my own varieties when either FactorioExtended and FactorioExtended Plus (2 seperate mods) is present.
         - Have different recipes based on the mods increase ratios.
@@ -28,6 +28,9 @@
                             blueprint.set_blueprint_entities(entities)
                         end
                     )
+    - Chase up with other mods support for mine:
+        - Electric Trains
+    - Review compatibility with Train Construction Site mod and deal with anything. Think this needs to add reacting to mod placement ???
 
 - Not Possible (presently):
     - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?

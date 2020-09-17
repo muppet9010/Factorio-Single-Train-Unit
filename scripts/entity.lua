@@ -11,114 +11,6 @@ local LoopDirectionValue = function(value)
     return Utils.LoopIntValueWithinRange(value, 0, 7)
 end
 
-local TryMoveInventoriesLuaItemStacks = function(sourceInventory, targetInventory, dropUnmovedOnGround, ratioToMove)
-    -- Moves the full Lua Item Stacks so handles items with data and other complicated items. Updates the passed in inventory object.
-    local sourceOwner, itemsNotMoved = nil, false
-    if sourceInventory.is_empty() then
-        return itemsNotMoved
-    end
-
-    for index = 1, #sourceInventory do
-        local itemStack = sourceInventory[index]
-        if itemStack.valid_for_read then
-            local toMoveCount = math.ceil(itemStack.count * ratioToMove)
-            local itemStackToMove = Utils.DeepCopy(itemStack)
-            itemStackToMove.count = toMoveCount
-            local movedCount = targetInventory.insert(itemStackToMove)
-            local remaining = itemStack.count - movedCount
-            if movedCount > 0 then
-                itemStack.count = remaining
-            end
-            if remaining > 0 then
-                itemsNotMoved = true
-                if dropUnmovedOnGround then
-                    sourceOwner = sourceOwner or targetInventory.entity_owner
-                    sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = itemStack.name, count = remaining}, true, sourceOwner.force, false)
-                end
-            end
-        end
-    end
-
-    return not itemsNotMoved
-end
-
-local TryTakeGridsItems = function(sourceGrid, targetInventory, dropUnmovedOnGround)
-    -- Can only move the item name and count via API, Facotrio doesn't support putting equipment objects in an inventory. Updates the passed in grid object.
-    local sourceOwner, itemsNotMoved = nil, false
-    for _, equipment in pairs(sourceGrid.equipment) do
-        local moved = targetInventory.insert({name = equipment.name, count = 1})
-        if moved > 0 then
-            sourceGrid.take({equipment = equipment})
-        end
-        if moved == 0 then
-            itemsNotMoved = true
-            if dropUnmovedOnGround then
-                sourceOwner = sourceOwner or targetInventory.entity_owner
-                sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = equipment.name, count = 1}, true, sourceOwner.force, false)
-            end
-        end
-    end
-    return not itemsNotMoved
-end
-
-local TryInsertInventoryContents = function(contents, targetInventory, dropUnmovedOnGround, ratioToMove)
-    -- Just takes a list of item names and counts that you get from the inventory.get_contents(). Updates the passed in contents object.
-    if contents == nil then
-        return
-    end
-    local sourceOwner, itemsNotMoved = nil, false
-    for name, count in pairs(contents) do
-        local toMove = math.ceil(count * ratioToMove)
-        local moved = targetInventory.insert({name = name, count = toMove})
-        local remaining = count - moved
-        if moved > 0 then
-            contents[name] = remaining
-        end
-        if remaining > 0 then
-            itemsNotMoved = true
-            if dropUnmovedOnGround then
-                sourceOwner = sourceOwner or targetInventory.entity_owner
-                sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = name, count = remaining}, true, sourceOwner.force, false)
-            end
-        end
-    end
-    return not itemsNotMoved
-end
-
-local TryInsertSimpleItems = function(contents, targetInventory, dropUnmovedOnGround, ratioToMove)
-    -- Takes a table of SimpleItemStack and inserts them in to an inventory. Updates the passed in contents object.
-    if contents == nil or #contents == 0 then
-        return
-    end
-    local sourceOwner, itemsNotMoved = nil, false
-    for index, simpleItemStack in pairs(contents) do
-        local toMove = math.ceil(simpleItemStack.count * ratioToMove)
-        local moved = targetInventory.insert({name = simpleItemStack.name, count = toMove, health = simpleItemStack.health, durability = simpleItemStack.durablilty, ammo = simpleItemStack.ammo})
-        local remaining = simpleItemStack.count - moved
-        if moved > 0 then
-            contents[index].count = remaining
-        end
-        if remaining > 0 then
-            itemsNotMoved = true
-            if dropUnmovedOnGround then
-                sourceOwner = sourceOwner or targetInventory.entity_owner
-                sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = simpleItemStack.name, count = remaining}, true, sourceOwner.force, false)
-            end
-        end
-    end
-    return not itemsNotMoved
-end
-
-local GetBuilderInventory = function(builder)
-    if builder.is_player() then
-        return builder.get_main_inventory()
-    elseif builder.type ~= nil and builder.type == "construction-robot" then
-        return builder.get_inventory(defines.inventory.robot_cargo)
-    else
-        return builder
-    end
-end
-
 local muWagonNamesFilter = {
     {filter = "name", name = StaticData.mu_cargo_loco.name},
     {mode = "or", filter = "name", name = StaticData.mu_cargo_wagon.name},
@@ -193,7 +85,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     local surface, force, placedEntityName, placedEntityPosition, placedEntityOrientation = entity.surface, entity.force, entity.name, entity.position, entity.orientation
     local placementStaticData = StaticData.entityNames[placedEntityName]
     local builder = event.robot or game.get_player(event.player_index)
-    local builderInventory = GetBuilderInventory(builder)
+    local builderInventory = Utils.GetBuilderInventory(builder)
 
     -- Is a bot placing blueprint of the actual wagon, not the placement entity.
     if placementStaticData.placedStaticDataWagon == nil then
@@ -269,17 +161,17 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
                 if fuelUsedFromBuilder > 0 then
                     builderInventory.remove({name = fuelName, count = fuelUsedFromBuilder})
                 elseif fuelUsedFromBuilder < 0 then
-                    TryInsertInventoryContents({[fuelName] = 0 - fuelUsedFromBuilder}, builderInventory, true, 1)
+                    Utils.TryInsertInventoryContents({[fuelName] = 0 - fuelUsedFromBuilder}, builderInventory, true, 1)
                 end
             end
         else
             -- Will spread the fuel from the placement loco across the 2 end locos.
-            local fuelAllMoved = TryInsertInventoryContents(fuelInventoryContents, wagons.forwardLoco.get_fuel_inventory(), false, 0.5)
+            local fuelAllMoved = Utils.TryInsertInventoryContents(fuelInventoryContents, wagons.forwardLoco.get_fuel_inventory(), false, 0.5)
             if not fuelAllMoved then
-                fuelAllMoved = TryInsertInventoryContents(fuelInventoryContents, wagons.rearLoco.get_fuel_inventory(), false, 0.5)
+                fuelAllMoved = Utils.TryInsertInventoryContents(fuelInventoryContents, wagons.rearLoco.get_fuel_inventory(), false, 0.5)
             end
             if not fuelAllMoved then
-                TryInsertInventoryContents(fuelInventoryContents, builderInventory, true, 1)
+                Utils.TryInsertInventoryContents(fuelInventoryContents, builderInventory, true, 1)
             end
         end
     end
@@ -310,7 +202,7 @@ end
 Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, failedOnName, eventReplaced, event, fuelInventoryContents, health)
     -- As we failed to place all the expected parts remove any placed. Then place the origional wagon placement entity back, but backwards. Calling the replacement process on this reversed placement wagon generally works for any standard use cases because Factorio.
     local builder = event.robot or game.get_player(event.player_index)
-    local builderInventory = GetBuilderInventory(builder)
+    local builderInventory = Utils.GetBuilderInventory(builder)
     local placementSimpleItemStackTable = {{name = placedEntityName, count = 1, health = health}}
 
     Logging.LogPrint("WARNING: " .. "failed placing " .. failedOnName, debug_writeAllWarnings)
@@ -321,20 +213,20 @@ Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityP
     end
     if eventReplaced ~= nil and eventReplaced then
         Logging.LogPrint("ERROR: " .. "failed placing " .. failedOnName .. " for second orientation, so giving up")
-        TryInsertSimpleItems(placementSimpleItemStackTable, builderInventory, true, 1)
-        TryInsertInventoryContents(fuelInventoryContents, builderInventory, true, 1)
+        Utils.TryInsertSimpleItems(placementSimpleItemStackTable, builderInventory, true, 1)
+        Utils.TryInsertInventoryContents(fuelInventoryContents, builderInventory, true, 1)
         return
     end
 
     placedEntityDirection = LoopDirectionValue(placedEntityDirection + 4)
     local placedWagon = surface.create_entity {name = placedEntityName, position = placedEntityPosition, force = force, snap_to_train_stop = false, direction = placedEntityDirection}
     if placedWagon ~= nil then
-        TryInsertInventoryContents(fuelInventoryContents, placedWagon.get_fuel_inventory(), true, 1)
+        Utils.TryInsertInventoryContents(fuelInventoryContents, placedWagon.get_fuel_inventory(), true, 1)
         placedWagon.health = health
     else
         Logging.LogPrint("ERROR: " .. "failed to place origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection)
-        TryInsertSimpleItems(placementSimpleItemStackTable, builderInventory, true, 1)
-        TryInsertInventoryContents(fuelInventoryContents, builderInventory, true, 1)
+        Utils.TryInsertSimpleItems(placementSimpleItemStackTable, builderInventory, true, 1)
+        Utils.TryInsertInventoryContents(fuelInventoryContents, builderInventory, true, 1)
         return
     end
     Logging.LogPrint("WARNING: " .. "placed origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection, debug_writeAllWarnings)
@@ -443,14 +335,14 @@ Entity.OnPrePlayerMined_MUWagon = function(event)
     local player = game.get_player(event.player_index)
     local playerInventory = player.get_main_inventory()
     if singleTrainUnit.type == "cargo-wagon" then
-        TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon), playerInventory, false, 1)
+        Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon), playerInventory, false, 1)
     end
-    TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory, false, 1)
-    TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), playerInventory, false, 1)
+    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory, false, 1)
+    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), playerInventory, false, 1)
     for _, wagon in pairs(singleTrainUnit.wagons) do
         local wagonGrid = wagon.grid
         if wagonGrid ~= nil then
-            TryTakeGridsItems(wagonGrid, playerInventory, false)
+            Utils.TryTakeGridsItems(wagonGrid, playerInventory, false)
         end
     end
 end
@@ -520,12 +412,12 @@ Entity.OnRobotMinedEntity_MUWagons = function(event)
         return
     end
 
-    TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), buffer, false, 1)
-    TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), buffer, false, 1)
+    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), buffer, false, 1)
+    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), buffer, false, 1)
     for _, wagon in pairs(singleTrainUnit.wagons) do
         local wagonGrid = wagon.grid
         if wagonGrid ~= nil then
-            TryTakeGridsItems(wagonGrid, buffer, false)
+            Utils.TryTakeGridsItems(wagonGrid, buffer, false)
         end
     end
 

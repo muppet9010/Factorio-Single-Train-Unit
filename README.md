@@ -83,6 +83,15 @@ Noxys Multidirectional Trains
 
 The Noxys Multidirectional Trains mod doesn't appear to get applied to Single Train Units by default. Probably due to single train units being placed via script. This is desired behavior as Single Train Units are already balanced for their dual direction nature.
 
+Electric Train
+-----------------
+
+At present no integration is present and so there isn't an electric version available.
+
+Battery Pack
+------------------
+
+
 
 Upgrading from old POC mod verison
 ========================

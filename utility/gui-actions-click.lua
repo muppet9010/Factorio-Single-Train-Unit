@@ -4,7 +4,7 @@ local Constants = require("constants")
 MOD = MOD or {}
 MOD.guiClickActions = MOD.guiClickActions or {}
 
---Called from the root of Control.lua
+--Called from the root of Control.lua or from OnLoad.
 GuiActionsClick.MonitorGuiClickActions = function()
     script.on_event(defines.events.on_gui_click, GuiActionsClick._HandleGuiClickAction)
 end

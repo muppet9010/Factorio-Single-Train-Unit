@@ -36,6 +36,7 @@ Logging.LogPrint = function(text, enabled)
         return
     end
     if game ~= nil then
+        --Won't print on 0 tick (startup) due to core game limitation. Either use the EventScheduler.GamePrint to do this or handle it another way at usage time.
         game.print(tostring(text))
     end
     Logging.Log(text)

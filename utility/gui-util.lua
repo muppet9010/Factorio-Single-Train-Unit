@@ -25,7 +25,7 @@ GuiUtil.AddElement = function(elementDetails)
     elementDetails.name = GuiUtil.GenerateGuiElementName(elementDetails.name, elementDetails.type)
     elementDetails.caption = GuiUtil._ReplaceSelfWithGeneratedName(elementDetails, "caption")
     elementDetails.tooltip = GuiUtil._ReplaceSelfWithGeneratedName(elementDetails, "tooltip")
-    if string.sub(elementDetails.style, 1, 7) == "muppet_" then
+    if elementDetails.style ~= nil and string.sub(elementDetails.style, 1, 7) == "muppet_" then
         elementDetails.style = elementDetails.style .. StyleDataStyleVersion
     end
     local returnElements = {}
