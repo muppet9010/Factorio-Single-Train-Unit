@@ -36,7 +36,7 @@ Not Implimented Yet
 
 - Graphics are a WIP: cargo unit, fluid unit, train wheels.
 - Coloring of the train unit.
-- Support for other mods making their own versions of the single train units, i.e. electric train mods, battery mods, Factorio extended.
+- Add direction indicator to placement graphics to help with snapping to stations.
 - Support for other mods to place the single trian units, i.e. Train Constrcution Site.
 
 
@@ -47,16 +47,15 @@ Limitations / Known Issues
 - Don't build a train with multiple single train units in it out of order. Start at one end and place each one sequentially. As placing a middle single train unit between 2 other rail wagons may not place correctly.
 - You can not detach a single train unit from other carriages as the parts all face inwards and there is protection in the mod to prevent a single train unit being broken up. However, you can detach regular carriages (cargo, loco, fluid) from a single train unit. If you need to detach a single train unit from another, its often easiest to just mine one of them.
 - Single train units when being placed will only snap to a stations position if they are facing the right way. Theres no visual way to tell their direction at present, so just rotate them before placing if needed. Snapping on corners can be finikity.
-- A single event that does multiple damages at a time (i.e. explosive rocket) will only do the single max damage and not the total cumilative damage. In the case of explosive rockets this means it will lose the lower impact damage, but get the correct higher blast damage. This is the least balance impacting solution I can find so far.
-- Not able to blueprint the single train units with fuel in them. This may be added in future, but isn't simple.
-- Other other mods that try to manipulate the train unit may have issues. Please report anything so I can review it.
+- A single event that does multiple damages at a time (i.e. explosive rocket) will only do the single max damage and not the total cumilative damage. In the case of explosive rockets this means it will lose the lower impact damage, but get the correct higher blast damage. This is the fairest balance solution I can find so far to damage across the multiple parts of the trian unit.
+- Not able to blueprint the single train units with fuel in them.
+- Other other mods that try to manipulate the train unit may have issues. Please report anything so I can review it if not listed below already.
 
 
 Other Mods
 ============
 
-I have not blocked any other mods unless they hard break this mod, however some won't work with the single train units added by this mod. All train related mods for known support, issues or just tested are listed below.
-This decision to not block mods that don't work with single train units is to allow their use with other (regular) type trains in the game.
+I have not blocked any other mods unless they hard break this mod, however some won't work with the single train units added by this mod. All train related mods for known support, issues or just tested are listed below. This decision to not block mods that don't work with single train units is to allow their use with other (regular) type trains in your game.
 
 Factorio Extended & Factorio Extended Plus
 --------------

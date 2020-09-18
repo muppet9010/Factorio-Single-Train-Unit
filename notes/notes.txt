@@ -1,7 +1,5 @@
 - TODO:
-    - Support modified versions of my placement and part entities. They often seem to add a prefix or suffix to my entity names. Mods to  investigate and plan support for:
-        - Battery Pack
-    - Mod setting to disable regular train wagons and known modded train wagons.
+    - Add support for Battery Pack mod.
 
 - Graphics:
     - Make graphics for new vehicle (cargo wagon entity).
@@ -11,7 +9,15 @@
 	- Add a second graphic option to use a tram render suggested by Klonan: https://sketchfab.com/3d-models/tatra-t3-76aa08d7c06340fc89229551c45e3c3a
 
 - Deferred:
-    - Handle mod entity placement.
+    - Handle other mods placeing our placement entity. By raising events it may trigger mods that currently ignore us.
+    - Chase up with other mods support for mine:
+        - Electric Trains
+    - Review compatibility with Train Construction Site mod and deal with anything. Think this needs to add reacting to mod placement ???
+
+- Not Possible (presently):
+    - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?
+    - Prevent the player from walking through a unit. As there needs to be gaps in the parts collision boes so it can turn corners.
+    - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it. I currently track whne the unit is broken up and rejoin the correct bit. I would then need to track the joined event and somehow track which the old end of train unit part was and then detach the next non unit part of the train. Can't do it in the origonal event so will get very messy.
     - Try to support blueprinting a train with fuel and converting the fule request between the entity swap so you end up with fuel requests on the bog built train. Needs to replace the locos with fuel request hidden entities. But keep track of these to the wargo part ghost so if the cargo is removed the requests go also. When the cargo is built the hidden entities are "triggered" and make the real fuel requests to the loco parts. Also have to make the loco blueprintable. Sample code for reacting to BP being made:
                     Events.RegisterHandler(
                         defines.events.on_player_setup_blueprint,
@@ -23,14 +29,6 @@
                             blueprint.set_blueprint_entities(entities)
                         end
                     )
-    - Chase up with other mods support for mine:
-        - Electric Trains
-    - Review compatibility with Train Construction Site mod and deal with anything. Think this needs to add reacting to mod placement ???
-
-- Not Possible (presently):
-    - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?
-    - Prevent the player from walking through a unit. As there needs to be gaps in the parts collision boes so it can turn corners.
-    - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it. I currently track whne the unit is broken up and rejoin the correct bit. I would then need to track the joined event and somehow track which the old end of train unit part was and then detach the next non unit part of the train. Can't do it in the origonal event so will get very messy.
 
 https://ezgif.com/sprite-cutter
 Locomotive HR Spritesheet: 474 x 458
