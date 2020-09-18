@@ -1,12 +1,7 @@
 - TODO:
     - Support modified versions of my placement and part entities. They often seem to add a prefix or suffix to my entity names. Mods to  investigate and plan support for:
         - Battery Pack
-	- Look at Factorio Extended mods integration
-        - Probably just add my own varieties when either FactorioExtended and FactorioExtended Plus (2 seperate mods) is present.
-        - Have different recipes based on the mods increase ratios.
-        - Have different train values based on the mods increase ratios.
-        - Have different cargo values based on the mods increase ratios.
-        - Just tint the icons and whole spritesheets for now as a simple fix.
+    - Mod setting to disable regular train wagons and known modded train wagons.
 
 - Graphics:
     - Make graphics for new vehicle (cargo wagon entity).

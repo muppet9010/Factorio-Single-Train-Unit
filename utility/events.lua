@@ -1,4 +1,5 @@
 --local Logging = require("utility/logging")
+local Utils = require("utility/utils")
 
 local Events = {}
 MOD = MOD or {}
@@ -14,6 +15,7 @@ Events.RegisterEvent = function(eventName, thisFilterName, thisFilterData)
         error("Events.RegisterEvent called with missing arguments")
     end
     local eventId, filterData
+    thisFilterData = Utils.DeepCopy(thisFilterData) -- Deepcopy it so if a persisted or shared table is passed in we don't cause changes to source table.
     if type(eventName) == "number" then
         eventId = eventName
         if thisFilterData ~= nil then

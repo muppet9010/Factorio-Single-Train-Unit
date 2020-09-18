@@ -58,6 +58,11 @@ Other Mods
 I have not blocked any other mods unless they hard break this mod, however some won't work with the single train units added by this mod. All train related mods for known support, issues or just tested are listed below.
 This decision to not block mods that don't work with single train units is to allow their use with other (regular) type trains in the game.
 
+Factorio Extended & Factorio Extended Plus
+--------------
+
+Additional tiers of single train units added to match the additional locomotive and wagon tiers.
+
 Fill4Me
 -------------
 
@@ -91,7 +96,7 @@ At present no integration is present and so there isn't an electric version avai
 Battery Pack
 ------------------
 
-
+At present this isn't compatible. Investigation ongoing.
 
 Upgrading from old POC mod verison
 ========================

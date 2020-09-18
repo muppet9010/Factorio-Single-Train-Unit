@@ -28,8 +28,8 @@ Entity.CreateGlobals = function()
     global.entity.damageSourcesThisTick = global.entity.damageSourcesThisTick or {}
 
     global.entity.muWagonVariants = {}
-    global.entity.muWagonNamesFilter = Entity.GenerateMuWagonNamesFilter()
-    global.entity.muWagonPlacementNameFilter = Entity.GenerateMuWagonPlacementNameFilter()
+    global.entity.muWagonNamesFilter = global.entity.muWagonNamesFilter or {}
+    global.entity.muWagonPlacementNameFilter = global.entity.muWagonPlacementNameFilter or {}
 end
 
 Entity.OnLoad = function()
@@ -54,6 +54,9 @@ end
 
 Entity.OnStartup = function()
     Entity.OnMigration()
+    global.entity.muWagonNamesFilter = Entity.GenerateMuWagonNamesFilter()
+    global.entity.muWagonPlacementNameFilter = Entity.GenerateMuWagonPlacementNameFilter()
+    Entity.OnLoad() -- need to update dynmaic filter registration lists
 end
 
 Entity.OnMigration = function()
@@ -103,7 +106,7 @@ Entity.GenerateMuWagonPlacementNameFilter = function()
 end
 
 Entity.GenerateRecordPlacementStaticDataVariant = function(baseName, variantName)
-    -- TODO - doesn't handle if a mod adds a new version of the loco and placement part, but not the wagon part. Need to handle this on the data side by making anew wagon type to go with the other mods.
+    -- TODO - doesn't handle if a mod adds a new version of the placement part and some or none of the other parts.
     local variantNamePos_start, variantNamePos_end = string.find(variantName, baseName, 1, true)
     local variantNamePrefix, variantNameSuffix = string.sub(variantName, 1, variantNamePos_start - 1), string.sub(variantName, variantNamePos_end + 1)
     local variantPlacement = Utils.DeepCopy(StaticData.entityNames[baseName])
@@ -121,8 +124,6 @@ Entity.GenerateRecordPlacementStaticDataVariant = function(baseName, variantName
     if variantPlacement.placedStaticDataLoco ~= nil then
         local variantPart = Utils.DeepCopy(variantPlacement.placedStaticDataLoco)
         local variantPartName = variantNamePrefix .. variantPart.name .. variantNameSuffix
-        local x = game.get_filtered_entity_prototypes({{filter = "name", name = variantPartName}})
-        local y = game.get_filtered_entity_prototypes({{filter = "rolling-stock"}})
         if game.get_filtered_entity_prototypes({{filter = "name", name = variantPartName}}) ~= nil then
             variantPart.name = variantPartName
         end

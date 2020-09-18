@@ -3,6 +3,7 @@ Version: 19.0.4
 Date: XXXXX
   Features:
     - Add specific support for the Fill4Me mod. When it places fuel in the single train unit placement wagon from your inventory, the same type of fuel is placed in both ends of the single train unit from your inventory.
+    - Added FactorioExtended and FactorioExtended Plus versions of the single train units.
   Changes:
     - Locomotive parts Info GUI drawing is now just a blank image, rather than being of the wheels (on hover tooltip image shown).
     - Only 1 health bar per single train unit now. Single train unit parts health will now keep the locos at full health and transfer all damage to the cargo wagon part. This does mean train collisions against a damaged signle train unit will take too much speed from the ramming train, but should have no other negative effects. Does mean that bots only repair one part of the train now as well as the single health bar.

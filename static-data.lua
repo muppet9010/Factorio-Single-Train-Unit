@@ -66,8 +66,10 @@ StaticData.mu_cargo_placement = {
     joint_distance = placementDetails.joint_distance,
     placedStaticDataWagon = StaticData.mu_cargo_wagon,
     placedStaticDataLoco = StaticData.mu_cargo_loco,
+    type = "placement",
     locoConfiguration = "double_end",
-    nameUnique = "loco_cargo_wagon_placement"
+    nameUnique = "loco_cargo_wagon_placement",
+    wagonType = "cargo-wagon"
 }
 StaticData.entityNames[StaticData.mu_cargo_placement.name] = StaticData.mu_cargo_placement
 
@@ -109,8 +111,10 @@ StaticData.mu_fluid_placement = {
     joint_distance = placementDetails.joint_distance,
     placedStaticDataWagon = StaticData.mu_fluid_wagon,
     placedStaticDataLoco = StaticData.mu_fluid_loco,
+    type = "placement",
     locoConfiguration = "double_end",
-    nameUnique = "loco_fluid_wagon_placement"
+    nameUnique = "loco_fluid_wagon_placement",
+    wagonType = "fluid-wagon"
 }
 StaticData.entityNames[StaticData.mu_fluid_placement.name] = StaticData.mu_fluid_placement
 

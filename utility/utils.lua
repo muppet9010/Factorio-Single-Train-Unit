@@ -901,4 +901,13 @@ Utils.GetBuilderInventory = function(builder)
     end
 end
 
+Utils.EmptyRotatedSprite = function()
+    return {
+        direction_count = 1,
+        filename = "__core__/graphics/empty.png",
+        width = 1,
+        height = 1
+    }
+end
+
 return Utils
