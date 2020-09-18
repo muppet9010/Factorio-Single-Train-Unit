@@ -15,7 +15,7 @@ local function EmptyRotatedSprite()
     }
 end
 
-local function MakeMULocoPrototype(thisStaticData)
+local function MakeMULocoPrototype(thisStaticData, prototypeData)
     local placementStaticData = thisStaticData.placementStaticData
     local muLoco = Utils.DeepCopy(refLoco)
     muLoco.name = thisStaticData.name
@@ -38,9 +38,9 @@ local function MakeMULocoPrototype(thisStaticData)
     muLoco.joint_distance = thisStaticData.joint_distance
     muLoco.connection_distance = thisStaticData.connection_distance
     muLoco.connection_snap_distance = thisStaticData.connection_snap_distance
-    muLoco.weight = (refLoco.weight + refCargoWagon.weight) / 1.75
-    muLoco.burner.fuel_inventory_size = 1
-    muLoco.burner.effectivity = 0.5
+    muLoco.weight = prototypeData.weight
+    muLoco.burner.fuel_inventory_size = prototypeData.burner_fuel_inventory_size
+    muLoco.burner.effectivity = prototypeData.burner_effectivity
     muLoco.minimap_representation = nil
     muLoco.selected_minimap_representation = nil
     muLoco.placeable_by = {item = placementStaticData.name, count = 1}
@@ -76,7 +76,7 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
     muWagon.joint_distance = thisStaticData.joint_distance
     muWagon.connection_distance = thisStaticData.connection_distance
     muWagon.connection_snap_distance = thisStaticData.connection_snap_distance
-    muWagon.weight = 1
+    muWagon.weight = prototypeData.weight
     muWagon.max_health = itsLocoPrototype.max_health
     muWagon.placeable_by = {item = placementStaticData.name, count = 1}
     muWagon.minimap_representation = {
@@ -192,7 +192,7 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
     data:extend({muWagon})
 end
 
-local function MakeMuWagonPlacementPrototype(thisStaticData, prototypeData)
+local function MakeMuWagonPlacementPrototype(thisStaticData, wagonPrototypeData, locoPrototypeData)
     local placedStaticDataWagon = thisStaticData.placedStaticDataWagon
     local itsWagonPrototype = data.raw[placedStaticDataWagon.type][placedStaticDataWagon.name]
     local muWagonPlacement
@@ -205,9 +205,12 @@ local function MakeMuWagonPlacementPrototype(thisStaticData, prototypeData)
     muWagonPlacement.connection_snap_distance = thisStaticData.connection_snap_distance
     muWagonPlacement.wheels = EmptyRotatedSprite()
     muWagonPlacement.pictures = itsWagonPrototype.pictures
-    muWagonPlacement.icon = prototypeData.icon
-    muWagonPlacement.icon_size = prototypeData.iconSize
-    muWagonPlacement.icon_mipmaps = prototypeData.iconMipmaps
+    muWagonPlacement.icon = wagonPrototypeData.icon
+    muWagonPlacement.icon_size = wagonPrototypeData.iconSize
+    muWagonPlacement.icon_mipmaps = wagonPrototypeData.iconMipmaps
+    muWagonPlacement.weight = (locoPrototypeData.weight * 2) + wagonPrototypeData.weight -- Weight of both loco ends plus the wagon part
+    muWagonPlacement.burner.fuel_inventory_size = locoPrototypeData.burner_fuel_inventory_size
+    muWagonPlacement.burner.effectivity = locoPrototypeData.burner_effectivity
     table.insert(muWagonPlacement.flags, "not-deconstructable")
     table.insert(muWagonPlacement.flags, "placeable-off-grid")
     data:extend({muWagonPlacement})
@@ -240,6 +243,12 @@ local function MakeMuWagonPlacementRecipePrototype(thisStaticData, prototypeData
     data:extend({muWagonPlacementRecipe})
 end
 
+local mu_loco_placement_prototypedata = {
+    weight = (refLoco.weight + refCargoWagon.weight) / 1.75,
+    burner_fuel_inventory_size = 1,
+    burner_effectivity = 0.5
+}
+
 local mu_cargo_placement_prototypedata = {
     itemOrder = "za0",
     icon = Constants.AssetModName .. "/graphics/icons/mu_cargo_wagon.png",
@@ -251,11 +260,12 @@ local mu_cargo_placement_prototypedata = {
         {"steel-plate", 30},
         {"iron-gear-wheel", 5},
         {"iron-plate", 10}
-    }
+    },
+    weight = 1
 }
-MakeMULocoPrototype(StaticData.mu_cargo_loco)
+MakeMULocoPrototype(StaticData.mu_cargo_loco, mu_loco_placement_prototypedata)
 MakeMUWagonPrototype(StaticData.mu_cargo_wagon, mu_cargo_placement_prototypedata)
-MakeMuWagonPlacementPrototype(StaticData.mu_cargo_placement, mu_cargo_placement_prototypedata)
+MakeMuWagonPlacementPrototype(StaticData.mu_cargo_placement, mu_cargo_placement_prototypedata, mu_loco_placement_prototypedata)
 MakeMuWagonPlacementItemPrototype(StaticData.mu_cargo_placement, mu_cargo_placement_prototypedata)
 MakeMuWagonPlacementRecipePrototype(StaticData.mu_cargo_placement, mu_cargo_placement_prototypedata)
 
@@ -273,9 +283,9 @@ local mu_fluid_placement_prototypedata = {
         {"storage-tank", 1}
     }
 }
-MakeMULocoPrototype(StaticData.mu_fluid_loco)
+MakeMULocoPrototype(StaticData.mu_fluid_loco, mu_loco_placement_prototypedata)
 MakeMUWagonPrototype(StaticData.mu_fluid_wagon, mu_fluid_placement_prototypedata)
-MakeMuWagonPlacementPrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata)
+MakeMuWagonPlacementPrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata, mu_loco_placement_prototypedata)
 MakeMuWagonPlacementItemPrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata)
 MakeMuWagonPlacementRecipePrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata)
 

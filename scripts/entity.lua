@@ -11,17 +11,6 @@ local LoopDirectionValue = function(value)
     return Utils.LoopIntValueWithinRange(value, 0, 7)
 end
 
-local muWagonNamesFilter = {
-    {filter = "name", name = StaticData.mu_cargo_loco.name},
-    {mode = "or", filter = "name", name = StaticData.mu_cargo_wagon.name},
-    {mode = "or", filter = "name", name = StaticData.mu_fluid_loco.name},
-    {mode = "or", filter = "name", name = StaticData.mu_fluid_wagon.name}
-}
-local muWagonPlacementNameFilter = {
-    {filter = "name", name = StaticData.mu_cargo_placement.name},
-    {mode = "or", filter = "name", name = StaticData.mu_fluid_placement.name}
-}
-
 Entity.CreateGlobals = function()
     global.entity = global.entity or {}
     global.entity.forces = global.entity.forces or {}
@@ -37,25 +26,29 @@ Entity.CreateGlobals = function()
     global.entity.wagonIdToSingleTrainUnit = global.entity.wagonIdToSingleTrainUnit or {} -- WagonId to lobal.entity.forces[force.index].singleTrainUnits entry
     global.entity.damageSourcesTick = global.entity.damageSourcesTick or 0
     global.entity.damageSourcesThisTick = global.entity.damageSourcesThisTick or {}
+
+    global.entity.muWagonVariants = {}
+    global.entity.muWagonNamesFilter = Entity.GenerateMuWagonNamesFilter()
+    global.entity.muWagonPlacementNameFilter = Entity.GenerateMuWagonPlacementNameFilter()
 end
 
 Entity.OnLoad = function()
-    Events.RegisterEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", muWagonPlacementNameFilter)
+    Events.RegisterEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", global.entity.muWagonPlacementNameFilter)
     Events.RegisterHandler(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement)
     Events.RegisterEvent(defines.events.on_train_created)
     Events.RegisterHandler(defines.events.on_train_created, "Entity.OnTrainCreated", Entity.OnTrainCreated)
-    Events.RegisterEvent(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", muWagonNamesFilter)
+    Events.RegisterEvent(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", global.entity.muWagonNamesFilter)
     Events.RegisterHandler(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", Entity.OnPlayerMined_MUWagon)
-    Events.RegisterEvent(defines.events.on_pre_player_mined_item, "Entity.OnPrePlayerMined_MUWagon", muWagonNamesFilter)
+    Events.RegisterEvent(defines.events.on_pre_player_mined_item, "Entity.OnPrePlayerMined_MUWagon", global.entity.muWagonNamesFilter)
     Events.RegisterHandler(defines.events.on_pre_player_mined_item, "Entity.OnPrePlayerMined_MUWagon", Entity.OnPrePlayerMined_MUWagon)
-    Events.RegisterEvent(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", muWagonNamesFilter)
+    Events.RegisterEvent(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", global.entity.muWagonNamesFilter)
     Events.RegisterHandler(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", Entity.OnEntityDamaged_MUWagon)
-    Events.RegisterEvent(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", muWagonNamesFilter)
+    Events.RegisterEvent(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", global.entity.muWagonNamesFilter)
     Events.RegisterHandler(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", Entity.OnEntityDied_MUWagon)
-    Events.RegisterEvent(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement_WagonEntities", muWagonNamesFilter)
-    Events.RegisterEvent(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement_PlacementEntities", muWagonPlacementNameFilter)
+    Events.RegisterEvent(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement_WagonEntities", global.entity.muWagonNamesFilter)
+    Events.RegisterEvent(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement_PlacementEntities", global.entity.muWagonPlacementNameFilter)
     Events.RegisterHandler(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement)
-    Events.RegisterEvent(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", muWagonNamesFilter)
+    Events.RegisterEvent(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", global.entity.muWagonNamesFilter)
     Events.RegisterHandler(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", Entity.OnRobotMinedEntity_MUWagons)
 end
 
@@ -64,6 +57,7 @@ Entity.OnStartup = function()
 end
 
 Entity.OnMigration = function()
+    -- Fix the missing .type on earlier versions
     for _, force in pairs(global.entity.forces) do
         for index, singleTrainUnit in pairs(force.singleTrainUnits) do
             if singleTrainUnit.wagons == nil or singleTrainUnit.wagons.middleCargo == nil or not singleTrainUnit.wagons.middleCargo.valid then
@@ -75,15 +69,79 @@ Entity.OnMigration = function()
     end
 end
 
+Entity.GenerateMuWagonNamesFilter = function()
+    local filterTable = {}
+    for _, prototype in pairs(game.get_filtered_entity_prototypes({{filter = "rolling-stock"}})) do
+        for _, staticDataName in pairs({StaticData.mu_cargo_loco.name, StaticData.mu_cargo_wagon.name, StaticData.mu_fluid_loco.name, StaticData.mu_fluid_wagon.name}) do
+            if string.find(prototype.name, staticDataName, 1, true) then
+                if #filterTable == 0 then
+                    table.insert(filterTable, {filter = "name", name = prototype.name})
+                else
+                    table.insert(filterTable, {mode = "or", filter = "name", name = prototype.name})
+                end
+            end
+        end
+    end
+    return filterTable
+end
+
+Entity.GenerateMuWagonPlacementNameFilter = function()
+    local filterTable = {}
+    for _, prototype in pairs(game.get_filtered_entity_prototypes({{filter = "rolling-stock"}})) do
+        for _, staticDataName in pairs({StaticData.mu_cargo_placement.name, StaticData.mu_fluid_placement.name}) do
+            if string.find(prototype.name, staticDataName, 1, true) then
+                if #filterTable == 0 then
+                    table.insert(filterTable, {filter = "name", name = prototype.name})
+                else
+                    table.insert(filterTable, {mode = "or", filter = "name", name = prototype.name})
+                end
+                Entity.GenerateRecordPlacementStaticDataVariant(staticDataName, prototype.name)
+            end
+        end
+    end
+    return filterTable
+end
+
+Entity.GenerateRecordPlacementStaticDataVariant = function(baseName, variantName)
+    -- TODO - doesn't handle if a mod adds a new version of the loco and placement part, but not the wagon part. Need to handle this on the data side by making anew wagon type to go with the other mods.
+    local variantNamePos_start, variantNamePos_end = string.find(variantName, baseName, 1, true)
+    local variantNamePrefix, variantNameSuffix = string.sub(variantName, 1, variantNamePos_start - 1), string.sub(variantName, variantNamePos_end + 1)
+    local variantPlacement = Utils.DeepCopy(StaticData.entityNames[baseName])
+    variantPlacement.name = variantName
+    if variantPlacement.placedStaticDataWagon ~= nil then
+        local variantPart = Utils.DeepCopy(variantPlacement.placedStaticDataWagon)
+        local variantPartName = variantNamePrefix .. variantPart.name .. variantNameSuffix
+        if game.get_filtered_entity_prototypes({{filter = "name", name = variantPartName}}) ~= nil then
+            variantPart.name = variantPartName
+        end
+        global.entity.muWagonVariants[variantPart.name] = variantPart
+        variantPlacement.placedStaticDataWagon = variantPart
+        variantPlacement.placedStaticDataWagon.placementStaticData = variantPlacement
+    end
+    if variantPlacement.placedStaticDataLoco ~= nil then
+        local variantPart = Utils.DeepCopy(variantPlacement.placedStaticDataLoco)
+        local variantPartName = variantNamePrefix .. variantPart.name .. variantNameSuffix
+        local x = game.get_filtered_entity_prototypes({{filter = "name", name = variantPartName}})
+        local y = game.get_filtered_entity_prototypes({{filter = "rolling-stock"}})
+        if game.get_filtered_entity_prototypes({{filter = "name", name = variantPartName}}) ~= nil then
+            variantPart.name = variantPartName
+        end
+        global.entity.muWagonVariants[variantPart.name] = variantPart
+        variantPlacement.placedStaticDataLoco = variantPart
+        variantPlacement.placedStaticDataLoco.placementStaticData = variantPlacement
+    end
+    global.entity.muWagonVariants[variantPlacement.name] = variantPlacement
+end
+
 Entity.OnBuiltEntity_MUPlacement = function(event)
     local entity = event.created_entity
     --Called from 2 different events with their own filter lists.
-    if not Utils.GetTableKeyWithInnerKeyValue(muWagonPlacementNameFilter, "name", entity.name) and not Utils.GetTableKeyWithInnerKeyValue(muWagonNamesFilter, "name", entity.name) then
+    if not Utils.GetTableKeyWithInnerKeyValue(global.entity.muWagonPlacementNameFilter, "name", entity.name) and not Utils.GetTableKeyWithInnerKeyValue(global.entity.muWagonNamesFilter, "name", entity.name) then
         return
     end
 
     local surface, force, placedEntityName, placedEntityPosition, placedEntityOrientation = entity.surface, entity.force, entity.name, entity.position, entity.orientation
-    local placementStaticData = StaticData.entityNames[placedEntityName]
+    local placementStaticData = global.entity.muWagonVariants[placedEntityName]
     local builder = event.robot or game.get_player(event.player_index)
     local builderInventory = Utils.GetBuilderInventory(builder)
 
@@ -284,7 +342,7 @@ Entity.OnTrainCreated = function(event)
     end
 
     -- Connects to the front or back of the rolling stock direction, not the train direction. The reverse of the connect direction based on the other end of the trains wagon seems to work in testing, but feels a bit janky.
-    local frontWagonStaticData = StaticData.entityNames[frontCarriage.name]
+    local frontWagonStaticData = global.entity.muWagonVariants[frontCarriage.name]
     if frontWagonStaticData ~= nil and (frontWagonStaticData.type == "cargo-wagon" or frontWagonStaticData.type == "fluid-wagon") then
         local orientationDif = math.abs(frontCarriage.orientation - backCarriage.orientation)
         if orientationDif < 0.25 then
@@ -294,7 +352,7 @@ Entity.OnTrainCreated = function(event)
         end
     end
 
-    local backWagonStaticData = StaticData.entityNames[backCarriage.name]
+    local backWagonStaticData = global.entity.muWagonVariants[backCarriage.name]
     if backWagonStaticData ~= nil and (backWagonStaticData.type == "cargo-wagon" or backWagonStaticData.type == "fluid-wagon") then
         local orientationDif = math.abs(frontCarriage.orientation - backCarriage.orientation)
         if orientationDif < 0.25 then
