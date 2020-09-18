@@ -451,6 +451,9 @@ Entity.OnEntityDamaged_MUWagon = function(event)
 
     cargoWagon.health = cargoWagon.health - damageToDo
     damagedWagon.health = damagedWagon.health + event.final_damage_amount
+    if cargoWagon.health == 0 then
+        cargoWagon.die(event.force, event.cause)
+    end
 end
 
 Entity.OnEntityDied_MUWagon = function(event)

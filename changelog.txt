@@ -14,7 +14,7 @@ Date: XXXXX
     - Any fuel placed in to the placement wagons by mods (other than Fill4Me) will be distributed equally across the 2 ends of the single train unit. Any spare fuel is returned to the builder. Previously it was lost.
     - Fixed Cargo & Fluid wagon parts Info GUI drawing is now the full image (on hover tooltip image shown).
     - An event that damages multiple parts of a unit will no longer accumilate damage too fast. i.e. a grenade hitting all 3 parts used to do triple damage to the overal single train units health. However, doing multiple damages from 1 event (explosive rocket) only do the single max damage ad not the impact plus blast damage. Is less of an issue than before.
-    - Fix misisng "type" on tracked single train units. Generate missing train data on mod load.
+    - Fix missing "type" meta data on existing single train units. Generate missing train data on mod load.
     - If a damaged single train unit is placed it maintains the damage, unlike before.
     - Placement entities should list the correct weight and burner effectivity now, same as the real locomitive parts of the single train units.
   Info:
