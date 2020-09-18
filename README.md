@@ -10,7 +10,7 @@ Overview
 
 - Intended for use as single unit trains, but they be joined togeather or joined with other locomotives or wagons (see Limitations).
 - The unit's first and last 2 tiles are for feeding fuel to the locos. For Cargo wagons the middle 2 tiles are for accessing the small cargo wagon. For Fluid wagons the middle third is for connecting one pump. See the images.
-- The unit runs between the performance of a single loco & wagon and a dual headed train with a wagon. It consumes fuel at twice the usual loco rate to account for its compact dual direction nature.
+- The unit runs between the performance of a single loco & wagon (1-1) and a dual headed train with a wagon (1-1-1). It consumes fuel at twice the usual loco rate to account for its compact dual direction nature.
 - The cargo/fluid wagon space is 1/2 of the standard capacity given its small size.
 - The unit is unlocked with the standard Railway research.
 - Place the dual headed cargo/fluid wagon in the usual manner and it will be replaced out for the 2 mini locos and a mini cargo wagon.
@@ -62,6 +62,7 @@ Factorio Extended & Factorio Extended Plus
 --------------
 
 Additional tiers of single train units added to match the additional locomotive and wagon tiers.
+Please provide any feedback on recipe or balance of these trains as I am not familiar with these mods and had to make approximations.
 
 Fill4Me
 -------------

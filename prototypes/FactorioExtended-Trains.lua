@@ -1,7 +1,7 @@
 local Utils = require("utility/utils")
 local StaticData = require("static-data")
 
-if not mods["FactorioExtended-Plus-Transport"] then
+if not mods["FactorioExtended-Trains"] then
     return
 end
 
@@ -9,111 +9,151 @@ end
     A lot of the values for the entity changes, graphics colors and item ordering is taken from the integratin mod at time of creation.
 ]]
 local MakeMkName = function(name, mk)
-    return name .. "-factorio_extended_plus_transport-" .. mk
+    return name .. "-factorio_extended_trains-" .. mk
 end
 
 local improvementTiers = {
-    mk2 = {
+    mk1 = {
         ["generic"] = {
-            color = {r = 0.4, g = 0.804, b = 0.667, a = 0.8},
-            max_health = 2000,
-            max_speed = 1.6,
-            air_resistance = 0.005
+            color = {r = 0.72, g = 0.31, b = 0.02, a = 0.8},
+            max_health = 1500,
+            max_speed = 1.5
         },
         ["cargo-loco"] = {
             reversing_power_modifier = 0.8,
-            braking_force = 15
+            braking_force = 15,
+            max_power = "800kW",
+            weight = (2250 + 1200) / 1.75
         },
         ["cargo-wagon"] = {
-            inventory_size = 60 / 2,
-            friction_force = 0.25,
-            equipment_grid = "car-medium-equipment-grid"
+            inventory_size = 80 / 2
         },
         ["cargo-placement"] = {
-            prototypeAttributes = {
-                equipment_grid = "car-medium-equipment-grid"
-            },
+            prototypeAttributes = {},
             recipe = {
-                {StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), 2},
+                {StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), 1},
+                {"electric-engine-unit", 20},
                 {"advanced-circuit", 20},
-                {"steel-plate", 50},
-                {"iron-plate", 25}
+                {"stainless-steel", 30},
+                {"iron-gear-wheel", 20}
             },
-            unlockTech = "railway-2"
+            unlockTech = "stainless-steel-trains"
         },
         ["fluid-loco"] = {
             reversing_power_modifier = 0.8,
-            braking_force = 15
+            braking_force = 15,
+            max_power = "800kW",
+            weight = (2250 + 1200) / 1.75
         },
         ["fluid-wagon"] = {
-            capacity = 75000 / 2,
-            friction_force = 0.25,
-            equipment_grid = "car-medium-equipment-grid"
+            capacity = 50000 / 2
         },
         ["fluid-placement"] = {
-            prototypeAttributes = {
-                equipment_grid = "car-medium-equipment-grid"
-            },
+            prototypeAttributes = {},
             recipe = {
-                {StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), 2},
+                {StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), 1},
+                {"electric-engine-unit", 20},
                 {"advanced-circuit", 20},
-                {"steel-plate", 100},
-                {"pipe-mk2", 4}
+                {"stainless-steel", 30},
+                {"pipe-1", 4},
+                {"storage-tank-1", 1}
             },
-            unlockTech = "railway-2"
+            unlockTech = "stainless-steel-trains"
+        }
+    },
+    mk2 = {
+        ["generic"] = {
+            color = {r = 0, g = 0.68, b = 0.08, a = 0.8},
+            max_health = 2000,
+            max_speed = 2
+        },
+        ["cargo-loco"] = {
+            reversing_power_modifier = 1,
+            braking_force = 20,
+            max_power = "1.0MW",
+            weight = (2500 + 1400) / 1.75
+        },
+        ["cargo-wagon"] = {
+            inventory_size = 160 / 2
+        },
+        ["cargo-placement"] = {
+            prototypeAttributes = {},
+            recipe = {
+                {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk1"), 2},
+                {"electric-engine-unit", 20},
+                {"advanced-circuit", 20},
+                {"titanium-rod", 30},
+                {"iron-gear-wheel", 20}
+            },
+            unlockTech = "titanium-trains"
+        },
+        ["fluid-loco"] = {
+            reversing_power_modifier = 1,
+            braking_force = 20,
+            max_power = "1.0MW",
+            weight = (2500 + 1400) / 1.75
+        },
+        ["fluid-wagon"] = {
+            capacity = 75000 / 2
+        },
+        ["fluid-placement"] = {
+            prototypeAttributes = {},
+            recipe = {
+                {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk1"), 2},
+                {"electric-engine-unit", 20},
+                {"advanced-circuit", 20},
+                {"titanium-rod", 30},
+                {"pipe-2", 4},
+                {"storage-tank-2", 1}
+            },
+            unlockTech = "titanium-trains"
         }
     },
     mk3 = {
         ["generic"] = {
-            color = {r = 0.690, g = 0.75, b = 1},
-            max_health = 2000,
-            max_speed = 2,
-            air_resistance = 0.0025
+            color = {r = 0.49, g = 0.10, b = 0.76, a = 0.8},
+            max_health = 2500,
+            max_speed = 2.5
         },
         ["cargo-loco"] = {
-            reversing_power_modifier = 1,
-            braking_force = 20
+            reversing_power_modifier = 1.4,
+            braking_force = 25,
+            max_power = "1.2MW",
+            weight = (3000 + 1600) / 1.75
         },
         ["cargo-wagon"] = {
-            inventory_size = 100 / 2,
-            friction_force = 0.01,
-            equipment_grid = "car-large-equipment-grid"
+            inventory_size = 320 / 2
         },
         ["cargo-placement"] = {
-            prototypeAttributes = {
-                equipment_grid = "car-large-equipment-grid"
-            },
+            prototypeAttributes = {},
             recipe = {
                 {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk2"), 2},
-                {"electric-engine-unit", 40},
-                {"processing-unit", 20},
-                {"titanium-alloy", 50},
-                {"steel-plate", 100}
+                {"electric-engine-unit", 20},
+                {"advanced-circuit", 20},
+                {"graphene", 30},
+                {"iron-gear-wheel", 20}
             },
-            unlockTech = "railway-3"
+            unlockTech = "graphene-trains"
         },
         ["fluid-loco"] = {
-            reversing_power_modifier = 1,
-            braking_force = 20
+            reversing_power_modifier = 1.4,
+            braking_force = 25,
+            max_power = "1.2MW"
         },
         ["fluid-wagon"] = {
-            capacity = 175000 / 2,
-            friction_force = 0.01,
-            equipment_grid = "car-large-equipment-grid"
+            capacity = 100000 / 2
         },
         ["fluid-placement"] = {
-            prototypeAttributes = {
-                equipment_grid = "car-large-equipment-grid"
-            },
+            prototypeAttributes = {},
             recipe = {
                 {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk2"), 2},
-                {"electric-engine-unit", 40},
-                {"processing-unit", 20},
-                {"titanium-alloy", 50},
-                {"steel-plate", 100},
-                {"pipe-mk2", 8}
+                {"electric-engine-unit", 20},
+                {"advanced-circuit", 20},
+                {"graphene", 30},
+                {"pipe-3", 4},
+                {"storage-tank-3", 1}
             },
-            unlockTech = "railway-3"
+            unlockTech = "graphene-trains"
         }
     }
 }
@@ -144,8 +184,8 @@ for mk, improvementDetails in pairs(improvementTiers) do
                 itemVariant.name = entityVariant.name
                 itemVariant.place_result = entityVariant.name
                 itemVariant.icons[1].tint = improvementDetails.generic.color
-                itemVariant.subgroup = "fb-vehicle"
-                itemVariant.order = "j" .. itemVariant.order .. "-" .. mk
+                itemVariant.subgroup = "fb-trains"
+                itemVariant.order = "a-c" .. itemVariant.order .. "-" .. mk
                 data:extend({itemVariant})
 
                 local recipeVariant = Utils.DeepCopy(data.raw["recipe"][baseName])
