@@ -28,8 +28,8 @@ Entity.CreateGlobals = function()
     global.entity.damageSourcesThisTick = global.entity.damageSourcesThisTick or {}
 
     global.entity.muWagonVariants = {}
-    global.entity.muWagonNamesFilter = global.entity.muWagonNamesFilter or {}
-    global.entity.muWagonPlacementNameFilter = global.entity.muWagonPlacementNameFilter or {}
+    --global.entity.muWagonNamesFilter -- don't set a default, we want nil
+    --global.entity.muWagonPlacementNameFilter -- don't set a default, we want nil
 end
 
 Entity.OnLoad = function()
@@ -66,7 +66,7 @@ Entity.OnMigration = function()
             if singleTrainUnit.wagons == nil or singleTrainUnit.wagons.middleCargo == nil or not singleTrainUnit.wagons.middleCargo.valid then
                 force.singleTrainUnits[index] = nil
             elseif singleTrainUnit.type == nil then
-                singleTrainUnit.type = StaticData.entityNames[singleTrainUnit.wagons.middleCargo.name].type
+                singleTrainUnit.type = StaticData.entityNames[singleTrainUnit.wagons.middleCargo.name].unitType
             end
         end
     end
@@ -237,7 +237,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
 
     wagons.middleCargo.health = health
 
-    Entity.RecordSingleUnit(force, wagons, wagonStaticData.type)
+    Entity.RecordSingleUnit(force, wagons, wagonStaticData.unitType)
 end
 
 Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
@@ -344,7 +344,7 @@ Entity.OnTrainCreated = function(event)
 
     -- Connects to the front or back of the rolling stock direction, not the train direction. The reverse of the connect direction based on the other end of the trains wagon seems to work in testing, but feels a bit janky.
     local frontWagonStaticData = global.entity.muWagonVariants[frontCarriage.name]
-    if frontWagonStaticData ~= nil and (frontWagonStaticData.type == "cargo-wagon" or frontWagonStaticData.type == "fluid-wagon") then
+    if frontWagonStaticData ~= nil and (frontWagonStaticData.prototypeType == "cargo-wagon" or frontWagonStaticData.prototypeType == "fluid-wagon") then
         local orientationDif = math.abs(frontCarriage.orientation - backCarriage.orientation)
         if orientationDif < 0.25 then
             frontCarriage.connect_rolling_stock(defines.rail_direction.front)
@@ -354,7 +354,7 @@ Entity.OnTrainCreated = function(event)
     end
 
     local backWagonStaticData = global.entity.muWagonVariants[backCarriage.name]
-    if backWagonStaticData ~= nil and (backWagonStaticData.type == "cargo-wagon" or backWagonStaticData.type == "fluid-wagon") then
+    if backWagonStaticData ~= nil and (backWagonStaticData.prototypeType == "cargo-wagon" or backWagonStaticData.prototypeType == "fluid-wagon") then
         local orientationDif = math.abs(frontCarriage.orientation - backCarriage.orientation)
         if orientationDif < 0.25 then
             backCarriage.connect_rolling_stock(defines.rail_direction.back)
@@ -426,6 +426,9 @@ end
 Entity.OnEntityDamaged_MUWagon = function(event)
     local damagedWagon = event.entity
     local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[damagedWagon.unit_number]
+    if singleTrainUnit == nil then
+        return
+    end
     local cargoWagon = singleTrainUnit.wagons.middleCargo
 
     if global.entity.damageSourcesTick ~= event.tick then
@@ -453,6 +456,9 @@ end
 Entity.OnEntityDied_MUWagon = function(event)
     local damagedWagon = event.entity
     local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[damagedWagon.unit_number]
+    if singleTrainUnit == nil then
+        return
+    end
 
     for _, wagon in pairs(singleTrainUnit.wagons) do
         if wagon.valid and wagon.unit_number ~= damagedWagon.unit_number then

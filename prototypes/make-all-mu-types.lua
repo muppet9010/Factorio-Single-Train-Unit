@@ -46,10 +46,10 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
     local placementStaticData = thisStaticData.placementStaticData
     local itsLocoPrototype = data.raw["locomotive"][placementStaticData.placedStaticDataLoco.name]
     local muWagon
-    if thisStaticData.type == "cargo-wagon" then
+    if thisStaticData.prototypeType == "cargo-wagon" then
         muWagon = Utils.DeepCopy(refCargoWagon)
         muWagon.inventory_size = muWagon.inventory_size / 2
-    elseif thisStaticData.type == "fluid-wagon" then
+    elseif thisStaticData.prototypeType == "fluid-wagon" then
         muWagon = Utils.DeepCopy(refFluidWagon)
         muWagon.capacity = muWagon.capacity / 2
         muWagon.tank_count = 1
@@ -71,21 +71,21 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
     muWagon.max_health = itsLocoPrototype.max_health
     muWagon.placeable_by = {item = placementStaticData.name, count = 1}
     muWagon.minimap_representation = {
-        filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "/" .. thisStaticData.name .. "-minimap_representation.png",
+        filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "/" .. thisStaticData.name .. "-minimap-representation.png",
         flags = {"icon"},
         size = {20, 70},
         scale = 0.5
     }
     muWagon.selected_minimap_representation = {
-        filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "/" .. thisStaticData.name .. "-selected_minimap_representation.png",
+        filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "/" .. thisStaticData.name .. "-selected-minimap-representation.png",
         flags = {"icon"},
         size = {20, 70},
         scale = 0.5
     }
     muWagon.icons = prototypeData.icons
     muWagon.drawing_box = {{-1, -4}, {1, 3}} -- same as locomotive
-    if thisStaticData.type == "cargo-wagon" and settings.startup["single_train_unit-use_wip_graphics"].value then
-        local filenameFolder = Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end_cargo_wagon/"
+    if thisStaticData.prototypeType == "cargo-wagon" and settings.startup["single_train_unit-use_wip_graphics"].value then
+        local filenameFolder = Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end-cargo-wagon/"
         muWagon.pictures = {
             layers = {
                 {
@@ -96,14 +96,14 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
                     allow_low_quality_rotation = true,
                     back_equals_front = true,
                     filenames = {
-                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_1.png",
-                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_2.png",
-                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_3.png",
-                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_4.png",
-                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_5.png",
-                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_6.png",
-                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_7.png",
-                        filenameFolder .. "single_train_unit-double_end_cargo_wagon_8.png"
+                        filenameFolder .. "single_train_unit-double_end-cargo-wagon-1.png",
+                        filenameFolder .. "single_train_unit-double_end-cargo-wagon-2.png",
+                        filenameFolder .. "single_train_unit-double_end-cargo-wagon-3.png",
+                        filenameFolder .. "single_train_unit-double_end-cargo-wagon-4.png",
+                        filenameFolder .. "single_train_unit-double_end-cargo-wagon-5.png",
+                        filenameFolder .. "single_train_unit-double_end-cargo-wagon-6.png",
+                        filenameFolder .. "single_train_unit-double_end-cargo-wagon-7.png",
+                        filenameFolder .. "single_train_unit-double_end-cargo-wagon-8.png"
                     },
                     line_length = 4,
                     lines_per_file = 4,
@@ -135,7 +135,7 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
         muWagon.horizontal_doors = {
             layers = {
                 {
-                    filename = filenameFolder .. "single_train_unit-double_end_cargo_wagon-horizontal_side.png",
+                    filename = filenameFolder .. "single_train_unit-double_end-cargo-wagon-horizontal-side.png",
                     line_length = 1,
                     width = 368,
                     height = 76,
@@ -144,7 +144,7 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
                     scale = 0.5
                 },
                 {
-                    filename = filenameFolder .. "single_train_unit-double_end_cargo_wagon-horizontal_top.png",
+                    filename = filenameFolder .. "single_train_unit-double_end-cargo-wagon-horizontal-top.png",
                     line_length = 1,
                     width = 369,
                     height = 54,
@@ -157,7 +157,7 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
         muWagon.vertical_doors = {
             layers = {
                 {
-                    filename = filenameFolder .. "single_train_unit-double_end_cargo_wagon-vertical_side.png",
+                    filename = filenameFolder .. "single_train_unit-double_end-cargo-wagon-vertical-side.png",
                     line_length = 8,
                     width = 127,
                     height = 337,
@@ -166,7 +166,7 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
                     scale = 0.5
                 },
                 {
-                    filename = filenameFolder .. "single_train_unit-double_end_cargo_wagon-vertical_top.png",
+                    filename = filenameFolder .. "single_train_unit-double_end-cargo-wagon-vertical-top.png",
                     line_length = 8,
                     width = 64,
                     height = 337,
@@ -183,7 +183,7 @@ end
 
 local function MakeMuWagonPlacementPrototype(thisStaticData, wagonPlacementPrototypeData, locoPrototypeData)
     local placedStaticDataWagon = thisStaticData.placedStaticDataWagon
-    local itsWagonPrototype = data.raw[placedStaticDataWagon.type][placedStaticDataWagon.name]
+    local itsWagonPrototype = data.raw[placedStaticDataWagon.prototypeType][placedStaticDataWagon.name]
     local muWagonPlacement
     muWagonPlacement = Utils.DeepCopy(refLoco) -- Loco type snaps to stations, whereas cargo types don't.
     muWagonPlacement.name = thisStaticData.name

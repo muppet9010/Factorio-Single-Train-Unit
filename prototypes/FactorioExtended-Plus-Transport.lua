@@ -14,13 +14,13 @@ end
 
 local improvementTiers = {
     mk2 = {
-        generic = {
+        ["generic"] = {
             color = {r = 0.4, g = 0.804, b = 0.667, a = 0.8},
             max_health = 2000,
             max_speed = 1.6,
             air_resistance = 0.005
         },
-        locomotive = {
+        ["cargo-loco"] = {
             reversing_power_modifier = 0.8,
             braking_force = 15
         },
@@ -29,28 +29,32 @@ local improvementTiers = {
             friction_force = 0.25,
             equipment_grid = "car-medium-equipment-grid"
         },
-        ["cargo-wagon-placement"] = {
+        ["cargo-placement"] = {
             prototypeAttributes = {
                 equipment_grid = "car-medium-equipment-grid"
             },
             recipe = {
-                {"single_train_unit-double_end_loco_cargo_wagon_placement", 2},
+                {StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), 2},
                 {"advanced-circuit", 20},
                 {"steel-plate", 50},
                 {"iron-plate", 25}
             },
             unlockTech = "railway-2"
         },
+        ["fluid-loco"] = {
+            reversing_power_modifier = 0.8,
+            braking_force = 15
+        },
         ["fluid-wagon"] = {
             capacity = 75000 / 2,
             equipment_grid = "car-medium-equipment-grid"
         },
-        ["fluid-wagon-placement"] = {
+        ["fluid-placement"] = {
             prototypeAttributes = {
                 equipment_grid = "car-medium-equipment-grid"
             },
             recipe = {
-                {"single_train_unit-double_end_loco_fluid_wagon_placement", 2},
+                {StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), 2},
                 {"advanced-circuit", 20},
                 {"steel-plate", 100},
                 {"pipe-mk2", 4}
@@ -59,13 +63,13 @@ local improvementTiers = {
         }
     },
     mk3 = {
-        generic = {
+        ["generic"] = {
             color = {r = 0.690, g = 0.75, b = 1},
             max_health = 2000,
             max_speed = 2,
             air_resistance = 0.0025
         },
-        locomotive = {
+        ["cargo-loco"] = {
             reversing_power_modifier = 1,
             braking_force = 20
         },
@@ -74,12 +78,12 @@ local improvementTiers = {
             friction_force = 0.01,
             equipment_grid = "car-large-equipment-grid"
         },
-        ["cargo-wagon-placement"] = {
+        ["cargo-placement"] = {
             prototypeAttributes = {
                 equipment_grid = "car-large-equipment-grid"
             },
             recipe = {
-                {MakeMkName("single_train_unit-double_end_loco_cargo_wagon_placement", "mk2"), 2},
+                {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk2"), 2},
                 {"electric-engine-unit", 40},
                 {"processing-unit", 20},
                 {"titanium-alloy", 50},
@@ -87,16 +91,20 @@ local improvementTiers = {
             },
             unlockTech = "railway-3"
         },
+        ["fluid-loco"] = {
+            reversing_power_modifier = 1,
+            braking_force = 20
+        },
         ["fluid-wagon"] = {
             capacity = 175000 / 2,
             equipment_grid = "car-large-equipment-grid"
         },
-        ["fluid-wagon-placement"] = {
+        ["fluid-placement"] = {
             prototypeAttributes = {
                 equipment_grid = "car-large-equipment-grid"
             },
             recipe = {
-                {MakeMkName("single_train_unit-double_end_loco_fluid_wagon_placement", "mk2"), 2},
+                {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk2"), 2},
                 {"electric-engine-unit", 40},
                 {"processing-unit", 20},
                 {"titanium-alloy", 50},
@@ -111,16 +119,16 @@ local improvementTiers = {
 for _, mk in pairs({"mk2", "mk3"}) do
     for baseName, baseStaticData in pairs(StaticData.entityNames) do
         local entityVariant
+        local improvementTierName = baseStaticData.unitType .. "-" .. baseStaticData.type
         if baseStaticData.type == "placement" then
-            local prototypeType = "locomotive"
-            local placementDetails = improvementTiers[mk][baseStaticData.wagonType .. "-" .. baseStaticData.type]
-            if improvementTiers[mk][prototypeType] ~= nil then
-                entityVariant = Utils.DeepCopy(data.raw[prototypeType][baseName])
+            if improvementTiers[mk][improvementTierName] ~= nil then
+                local placementDetails = improvementTiers[mk][improvementTierName]
+                entityVariant = Utils.DeepCopy(data.raw["locomotive"][baseName])
                 entityVariant.name = MakeMkName(entityVariant.name, mk)
                 for key, value in pairs(improvementTiers[mk].generic) do
                     entityVariant[key] = value
                 end
-                for key, value in pairs(improvementTiers[mk][prototypeType]) do
+                for key, value in pairs(improvementTiers[mk][baseStaticData.unitType .. "-loco"]) do
                     entityVariant[key] = value
                 end
                 for key, value in pairs(placementDetails.prototypeAttributes) do
@@ -146,18 +154,17 @@ for _, mk in pairs({"mk2", "mk3"}) do
                 table.insert(data.raw["technology"][placementDetails.unlockTech].effects, {type = "unlock-recipe", recipe = entityVariant.name})
             end
         else
-            local prototypeType = baseStaticData.type
-            if improvementTiers[mk][prototypeType] ~= nil then
+            if improvementTiers[mk][improvementTierName] ~= nil then
                 local placementName = MakeMkName(baseStaticData.placementStaticData.name, mk)
-                entityVariant = Utils.DeepCopy(data.raw[prototypeType][baseName])
+                entityVariant = Utils.DeepCopy(data.raw[baseStaticData.prototypeType][baseName])
                 entityVariant.name = MakeMkName(entityVariant.name, mk)
                 for key, value in pairs(improvementTiers[mk].generic) do
                     entityVariant[key] = value
                 end
-                for key, value in pairs(improvementTiers[mk][prototypeType]) do
+                for key, value in pairs(improvementTiers[mk][improvementTierName]) do
                     entityVariant[key] = value
                 end
-                if prototypeType ~= "locomotive" then
+                if baseStaticData.type == "wagon" then
                     entityVariant.pictures.layers[1].tint = improvementTiers[mk].generic.color
                     entityVariant.icons[1].tint = improvementTiers[mk].generic.color
                     entityVariant.minable.result = placementName
