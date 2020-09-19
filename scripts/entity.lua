@@ -27,37 +27,32 @@ Entity.CreateGlobals = function()
     global.entity.damageSourcesTick = global.entity.damageSourcesTick or 0
     global.entity.damageSourcesThisTick = global.entity.damageSourcesThisTick or {}
 
+    --Always reset these as we re-populate them as part of OnStartup()
     global.entity.muWagonVariants = {}
-    --global.entity.muWagonNamesFilter -- don't set a default, we want nil
-    --global.entity.muWagonPlacementNameFilter -- don't set a default, we want nil
+    global.entity.muWagonNamesFilter = {}
+    global.entity.muWagonPlacementNameFilter = {}
+    global.entity.muWagonNamesAndPlacementNameFilter = {}
 end
 
 Entity.OnLoad = function()
-    Events.RegisterEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", global.entity.muWagonPlacementNameFilter)
-    Events.RegisterHandler(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement)
-    Events.RegisterEvent(defines.events.on_train_created)
-    Events.RegisterHandler(defines.events.on_train_created, "Entity.OnTrainCreated", Entity.OnTrainCreated)
-    Events.RegisterEvent(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", global.entity.muWagonNamesFilter)
-    Events.RegisterHandler(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", Entity.OnPlayerMined_MUWagon)
-    Events.RegisterEvent(defines.events.on_pre_player_mined_item, "Entity.OnPrePlayerMined_MUWagon", global.entity.muWagonNamesFilter)
-    Events.RegisterHandler(defines.events.on_pre_player_mined_item, "Entity.OnPrePlayerMined_MUWagon", Entity.OnPrePlayerMined_MUWagon)
-    Events.RegisterEvent(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", global.entity.muWagonNamesFilter)
-    Events.RegisterHandler(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", Entity.OnEntityDamaged_MUWagon)
-    Events.RegisterEvent(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", global.entity.muWagonNamesFilter)
-    Events.RegisterHandler(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", Entity.OnEntityDied_MUWagon)
-    Events.RegisterEvent(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement_WagonEntities", global.entity.muWagonNamesFilter)
-    Events.RegisterEvent(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement_PlacementEntities", global.entity.muWagonPlacementNameFilter)
-    Events.RegisterHandler(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement)
-    Events.RegisterEvent(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", global.entity.muWagonNamesFilter)
-    Events.RegisterHandler(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", Entity.OnRobotMinedEntity_MUWagons)
-    Events.RegisterEvent(defines.events.on_player_setup_blueprint, "Entity.OnPlayerSetupBlueprint")
-    Events.RegisterHandler(defines.events.on_player_setup_blueprint, "Entity.OnPlayerSetupBlueprint", Entity.OnPlayerSetupBlueprint)
+    Events.RegisterHandlerEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement, "Entity.OnBuiltEntity_MUPlacement", global.entity.muWagonPlacementNameFilter)
+    Events.RegisterHandlerEvent(defines.events.on_train_created, "Entity.OnTrainCreated", Entity.OnTrainCreated)
+    Events.RegisterHandlerEvent(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", Entity.OnPlayerMined_MUWagon, "Entity.OnPlayerMined_MUWagon", global.entity.muWagonNamesFilter)
+    Events.RegisterHandlerEvent(defines.events.on_pre_player_mined_item, "Entity.OnPrePlayerMined_MUWagon", Entity.OnPrePlayerMined_MUWagon, "Entity.OnPrePlayerMined_MUWagon", global.entity.muWagonNamesFilter)
+    Events.RegisterHandlerEvent(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", Entity.OnEntityDamaged_MUWagon, "Entity.OnEntityDamaged_MUWagon", global.entity.muWagonNamesFilter)
+    Events.RegisterHandlerEvent(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", Entity.OnEntityDied_MUWagon, "Entity.OnEntityDied_MUWagon", global.entity.muWagonNamesFilter)
+    Events.RegisterHandlerEvent(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement, "Entity.OnBuiltEntity_MUPlacement", global.entity.muWagonNamesAndPlacementNameFilter)
+    Events.RegisterHandlerEvent(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", Entity.OnRobotMinedEntity_MUWagons, "Entity.OnRobotMinedEntity_MUWagons", global.entity.muWagonNamesFilter)
+    Events.RegisterHandlerEvent(defines.events.on_player_setup_blueprint, "Entity.OnPlayerSetupBlueprint", Entity.OnPlayerSetupBlueprint)
 end
 
 Entity.OnStartup = function()
     Entity.OnMigration()
     global.entity.muWagonNamesFilter = Entity.GenerateMuWagonNamesFilter()
     global.entity.muWagonPlacementNameFilter = Entity.GenerateMuWagonPlacementNameFilter()
+    local placementNameFilterForMerge = Utils.DeepCopy(global.entity.muWagonPlacementNameFilter)
+    placementNameFilterForMerge[1].mode = "or"
+    global.entity.muWagonNamesAndPlacementNameFilter = Utils.TableMerge({global.entity.muWagonNamesFilter, placementNameFilterForMerge})
     Entity.OnLoad() -- need to update dynmaic filter registration lists
 end
 
@@ -69,6 +64,17 @@ Entity.OnMigration = function()
                 force.singleTrainUnits[index] = nil
             elseif singleTrainUnit.type == nil then
                 singleTrainUnit.type = StaticData.entityNames[singleTrainUnit.wagons.middleCargo.name].unitType
+            end
+        end
+    end
+    -- Fix any damaged loco parts now that only the wagon takes damage
+    for _, force in pairs(global.entity.forces) do
+        for index, singleTrainUnit in pairs(force.singleTrainUnits) do
+            if singleTrainUnit.wagons.forwardLoco.health <= singleTrainUnit.wagons.forwardLoco.prototype.max_health then
+                singleTrainUnit.wagons.forwardLoco.health = singleTrainUnit.wagons.forwardLoco.prototype.max_health
+            end
+            if singleTrainUnit.wagons.rearLoco.health <= singleTrainUnit.wagons.rearLoco.prototype.max_health then
+                singleTrainUnit.wagons.rearLoco.health = singleTrainUnit.wagons.rearLoco.prototype.max_health
             end
         end
     end
@@ -445,21 +451,27 @@ Entity.OnEntityDamaged_MUWagon = function(event)
     local damageName = Entity.GetDamageCauseString(event)
     local damageToDo = event.final_damage_amount
     -- This damageToDo is to handle variable damage from the same thing affecting multiple parts, however, it does mean that dual damaging weapons (explosive rockets, cluster grenades, etc) will only do their single most max damage and not the damage from each part.
-    if global.entity.damageSourcesThisTick[damageName] == nil then
-        global.entity.damageSourcesThisTick[damageName] = damageToDo
+    global.entity.damageSourcesThisTick[singleTrainUnit] = global.entity.damageSourcesThisTick[singleTrainUnit] or {}
+    local thisTrainsDamageSourcesThisTick = global.entity.damageSourcesThisTick[singleTrainUnit]
+    if thisTrainsDamageSourcesThisTick[damageName] == nil then
+        thisTrainsDamageSourcesThisTick[damageName] = damageToDo
     else
-        if global.entity.damageSourcesThisTick[damageName] < event.final_damage_amount then
-            damageToDo = event.final_damage_amount - global.entity.damageSourcesThisTick[damageName]
-            global.entity.damageSourcesThisTick[damageName] = event.final_damage_amount
+        if thisTrainsDamageSourcesThisTick[damageName] < event.final_damage_amount then
+            damageToDo = event.final_damage_amount - thisTrainsDamageSourcesThisTick[damageName]
+            thisTrainsDamageSourcesThisTick[damageName] = event.final_damage_amount
         else
             damageToDo = 0
         end
     end
 
-    cargoWagon.health = cargoWagon.health - damageToDo
     damagedWagon.health = damagedWagon.health + event.final_damage_amount
+    cargoWagon.health = cargoWagon.health - damageToDo
     if cargoWagon.health == 0 then
-        cargoWagon.die(event.force, event.cause)
+        if event.cause ~= nil then
+            cargoWagon.die(event.force, event.cause)
+        else
+            cargoWagon.die(event.force)
+        end
     end
 end
 

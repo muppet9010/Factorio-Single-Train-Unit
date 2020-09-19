@@ -1,4 +1,16 @@
 ---------------------------------------------------------------------------------------------------
+Version: 19.0.5
+Date: 2020-09-19
+  Features:
+  Changes:
+  Bugfixes:
+    - Repair the locomitive parts of any single train units from older versions, as since 19.0.4 only the wagon part takes damage to ensure only 1 health bar.
+    - Fix that the wagon (middle) part taking damage could never do the final kill to the single train unit, only the end loco's could.
+    - A non entity (player in editor mode) killing a single train unit crashed the mod.
+    - Fixed that only 1 single train unit would take damage from a single action, i.e. grenade.
+  Info:
+    - Think I must have been half asleep when I did the damage handling overhaul in 19.0.4.
+---------------------------------------------------------------------------------------------------
 Version: 19.0.4
 Date: 2020-09-19
   Features:
