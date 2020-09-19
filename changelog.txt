@@ -1,4 +1,29 @@
 ---------------------------------------------------------------------------------------------------
+Version: 19.0.4
+Date: 2020-09-19
+  Features:
+    - Add specific support for the Fill4Me mod. When it places fuel in the single train unit placement wagon from your inventory, the same type of fuel is placed in both ends of the single train unit from your inventory.
+    - Added FactorioExtended and FactorioExtended Plus versions of the single train units.
+    - Support for single train units being bluerpinted with fuel in them. The best fuel type is set as the request for all trains in the blueprint.
+    - Any fuel placed in to the placement wagons by mods (other than Fill4Me) will be distributed equally across the 2 ends of the single train unit. Any spare fuel is returned to the builder. Previously it was lost.
+    - Support for BatteryPack mod.
+  Changes:
+    - Locomotive parts Info GUI drawing is now just a blank image, rather than being of the wheels (on hover tooltip image shown).
+    - Only 1 health bar per single train unit now. Single train unit parts health will now keep the locos at full health and transfer all damage to the cargo wagon part. This does mean train collisions against a damaged signle train unit will take too much speed from the ramming train, but should have no other negative effects. Does mean that bots only repair one part of the train now as well as the single health bar.
+    - An event that damages multiple parts of a unit will no longer accumilate damage too fast. i.e. a grenade hitting all 3 parts used to do triple damage to the overal single train units health. However, doing multiple damages from 1 event (explosive rocket) only do the single max damage ad not the impact plus blast damage. Is less of an issue than before.
+    - Test with a bunch of other mods and record to readme.
+    - Renamed a lot of the mod prototypes so they are logical and built from sub names to allow better mod compatibility.
+  Bugfixes:
+    - Improved behaviour of anti disconnecting logic to not affect other wagon types in a common train.
+    - Mining/deconstructing a single train unit returns any grid equipment it had to your inventory. Previously they were lost.
+    - If a mined single unit train was undone and the bot placement failed due to being blocked the single unit train is returned by the bot and standard placement information chat message shown. Before the mod hard errored.
+    - Fixed Cargo & Fluid wagon parts Info GUI drawing is now the full image (on hover tooltip image shown).
+    - Fix missing "type" meta data on existing single train units. Generate missing train data on mod load.
+    - If a damaged single train unit is placed it maintains the damage, unlike before.
+    - Placement entities should list the correct weight and burner effectivity now, same as the real locomitive parts of the single train units.
+    - Fix the alert (no fuel) alert position.
+  Info:
+---------------------------------------------------------------------------------------------------
 Version: 19.0.3
 Date: 2020-09-07
   Features:

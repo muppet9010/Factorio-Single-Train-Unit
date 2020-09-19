@@ -9,16 +9,15 @@ local function OnLoad()
     Entity.OnLoad()
 end
 
-local function OnSettingChanged(event)
-    --if event == nil or event.setting == "xxxxx" then
-    --	local x = tonumber(settings.global["xxxxx"].value)
-    --end
+local function OnSettingChanged()
 end
 
 local function OnStartup()
     CreateGlobals()
     OnLoad()
     OnSettingChanged(nil)
+
+    Entity.OnStartup()
 end
 
 script.on_init(OnStartup)

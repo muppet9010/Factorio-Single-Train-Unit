@@ -282,6 +282,14 @@ function Utils.FuzzyCompareDoubles(num1, logic, num2)
     end
 end
 
+function Utils.IsTableEmpty(table)
+    if table == nil or next(table) == nil then
+        return true
+    else
+        return false
+    end
+end
+
 function Utils.GetTableNonNilLength(table)
     local count = 0
     for _ in pairs(table) do
@@ -372,50 +380,59 @@ function Utils.TableKeyToArray(aTable)
     return newArray
 end
 
-function Utils.TableContentsToJSON(target_table, name)
+function Utils.TableContentsToJSON(targetTable, name, singleLineOutput)
+    --targetTable is the only mandatory parameter. name if provided will appear as a "name:JSONData" output. singleLineOutput removes all lines and spacing from the output.
+    singleLineOutput = singleLineOutput or false
     local tablesLogged = {}
-    return Utils._TableContentsToJSON(target_table, name, tablesLogged)
+    return Utils._TableContentsToJSON(targetTable, name, singleLineOutput, tablesLogged)
 end
-function Utils._TableContentsToJSON(target_table, name, tablesLogged, indent, stop_traversing)
+function Utils._TableContentsToJSON(targetTable, name, singleLineOutput, tablesLogged, indent, stopTraversing)
+    local newLineCharacter = "\r\n"
     indent = indent or 1
     local indentstring = string.rep(" ", (indent * 4))
-    tablesLogged[target_table] = "logged"
+    if singleLineOutput then
+        newLineCharacter = ""
+        indentstring = ""
+    end
+    tablesLogged[targetTable] = "logged"
     local table_contents = ""
-    if Utils.GetTableNonNilLength(target_table) > 0 then
-        for k, v in pairs(target_table) do
+    if Utils.GetTableNonNilLength(targetTable) > 0 then
+        for k, v in pairs(targetTable) do
             local key, value
-            if type(k) == "string" or type(k) == "number" or type(k) == "boolean" then
+            if type(k) == "string" or type(k) == "number" or type(k) == "boolean" then -- keys are always strings
                 key = '"' .. tostring(k) .. '"'
             elseif type(k) == "nil" then
                 key = '"nil"'
             elseif type(k) == "table" then
-                if stop_traversing == true then
+                if stopTraversing == true then
                     key = '"CIRCULAR LOOP TABLE"'
                 else
-                    local sub_stop_traversing = nil
+                    local subStopTraversing = nil
                     if tablesLogged[k] ~= nil then
-                        sub_stop_traversing = true
+                        subStopTraversing = true
                     end
-                    key = "{\r\n" .. Utils._TableContentsToJSON(k, name, tablesLogged, indent + 1, sub_stop_traversing) .. "\r\n" .. indentstring .. "}"
+                    key = "{" .. newLineCharacter .. Utils._TableContentsToJSON(k, name, singleLineOutput, tablesLogged, indent + 1, subStopTraversing) .. newLineCharacter .. indentstring .. "}"
                 end
             elseif type(k) == "function" then
                 key = '"' .. tostring(k) .. '"'
             else
                 key = '"unhandled type: ' .. type(k) .. '"'
             end
-            if type(v) == "string" or type(v) == "number" or type(v) == "boolean" then
+            if type(v) == "string" then
                 value = '"' .. tostring(v) .. '"'
+            elseif type(v) == "number" or type(v) == "boolean" then
+                value = tostring(v)
             elseif type(v) == "nil" then
                 value = '"nil"'
             elseif type(v) == "table" then
-                if stop_traversing == true then
+                if stopTraversing == true then
                     value = '"CIRCULAR LOOP TABLE"'
                 else
-                    local sub_stop_traversing = nil
+                    local subStopTraversing = nil
                     if tablesLogged[v] ~= nil then
-                        sub_stop_traversing = true
+                        subStopTraversing = true
                     end
-                    value = "{\r\n" .. Utils._TableContentsToJSON(v, name, tablesLogged, indent + 1, sub_stop_traversing) .. "\r\n" .. indentstring .. "}"
+                    value = "{" .. newLineCharacter .. Utils._TableContentsToJSON(v, name, singleLineOutput, tablesLogged, indent + 1, subStopTraversing) .. newLineCharacter .. indentstring .. "}"
                 end
             elseif type(v) == "function" then
                 value = '"' .. tostring(v) .. '"'
@@ -423,7 +440,7 @@ function Utils._TableContentsToJSON(target_table, name, tablesLogged, indent, st
                 value = '"unhandled type: ' .. type(v) .. '"'
             end
             if table_contents ~= "" then
-                table_contents = table_contents .. "," .. "\r\n"
+                table_contents = table_contents .. "," .. newLineCharacter
             end
             table_contents = table_contents .. indentstring .. tostring(key) .. ":" .. tostring(value)
         end
@@ -433,9 +450,9 @@ function Utils._TableContentsToJSON(target_table, name, tablesLogged, indent, st
     if indent == 1 then
         local resultString = ""
         if name ~= nil then
-            resultString = resultString .. '"' .. name .. '":'
+            resultString = '"' .. name .. '":'
         end
-        resultString = resultString .. "{" .. "\r\n" .. table_contents .. "\r\n" .. "}"
+        resultString = resultString .. "{" .. newLineCharacter .. table_contents .. newLineCharacter .. "}"
         return resultString
     else
         return table_contents
@@ -574,6 +591,7 @@ function Utils.DisplayNumberPretty(number)
 end
 
 function Utils.DisplayTimeOfTicks(inputTicks, displayLargestTimeUnit, displaySmallestTimeUnit)
+    -- display time units: hour, minute, second
     if inputTicks == nil then
         return ""
     end
@@ -781,6 +799,148 @@ end
 
 Utils.GetValueAndUnitFromString = function(text)
     return string.match(text, "%d+"), string.match(text, "%a+")
+end
+
+Utils.TryMoveInventoriesLuaItemStacks = function(sourceInventory, targetInventory, dropUnmovedOnGround, ratioToMove)
+    -- Moves the full Lua Item Stacks so handles items with data and other complicated items. Updates the passed in inventory object.
+    local sourceOwner, itemsNotMoved = nil, false
+    if sourceInventory.is_empty() then
+        return itemsNotMoved
+    end
+
+    for index = 1, #sourceInventory do
+        local itemStack = sourceInventory[index]
+        if itemStack.valid_for_read then
+            local toMoveCount = math.ceil(itemStack.count * ratioToMove)
+            local itemStackToMove = Utils.DeepCopy(itemStack)
+            itemStackToMove.count = toMoveCount
+            local movedCount = targetInventory.insert(itemStackToMove)
+            local remaining = itemStack.count - movedCount
+            if movedCount > 0 then
+                itemStack.count = remaining
+            end
+            if remaining > 0 then
+                itemsNotMoved = true
+                if dropUnmovedOnGround then
+                    sourceOwner = sourceOwner or targetInventory.entity_owner
+                    sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = itemStack.name, count = remaining}, true, sourceOwner.force, false)
+                end
+            end
+        end
+    end
+
+    return not itemsNotMoved
+end
+
+Utils.TryTakeGridsItems = function(sourceGrid, targetInventory, dropUnmovedOnGround)
+    -- Can only move the item name and count via API, Facotrio doesn't support putting equipment objects in an inventory. Updates the passed in grid object.
+    local sourceOwner, itemsNotMoved = nil, false
+    for _, equipment in pairs(sourceGrid.equipment) do
+        local moved = targetInventory.insert({name = equipment.name, count = 1})
+        if moved > 0 then
+            sourceGrid.take({equipment = equipment})
+        end
+        if moved == 0 then
+            itemsNotMoved = true
+            if dropUnmovedOnGround then
+                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = equipment.name, count = 1}, true, sourceOwner.force, false)
+            end
+        end
+    end
+    return not itemsNotMoved
+end
+
+Utils.TryInsertInventoryContents = function(contents, targetInventory, dropUnmovedOnGround, ratioToMove)
+    -- Just takes a list of item names and counts that you get from the inventory.get_contents(). Updates the passed in contents object.
+    if contents == nil then
+        return
+    end
+    local sourceOwner, itemsNotMoved = nil, false
+    for name, count in pairs(contents) do
+        local toMove = math.ceil(count * ratioToMove)
+        local moved = targetInventory.insert({name = name, count = toMove})
+        local remaining = count - moved
+        if moved > 0 then
+            contents[name] = remaining
+        end
+        if remaining > 0 then
+            itemsNotMoved = true
+            if dropUnmovedOnGround then
+                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = name, count = remaining}, true, sourceOwner.force, false)
+            end
+        end
+    end
+    return not itemsNotMoved
+end
+
+Utils.TryInsertSimpleItems = function(contents, targetInventory, dropUnmovedOnGround, ratioToMove)
+    -- Takes a table of SimpleItemStack and inserts them in to an inventory. Updates the passed in contents object.
+    if contents == nil or #contents == 0 then
+        return
+    end
+    local sourceOwner, itemsNotMoved = nil, false
+    for index, simpleItemStack in pairs(contents) do
+        local toMove = math.ceil(simpleItemStack.count * ratioToMove)
+        local moved = targetInventory.insert({name = simpleItemStack.name, count = toMove, health = simpleItemStack.health, durability = simpleItemStack.durablilty, ammo = simpleItemStack.ammo})
+        local remaining = simpleItemStack.count - moved
+        if moved > 0 then
+            contents[index].count = remaining
+        end
+        if remaining > 0 then
+            itemsNotMoved = true
+            if dropUnmovedOnGround then
+                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = simpleItemStack.name, count = remaining}, true, sourceOwner.force, false)
+            end
+        end
+    end
+    return not itemsNotMoved
+end
+
+Utils.GetBuilderInventory = function(builder)
+    if builder.is_player() then
+        return builder.get_main_inventory()
+    elseif builder.type ~= nil and builder.type == "construction-robot" then
+        return builder.get_inventory(defines.inventory.robot_cargo)
+    else
+        return builder
+    end
+end
+
+Utils.EmptyRotatedSprite = function()
+    return {
+        direction_count = 1,
+        filename = "__core__/graphics/empty.png",
+        width = 1,
+        height = 1
+    }
+end
+
+Utils.TrackBestFuelCount = function(trackingTable, itemName, itemCount)
+    --[[
+        The "trackingTable" argument should be an empty table created in the calling function. It should be passed in to each calling of this function to track the best fuel.
+        The function returns true when the fuel is a new best and false when its not. Returns nil if the item isn't a fuel type.
+        This function will set trackingTable to have the below entry. Query these keys in calling function:
+            trackingTable {
+                fuelName = STRING,
+                fuelCount = INT,
+                fuelValue = INT,
+            }
+    --]]
+    local itemPrototype = game.item_prototypes[itemName]
+    local fuelValue = itemPrototype.fuel_value
+    if fuelValue == nil then
+        return nil
+    end
+    if trackingTable.fuelValue == nil or fuelValue > trackingTable.fuelValue then
+        trackingTable.fuelName = itemName
+        trackingTable.fuelCount = itemCount
+        trackingTable.fuelValue = fuelValue
+        return true
+    end
+    return false
 end
 
 return Utils

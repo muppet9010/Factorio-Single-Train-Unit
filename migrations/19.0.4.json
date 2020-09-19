@@ -1,0 +1,40 @@
+{
+    "entity": [
+        [
+            "single_train_unit-double_end_cargo_loco",
+            "single_train_unit-double_end-cargo-loco"
+        ],
+        [
+            "single_train_unit-double_end_cargo_wagon",
+            "single_train_unit-double_end-cargo-wagon"
+        ],
+        [
+            "single_train_unit-double_end_fluid_loco",
+            "single_train_unit-double_end-fluid-loco"
+        ],
+        [
+            "single_train_unit-double_end_fluid_wagon",
+            "single_train_unit-double_end-fluid-wagon"
+        ]
+    ],
+    "item": [
+        [
+            "single_train_unit-double_end_loco_cargo_wagon_placement",
+            "single_train_unit-double_end-cargo-placement"
+        ],
+        [
+            "single_train_unit-double_end_loco_fluid_wagon_placement",
+            "single_train_unit-double_end-fluid-placement"
+        ]
+    ],
+    "recipe": [
+        [
+            "single_train_unit-double_end_loco_cargo_wagon_placement",
+            "single_train_unit-double_end-cargo-placement"
+        ],
+        [
+            "single_train_unit-double_end_loco_fluid_wagon_placement",
+            "single_train_unit-double_end-fluid-placement"
+        ]
+    ]
+}

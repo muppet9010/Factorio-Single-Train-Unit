@@ -2,7 +2,14 @@
 local Utils = require("utility/utils")
 local EventScheduler = {}
 MOD = MOD or {}
-MOD.scheduledEventNames = MOD.scheduledEventNames or {}
+MOD.scheduledEventNames =
+    MOD.scheduledEventNames or
+    {
+        ["EventScheduler.GamePrint"] = function(event)
+            --Builtin game.print delayed function, needed for 0 tick logging (startup) writing to screen activites.
+            game.print(event.data.message)
+        end
+    }
 
 --Called from the root of Control.lua
 EventScheduler.RegisterScheduler = function()
@@ -94,26 +101,30 @@ end
 EventScheduler._ParseScheduledEvents = function(targetEventName, targetInstanceId, targetTick, actionFunction)
     targetInstanceId = EventScheduler._GetDefaultInstanceId(targetInstanceId)
     local result, results = nil, {}
-    if targetTick == nil then
-        for tick, events in pairs(global.UTILITYSCHEDULEDFUNCTIONS) do
-            local outcome = actionFunction(events, targetEventName, targetInstanceId, tick)
-            if outcome ~= nil then
-                result = outcome.result
-                if outcome.results ~= nil then
-                    table.insert(results, outcome.results)
-                end
-                if result then
-                    break
+    if global.UTILITYSCHEDULEDFUNCTIONS ~= nil then
+        if targetTick == nil then
+            for tick, events in pairs(global.UTILITYSCHEDULEDFUNCTIONS) do
+                local outcome = actionFunction(events, targetEventName, targetInstanceId, tick)
+                if outcome ~= nil then
+                    result = outcome.result
+                    if outcome.results ~= nil then
+                        table.insert(results, outcome.results)
+                    end
+                    if result then
+                        break
+                    end
                 end
             end
-        end
-    else
-        local events = global.UTILITYSCHEDULEDFUNCTIONS[targetTick]
-        if events ~= nil then
-            local outcome = actionFunction(events, targetEventName, targetInstanceId)
-            result = outcome.result
-            if outcome.results ~= nil then
-                table.insert(results, outcome.results)
+        else
+            local events = global.UTILITYSCHEDULEDFUNCTIONS[targetTick]
+            if events ~= nil then
+                local outcome = actionFunction(events, targetEventName, targetInstanceId, targetTick)
+                if outcome ~= nil then
+                    result = outcome.result
+                    if outcome.results ~= nil then
+                        table.insert(results, outcome.results)
+                    end
+                end
             end
         end
     end

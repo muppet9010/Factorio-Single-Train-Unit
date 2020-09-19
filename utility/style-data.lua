@@ -253,6 +253,23 @@ styleData.GeneratePrototypes = function()
         end
     end
 
+    --TEXT BOX - set width & height setting when using as base game has values that can't be nil'd
+    for _, margin in pairs({{"", 0, 0, 0, 0}, {"_marginTL", 4, 4, 0, 0}}) do
+        for _, padding in pairs({{"", 0, 0, 0, 0}, {"_paddingBR", 0, 0, 4, 4}}) do
+            defaultStyle["muppet_textbox" .. margin[1] .. padding[1] .. styleData.styleVersion] = {
+                type = "textbox_style",
+                left_margin = margin[2],
+                top_margin = margin[3],
+                right_margin = margin[4],
+                bottom_margin = margin[5],
+                left_padding = padding[2],
+                top_padding = padding[3],
+                right_padding = padding[4],
+                bottom_padding = padding[5]
+            }
+        end
+    end
+
     data:extend(
         {
             {
