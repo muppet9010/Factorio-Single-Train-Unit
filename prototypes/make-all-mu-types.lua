@@ -282,8 +282,8 @@ MakeMuWagonPlacementPrototype(StaticData.mu_fluid_placement, mu_fluid_placement_
 MakeMuWagonPlacementItemPrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata)
 MakeMuWagonPlacementRecipePrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata)
 
-if mods["trainConstructionSite"] ~= nil then
-else
+if mods["trainConstructionSite"] == nil then
+    -- Don't add our recipes for Train Construction Site mod as it makes a loop
     table.insert(
         data.raw["technology"]["railway"].effects,
         {
