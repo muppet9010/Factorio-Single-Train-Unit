@@ -451,12 +451,14 @@ Entity.OnEntityDamaged_MUWagon = function(event)
     local damageName = Entity.GetDamageCauseString(event)
     local damageToDo = event.final_damage_amount
     -- This damageToDo is to handle variable damage from the same thing affecting multiple parts, however, it does mean that dual damaging weapons (explosive rockets, cluster grenades, etc) will only do their single most max damage and not the damage from each part.
-    if global.entity.damageSourcesThisTick[damageName] == nil then
-        global.entity.damageSourcesThisTick[damageName] = damageToDo
+    global.entity.damageSourcesThisTick[singleTrainUnit] = global.entity.damageSourcesThisTick[singleTrainUnit] or {}
+    local thisTrainsDamageSourcesThisTick = global.entity.damageSourcesThisTick[singleTrainUnit]
+    if thisTrainsDamageSourcesThisTick[damageName] == nil then
+        thisTrainsDamageSourcesThisTick[damageName] = damageToDo
     else
-        if global.entity.damageSourcesThisTick[damageName] < event.final_damage_amount then
-            damageToDo = event.final_damage_amount - global.entity.damageSourcesThisTick[damageName]
-            global.entity.damageSourcesThisTick[damageName] = event.final_damage_amount
+        if thisTrainsDamageSourcesThisTick[damageName] < event.final_damage_amount then
+            damageToDo = event.final_damage_amount - thisTrainsDamageSourcesThisTick[damageName]
+            thisTrainsDamageSourcesThisTick[damageName] = event.final_damage_amount
         else
             damageToDo = 0
         end
