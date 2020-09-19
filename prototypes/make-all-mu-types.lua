@@ -282,17 +282,20 @@ MakeMuWagonPlacementPrototype(StaticData.mu_fluid_placement, mu_fluid_placement_
 MakeMuWagonPlacementItemPrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata)
 MakeMuWagonPlacementRecipePrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata)
 
-table.insert(
-    data.raw["technology"]["railway"].effects,
-    {
-        type = "unlock-recipe",
-        recipe = StaticData.mu_cargo_placement.name
-    }
-)
-table.insert(
-    data.raw["technology"]["railway"].effects,
-    {
-        type = "unlock-recipe",
-        recipe = StaticData.mu_fluid_placement.name
-    }
-)
+if mods["trainConstructionSite"] ~= nil then
+else
+    table.insert(
+        data.raw["technology"]["railway"].effects,
+        {
+            type = "unlock-recipe",
+            recipe = StaticData.mu_cargo_placement.name
+        }
+    )
+    table.insert(
+        data.raw["technology"]["railway"].effects,
+        {
+            type = "unlock-recipe",
+            recipe = StaticData.mu_fluid_placement.name
+        }
+    )
+end

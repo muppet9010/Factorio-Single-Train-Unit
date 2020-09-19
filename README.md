@@ -98,6 +98,11 @@ Battery Pack
 
 At present this isn't compatible. Investigation ongoing.
 
+Train Construction Site
+-----------------
+
+Mod isn't compatible with single train units due to how it creates the boxed train prototypes at present. Not raised to mod author so far due to lack of interest.
+
 Upgrading from old POC mod verison
 ========================
 

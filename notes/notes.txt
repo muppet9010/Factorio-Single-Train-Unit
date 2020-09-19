@@ -12,7 +12,6 @@
     - Handle other mods placeing our placement entity. By raising events it may trigger mods that currently ignore us.
     - Chase up with other mods support for mine:
         - Electric Trains
-    - Review compatibility with Train Construction Site mod and deal with anything. Think this needs to add reacting to mod placement ???
 
 - Not Possible (presently):
     - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?
