@@ -18,7 +18,7 @@ Events.RegisterEvent = function(eventName, thisFilterName, thisFilterData)
     thisFilterData = Utils.DeepCopy(thisFilterData) -- Deepcopy it so if a persisted or shared table is passed in we don't cause changes to source table.
     if type(eventName) == "number" then
         eventId = eventName
-        if thisFilterData ~= nil and Utils.GetTableNonNilLength(thisFilterData) > 0 then
+        if not Utils.IsTableEmpty(thisFilterData) then
             MOD.eventFilters[eventId] = MOD.eventFilters[eventId] or {}
             MOD.eventFilters[eventId][thisFilterName] = thisFilterData
             local currentFilter, currentHandler = script.get_event_filter(eventId), script.get_event_handler(eventId)

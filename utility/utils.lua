@@ -282,6 +282,14 @@ function Utils.FuzzyCompareDoubles(num1, logic, num2)
     end
 end
 
+function Utils.IsTableEmpty(table)
+    if table == nil or next(table) == nil then
+        return true
+    else
+        return false
+    end
+end
+
 function Utils.GetTableNonNilLength(table)
     local count = 0
     for _ in pairs(table) do
