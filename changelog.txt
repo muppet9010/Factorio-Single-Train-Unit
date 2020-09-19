@@ -6,6 +6,7 @@ Date: XXXX
   Bugfixes:
     - Repair the locomitive parts of the signle train unit from older versions as since 19.0.4 only the wagon part takes damage.
     - Fix that the wagon (middle) part taking damage could never do the final kill to the single train unit, only the end loco's could.
+    - A non entity (player in editor mode) killing a single train unit crashed the mod.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.4
