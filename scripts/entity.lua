@@ -67,6 +67,17 @@ Entity.OnMigration = function()
             end
         end
     end
+    -- Fix any damaged loco parts now that only the wagon takes damage
+    for _, force in pairs(global.entity.forces) do
+        for index, singleTrainUnit in pairs(force.singleTrainUnits) do
+            if singleTrainUnit.wagons.forwardLoco.health <= singleTrainUnit.wagons.forwardLoco.prototype.max_health then
+                singleTrainUnit.wagons.forwardLoco.health = singleTrainUnit.wagons.forwardLoco.prototype.max_health
+            end
+            if singleTrainUnit.wagons.rearLoco.health <= singleTrainUnit.wagons.rearLoco.prototype.max_health then
+                singleTrainUnit.wagons.rearLoco.health = singleTrainUnit.wagons.rearLoco.prototype.max_health
+            end
+        end
+    end
 end
 
 Entity.GenerateMuWagonNamesFilter = function()

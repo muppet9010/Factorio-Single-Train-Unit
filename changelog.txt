@@ -4,6 +4,7 @@ Date: XXXX
   Features:
   Changes:
   Bugfixes:
+    - Repair the locomitive parts of the signle train unit from older versions as since 19.0.4 only the wagon part takes damage.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.4
