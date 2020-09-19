@@ -27,11 +27,7 @@ The graphics are a work in progress and there is a mod setting to turn them on. 
 At present the cargo wagon has WIP graphics when stopped at a station and for some of the rotations, at other items its graphics will change to a vanilla locomotive. The fluid wagon has no custom graphics yet. The train wheels may show as doubled up.
 
 
-If you can help with the graphics please see: https://forums.factorio.com/viewtopic.php?f=15&t=89145
-===========
-
-
-Not Implimented Yet
+Not Implimented Yet / TODO
 ================
 
 - Graphics are a WIP: cargo unit, fluid unit, train wheels.
@@ -52,10 +48,8 @@ Limitations / Known Issues
 - Other other mods that try to manipulate the train unit may have issues. Please report anything so I can review it if not listed below already.
 
 
-Other Mods
-============
-
-I have not blocked any other mods unless they hard break this mod, however some won't work with the single train units added by this mod. All train related mods for known support, issues or just tested are listed below. This decision to not block mods that don't work with single train units is to allow their use with other (regular) type trains in your game.
+Compatible Mods
+=============
 
 Factorio Extended & Factorio Extended Plus
 --------------
@@ -72,6 +66,17 @@ Signalized Couplers
 -------------
 
 As the single train unit is made up of 3 train parts internally you need to account for this in the signals used. i.e. to decouple a single train unit at the end of a train use -3 as the decouple signal, not the standard -1 for a vanilla cargo wagon or locomotive.
+
+Battery Pack
+------------------
+
+Battery pack vesions of the trains are included when the mod is enabled.
+
+
+Incompatible Mods
+============
+
+I have not blocked any other mods unless they hard break this mod, however some won't work with the single train units added by this mod. All train related mods for known support, issues or just tested are listed below. This decision to not block mods that don't work with single train units is to allow their use with other (regular) type trains in your game.
 
 Bulk Rail Loader
 -------------
@@ -93,15 +98,11 @@ Electric Train
 
 At present no integration is present and so there isn't an electric version available.
 
-Battery Pack
-------------------
-
-At present this isn't compatible. Investigation ongoing.
-
 Train Construction Site
 -----------------
 
 Mod isn't compatible with single train units due to how it creates the boxed train prototypes at present. Not raised to mod author so far due to lack of interest.
+
 
 Upgrading from old POC mod verison
 ========================

@@ -1,7 +1,9 @@
 - TODO:
-    - Add support for Battery Pack mod.
+    - Move the fuel stick icon on each entity as its wrong. Also check BP fuel request.
+    - Make each end loco fuel inventory 2 as its burns through fuel far too fast at present.
 
 - Graphics:
+    - Add direction indicator to placement graphics to help with snapping to stations.
     - Make graphics for new vehicle (cargo wagon entity).
     - Make graphics for wheels both ends (wheels on locos) - Use half the wheel graphics with connctors facing outwards as will be 2 copies on each loco entity. Needs white space adding to the end of each sprite sheets when remade to space them. Can't be the loco entity picture as this can't have its render layer set and so wheels will overlap wagon in some orientations.
     - Allow color to be pasted on the cargo wagon as it has the graphics. Copy from WagonColors mod.

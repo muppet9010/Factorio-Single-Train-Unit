@@ -9,7 +9,8 @@
     "dependencies": [
         "base >= 1.0.0",
         "? FactorioExtended-Plus-Transport",
-        "? FactorioExtended-Trains"
+        "? FactorioExtended-Trains",
+        "? BatteryPack"
     ],
     "description": "Adds a single train unit that is the standard length, but include storage and can travel in both directions"
 }

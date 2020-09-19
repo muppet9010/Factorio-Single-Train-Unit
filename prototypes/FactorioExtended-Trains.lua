@@ -160,12 +160,11 @@ local improvementTiers = {
 
 for mk, improvementDetails in pairs(improvementTiers) do
     for baseName, baseStaticData in pairs(StaticData.entityNames) do
-        local entityVariant
         local improvementTierName = baseStaticData.unitType .. "-" .. baseStaticData.type
         if baseStaticData.type == "placement" then
             if improvementDetails[improvementTierName] ~= nil then
                 local placementDetails = improvementDetails[improvementTierName]
-                entityVariant = Utils.DeepCopy(data.raw["locomotive"][baseName])
+                local entityVariant = Utils.DeepCopy(data.raw["locomotive"][baseName])
                 entityVariant.name = MakeMkName(entityVariant.name, mk)
                 for key, value in pairs(improvementDetails.generic) do
                     entityVariant[key] = value
@@ -198,7 +197,7 @@ for mk, improvementDetails in pairs(improvementTiers) do
         else
             if improvementDetails[improvementTierName] ~= nil then
                 local placementName = MakeMkName(baseStaticData.placementStaticData.name, mk)
-                entityVariant = Utils.DeepCopy(data.raw[baseStaticData.prototypeType][baseName])
+                local entityVariant = Utils.DeepCopy(data.raw[baseStaticData.prototypeType][baseName])
                 entityVariant.name = MakeMkName(entityVariant.name, mk)
                 for key, value in pairs(improvementDetails.generic) do
                     entityVariant[key] = value
