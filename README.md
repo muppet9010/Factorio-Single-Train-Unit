@@ -1,6 +1,6 @@
 # Single Train Unit
 
-Adds a single train unit comprising of a small cargo/fluid wagon and a locomotives at both ends. Total size is of a standard  wagon. There are seperate cargo and fluid wagon versions.
+Adds a single train unit comprising of a small cargo/fluid wagon and a locomotives at both ends. Total size is of a standard wagon. There are seperate cargo and fluid wagon versions.
 
 ![Single Train Unit Examples](https://thumbs.gfycat.com/DependableMixedBarasinga-size_restricted.gif)
 
@@ -35,7 +35,7 @@ Not Implimented Yet
 ================
 
 - Graphics are a WIP: cargo unit, fluid unit, train wheels.
-- Coloring of the train unit.
+- Method for players to color the train unit.
 - Add direction indicator to placement graphics to help with snapping to stations.
 - Support for other mods to place the single trian units, i.e. Train Constrcution Site.
 

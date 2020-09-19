@@ -10,7 +10,7 @@ Date: XXXXX
     - Only 1 health bar per single train unit now. Single train unit parts health will now keep the locos at full health and transfer all damage to the cargo wagon part. This does mean train collisions against a damaged signle train unit will take too much speed from the ramming train, but should have no other negative effects. Does mean that bots only repair one part of the train now as well as the single health bar.
   Bugfixes:
     - Improved behaviour of anti disconnecting logic to not affect other wagon types in a common train.
-    - Mining a single train unit returns any grid equipment it had to your inventory. Previously they were lost.
+    - Mining/deconstructing a single train unit returns any grid equipment it had to your inventory. Previously they were lost.
     - If a mined single unit train was undone and the bot placement failed due to being blocked the single unit train is returned by the bot and standard placement information chat message shown. Before the mod hard errored.
     - Any fuel placed in to the placement wagons by mods (other than Fill4Me) will be distributed equally across the 2 ends of the single train unit. Any spare fuel is returned to the builder. Previously it was lost.
     - Fixed Cargo & Fluid wagon parts Info GUI drawing is now the full image (on hover tooltip image shown).
