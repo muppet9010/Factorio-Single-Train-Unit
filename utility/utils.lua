@@ -918,4 +918,29 @@ Utils.EmptyRotatedSprite = function()
     }
 end
 
+Utils.TrackBestFuelCount = function(trackingTable, itemName, itemCount)
+    --[[
+        The "trackingTable" argument should be an empty table created in the calling function. It should be passed in to each calling of this function to track the best fuel.
+        The function returns true when the fuel is a new best and false when its not. Returns nil if the item isn't a fuel type.
+        This function will set trackingTable to have the below entry. Query these keys in calling function:
+            trackingTable {
+                fuelName = STRING,
+                fuelCount = INT,
+                fuelValue = INT,
+            }
+    --]]
+    local itemPrototype = game.item_prototypes[itemName]
+    local fuelValue = itemPrototype.fuel_value
+    if fuelValue == nil then
+        return nil
+    end
+    if trackingTable.fuelValue == nil or fuelValue > trackingTable.fuelValue then
+        trackingTable.fuelName = itemName
+        trackingTable.fuelCount = itemCount
+        trackingTable.fuelValue = fuelValue
+        return true
+    end
+    return false
+end
+
 return Utils

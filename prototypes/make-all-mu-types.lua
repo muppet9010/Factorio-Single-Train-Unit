@@ -36,7 +36,6 @@ local function MakeMULocoPrototype(thisStaticData, prototypeData)
     muLoco.selected_minimap_representation = nil
     muLoco.placeable_by = {item = placementStaticData.name, count = 1}
     muLoco.alert_when_damaged = false
-    table.insert(muLoco.flags, "not-blueprintable")
     table.insert(muLoco.flags, "not-deconstructable")
     table.insert(muLoco.flags, "placeable-off-grid")
     data:extend({muLoco})
@@ -196,7 +195,7 @@ local function MakeMuWagonPlacementPrototype(thisStaticData, wagonPlacementProto
     muWagonPlacement.pictures = itsWagonPrototype.pictures
     muWagonPlacement.icons = wagonPlacementPrototypeData.icons
     muWagonPlacement.weight = (locoPrototypeData.weight * 2) + wagonPlacementPrototypeData.weight -- Weight of both loco ends plus the wagon part
-    muWagonPlacement.burner.fuel_inventory_size = locoPrototypeData.burner_fuel_inventory_size
+    muWagonPlacement.burner.fuel_inventory_size = locoPrototypeData.burner_fuel_inventory_size * 2 -- Make the placement twice the size of the loco as then when any fuel/request is split between the 2 loco ends it works out.
     muWagonPlacement.burner.effectivity = locoPrototypeData.burner_effectivity
     table.insert(muWagonPlacement.flags, "not-deconstructable")
     table.insert(muWagonPlacement.flags, "placeable-off-grid")

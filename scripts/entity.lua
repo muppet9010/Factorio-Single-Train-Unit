@@ -50,6 +50,8 @@ Entity.OnLoad = function()
     Events.RegisterHandler(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement)
     Events.RegisterEvent(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", global.entity.muWagonNamesFilter)
     Events.RegisterHandler(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", Entity.OnRobotMinedEntity_MUWagons)
+    Events.RegisterEvent(defines.events.on_player_setup_blueprint, "Entity.OnPlayerSetupBlueprint")
+    Events.RegisterHandler(defines.events.on_player_setup_blueprint, "Entity.OnPlayerSetupBlueprint", Entity.OnPlayerSetupBlueprint)
 end
 
 Entity.OnStartup = function()
@@ -170,6 +172,8 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
         fuelInventoryContents = fuelInventory.get_contents()
     end
     local health = entity.health
+    local fuelRequestProxy = surface.find_entities_filtered {position = entity.position, type = "item-request-proxy"}[1]
+
     entity.destroy()
     local wagons = {forwardLoco = nil, middleCargo = nil, rearLoco = nil}
 
@@ -227,12 +231,16 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
             -- Will spread the fuel from the placement loco across the 2 end locos.
             local fuelAllMoved = Utils.TryInsertInventoryContents(fuelInventoryContents, wagons.forwardLoco.get_fuel_inventory(), false, 0.5)
             if not fuelAllMoved then
-                fuelAllMoved = Utils.TryInsertInventoryContents(fuelInventoryContents, wagons.rearLoco.get_fuel_inventory(), false, 0.5)
+                fuelAllMoved = Utils.TryInsertInventoryContents(fuelInventoryContents, wagons.rearLoco.get_fuel_inventory(), false, 1)
             end
             if not fuelAllMoved then
                 Utils.TryInsertInventoryContents(fuelInventoryContents, builderInventory, true, 1)
             end
         end
+    end
+    if fuelRequestProxy ~= nil then
+        surface.create_entity {name = "item-request-proxy", position = wagons.forwardLoco.position, force = wagons.forwardLoco.force, target = wagons.forwardLoco, modules = fuelRequestProxy.item_requests}
+        surface.create_entity {name = "item-request-proxy", position = wagons.rearLoco.position, force = wagons.rearLoco.force, target = wagons.rearLoco, modules = fuelRequestProxy.item_requests}
     end
 
     wagons.middleCargo.health = health
@@ -498,6 +506,36 @@ Entity.OnRobotMinedEntity_MUWagons = function(event)
             wagon.destroy()
         end
     end
+end
+
+Entity.OnPlayerSetupBlueprint = function(event)
+    local player = game.get_player(event.player_index)
+    local blueprint = player.blueprint_to_setup
+    local entities = blueprint.get_blueprint_entities()
+    local placementWagons, fuelTrackingTable = {}, {}
+    for index, entity in pairs(entities) do
+        local staticData = global.entity.muWagonVariants[entity.name]
+        if staticData ~= nil then
+            if staticData.type == "loco" then
+                if entity.items ~= nil then
+                    for itemName, itemCount in pairs(entity.items) do
+                        Utils.TrackBestFuelCount(fuelTrackingTable, itemName, itemCount)
+                    end
+                end
+                entities[index] = nil
+            elseif staticData.type == "wagon" then
+                entity.name = staticData.placementStaticData.name
+                table.insert(placementWagons, entity)
+            end
+        end
+    end
+    if not Utils.IsTableEmpty(fuelTrackingTable) then
+        for _, entity in pairs(placementWagons) do
+            entity.items = entity.items or {}
+            entity.items[fuelTrackingTable.fuelName] = fuelTrackingTable.fuelCount
+        end
+    end
+    blueprint.set_blueprint_entities(entities)
 end
 
 return Entity
