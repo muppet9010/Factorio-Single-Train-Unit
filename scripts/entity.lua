@@ -27,37 +27,32 @@ Entity.CreateGlobals = function()
     global.entity.damageSourcesTick = global.entity.damageSourcesTick or 0
     global.entity.damageSourcesThisTick = global.entity.damageSourcesThisTick or {}
 
+    --Always reset these as we re-populate them as part of OnStartup()
     global.entity.muWagonVariants = {}
-    --global.entity.muWagonNamesFilter -- don't set a default, we want nil
-    --global.entity.muWagonPlacementNameFilter -- don't set a default, we want nil
+    global.entity.muWagonNamesFilter = {}
+    global.entity.muWagonPlacementNameFilter = {}
+    global.entity.muWagonNamesAndPlacementNameFilter = {}
 end
 
 Entity.OnLoad = function()
-    Events.RegisterEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", global.entity.muWagonPlacementNameFilter)
-    Events.RegisterHandler(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement)
-    Events.RegisterEvent(defines.events.on_train_created)
-    Events.RegisterHandler(defines.events.on_train_created, "Entity.OnTrainCreated", Entity.OnTrainCreated)
-    Events.RegisterEvent(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", global.entity.muWagonNamesFilter)
-    Events.RegisterHandler(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", Entity.OnPlayerMined_MUWagon)
-    Events.RegisterEvent(defines.events.on_pre_player_mined_item, "Entity.OnPrePlayerMined_MUWagon", global.entity.muWagonNamesFilter)
-    Events.RegisterHandler(defines.events.on_pre_player_mined_item, "Entity.OnPrePlayerMined_MUWagon", Entity.OnPrePlayerMined_MUWagon)
-    Events.RegisterEvent(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", global.entity.muWagonNamesFilter)
-    Events.RegisterHandler(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", Entity.OnEntityDamaged_MUWagon)
-    Events.RegisterEvent(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", global.entity.muWagonNamesFilter)
-    Events.RegisterHandler(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", Entity.OnEntityDied_MUWagon)
-    Events.RegisterEvent(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement_WagonEntities", global.entity.muWagonNamesFilter)
-    Events.RegisterEvent(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement_PlacementEntities", global.entity.muWagonPlacementNameFilter)
-    Events.RegisterHandler(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement)
-    Events.RegisterEvent(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", global.entity.muWagonNamesFilter)
-    Events.RegisterHandler(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", Entity.OnRobotMinedEntity_MUWagons)
-    Events.RegisterEvent(defines.events.on_player_setup_blueprint, "Entity.OnPlayerSetupBlueprint")
-    Events.RegisterHandler(defines.events.on_player_setup_blueprint, "Entity.OnPlayerSetupBlueprint", Entity.OnPlayerSetupBlueprint)
+    Events.RegisterHandlerEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement, "Entity.OnBuiltEntity_MUPlacement", global.entity.muWagonPlacementNameFilter)
+    Events.RegisterHandlerEvent(defines.events.on_train_created, "Entity.OnTrainCreated", Entity.OnTrainCreated)
+    Events.RegisterHandlerEvent(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", Entity.OnPlayerMined_MUWagon, "Entity.OnPlayerMined_MUWagon", global.entity.muWagonNamesFilter)
+    Events.RegisterHandlerEvent(defines.events.on_pre_player_mined_item, "Entity.OnPrePlayerMined_MUWagon", Entity.OnPrePlayerMined_MUWagon, "Entity.OnPrePlayerMined_MUWagon", global.entity.muWagonNamesFilter)
+    Events.RegisterHandlerEvent(defines.events.on_entity_damaged, "Entity.OnEntityDamaged_MUWagon", Entity.OnEntityDamaged_MUWagon, "Entity.OnEntityDamaged_MUWagon", global.entity.muWagonNamesFilter)
+    Events.RegisterHandlerEvent(defines.events.on_entity_died, "Entity.OnEntityDied_MUWagon", Entity.OnEntityDied_MUWagon, "Entity.OnEntityDied_MUWagon", global.entity.muWagonNamesFilter)
+    Events.RegisterHandlerEvent(defines.events.on_robot_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement, "Entity.OnBuiltEntity_MUPlacement", global.entity.muWagonNamesAndPlacementNameFilter)
+    Events.RegisterHandlerEvent(defines.events.on_robot_mined_entity, "Entity.OnRobotMinedEntity_MUWagons", Entity.OnRobotMinedEntity_MUWagons, "Entity.OnRobotMinedEntity_MUWagons", global.entity.muWagonNamesFilter)
+    Events.RegisterHandlerEvent(defines.events.on_player_setup_blueprint, "Entity.OnPlayerSetupBlueprint", Entity.OnPlayerSetupBlueprint)
 end
 
 Entity.OnStartup = function()
     Entity.OnMigration()
     global.entity.muWagonNamesFilter = Entity.GenerateMuWagonNamesFilter()
     global.entity.muWagonPlacementNameFilter = Entity.GenerateMuWagonPlacementNameFilter()
+    local placementNameFilterForMerge = Utils.DeepCopy(global.entity.muWagonPlacementNameFilter)
+    placementNameFilterForMerge[1].mode = "or"
+    global.entity.muWagonNamesAndPlacementNameFilter = Utils.TableMerge({global.entity.muWagonNamesFilter, placementNameFilterForMerge})
     Entity.OnLoad() -- need to update dynmaic filter registration lists
 end
 
