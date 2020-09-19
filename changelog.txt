@@ -20,6 +20,7 @@ Date: XXXXX
     - Fix missing "type" meta data on existing single train units. Generate missing train data on mod load.
     - If a damaged single train unit is placed it maintains the damage, unlike before.
     - Placement entities should list the correct weight and burner effectivity now, same as the real locomitive parts of the single train units.
+    - Fix the alert (no fuel) alert position.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.3

@@ -108,7 +108,6 @@ Entity.GenerateMuWagonPlacementNameFilter = function()
 end
 
 Entity.GenerateRecordPlacementStaticDataVariant = function(baseName, variantName)
-    -- TODO - doesn't handle if a mod adds a new version of the placement part and some or none of the other parts.
     local variantNamePos_start, variantNamePos_end = string.find(variantName, baseName, 1, true)
     local variantNamePrefix, variantNameSuffix = string.sub(variantName, 1, variantNamePos_start - 1), string.sub(variantName, variantNamePos_end + 1)
     local variantPlacement = Utils.DeepCopy(StaticData.entityNames[baseName])
@@ -511,6 +510,9 @@ end
 Entity.OnPlayerSetupBlueprint = function(event)
     local player = game.get_player(event.player_index)
     local blueprint = player.blueprint_to_setup
+    if not blueprint.valid_for_read then
+        return
+    end
     local entities = blueprint.get_blueprint_entities()
     local placementWagons, fuelTrackingTable = {}, {}
     for index, entity in pairs(entities) do

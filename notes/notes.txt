@@ -1,6 +1,5 @@
 - TODO:
-    - Move the fuel stick icon on each entity as its wrong. Also check BP fuel request.
-    - Make each end loco fuel inventory 2 as its burns through fuel far too fast at present.
+    - Test MP after the event changes. Also add/remove mods mid MP game.
 
 - Graphics:
     - Add direction indicator to placement graphics to help with snapping to stations.

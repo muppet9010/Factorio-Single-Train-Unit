@@ -36,6 +36,7 @@ local function MakeMULocoPrototype(thisStaticData, prototypeData)
     muLoco.selected_minimap_representation = nil
     muLoco.placeable_by = {item = placementStaticData.name, count = 1}
     muLoco.alert_when_damaged = false
+    muLoco.alert_icon_shift = {0, -0.5}
     table.insert(muLoco.flags, "not-deconstructable")
     table.insert(muLoco.flags, "placeable-off-grid")
     data:extend({muLoco})
@@ -62,6 +63,7 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
     muWagon.stand_by_light = nil
     muWagon.collision_box = thisStaticData.collision_box
     muWagon.selection_box = thisStaticData.selection_box
+    muWagon.alert_icon_shift = {0, -0.5}
     muWagon.allow_manual_color = true
     muWagon.joint_distance = thisStaticData.joint_distance
     muWagon.connection_distance = thisStaticData.connection_distance
