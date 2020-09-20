@@ -22,6 +22,13 @@
     - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it. I currently track whne the unit is broken up and rejoin the correct bit. I would then need to track the joined event and somehow track which the old end of train unit part was and then detach the next non unit part of the train. Can't do it in the origonal event so will get very messy.
 
 
+Chopping Up Source Images
+------------------
 https://ezgif.com/sprite-cutter
 Locomotive HR Spritesheet: 474 x 458
 Cargo Wagon HR Spritesheet: 442 x 407
+
+Making New Sprite Sheets
+----------------------
+GlueIt - local exe downloaded
+https://github.com/Kavex/GlueIT
