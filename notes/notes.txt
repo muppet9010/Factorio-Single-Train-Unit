@@ -1,4 +1,6 @@
 - TODO:
+	- Support for bobs trains: https://mods.factorio.com/mod/boblogistics
+	- Support for bobs vehicle equipment: https://mods.factorio.com/mod/bobvehicleequipment
 
 - Graphics:
     - Add direction indicator to placement graphics to help with snapping to stations.
@@ -12,6 +14,7 @@
     - Handle other mods placeing our placement entity. By raising events it may trigger mods that currently ignore us.
     - Chase up with other mods support for mine:
         - Electric Trains
+	- Do a single ended version, with a 4 tile large cargo area.
 
 - Not Possible (presently):
     - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?
