@@ -84,6 +84,9 @@ The Noxys Multidirectional Trains mod doesn't appear to get applied to Single Tr
 *Train Construction Site*
 Mod isn't compatible with single train units due to how it creates the boxed train prototypes at present. Not raised to mod author so far due to lack of interest.
 
+*Renai Transportation*
+Mod isn't compatible as it manipulates the train entities when they land after flying. This may be suportable in the future, but not planned at present.
+
 
 Upgrading from old POC mod version
 ========================

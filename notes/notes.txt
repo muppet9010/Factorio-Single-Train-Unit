@@ -15,7 +15,8 @@
 	- Add a second graphic option to use a tram render suggested by Klonan: https://sketchfab.com/3d-models/tatra-t3-76aa08d7c06340fc89229551c45e3c3a
 
 - Deferred:
-    - Handle other mods placeing our placement entity. By raising events it may trigger mods that currently ignore us.
+    - Handle other mods placeing our placement entity. By raising events it may trigger mods that currently ignore us. i.e.
+         - Renai Transportation
     - Chase up with other mods support for mine:
         - Electric Trains
 	- Do a single ended version, with a 4 tile large cargo area.
