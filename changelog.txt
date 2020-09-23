@@ -4,6 +4,7 @@ Date: XXXXX
   Features:
   Changes:
   Bugfixes:
+    - Fix event mismatch error when loading the mod on to an existing save.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.5

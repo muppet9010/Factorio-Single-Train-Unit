@@ -1,5 +1,4 @@
 - TODO:
-	- Send my even registration apprach to mod making discord anbd see if they can point out anything wrong.
     - Test all the different item, grid, fuel being decon'd and if it handles bots and players decon.
     - Error when an editor driving a train rammed another train and did damage and I then tried to get out of the train.
     - Why do i track single trian unit forces ? I don't handle an entity having its force changed at present if I need to keep this.
