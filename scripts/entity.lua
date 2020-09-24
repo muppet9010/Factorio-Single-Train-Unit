@@ -20,6 +20,7 @@ Entity.CreateGlobals = function()
         wagons = {
             forwardLoco = ENTITY, middleCargo = ENTITY, rearLoco = ENTITY
         },
+        wagonIds = {}
         type = STATICDATA WAGON TYPE
     }
     --]]
@@ -46,8 +47,8 @@ Entity.OnLoad = function()
     Events.RegisterHandlerEvent(defines.events.on_player_setup_blueprint, "Entity.OnPlayerSetupBlueprint", Entity.OnPlayerSetupBlueprint)
 end
 
-Entity.OnStartup = function()
-    Entity.OnMigration()
+Entity.OnStartup = function(event)
+    Entity.OnMigration(event)
     global.entity.muWagonNamesFilter = Entity.GenerateMuWagonNamesFilter()
     global.entity.muWagonPlacementNameFilter = Entity.GenerateMuWagonPlacementNameFilter()
     local placementNameFilterForMerge = Utils.DeepCopy(global.entity.muWagonPlacementNameFilter)
@@ -56,9 +57,16 @@ Entity.OnStartup = function()
     Entity.OnLoad() -- need to update dynmaic filter registration lists
 end
 
-Entity.OnMigration = function()
-    -- remove the old forces groupings in global
-    if global.entity.forces ~= nil then
+Entity.OnMigration = function(event)
+    local singleTrainUnitModVersion
+    if event ~= nil and event.mod_changes ~= nil and event.mod_changes.single_train_unit ~= nil and event.mod_changes.single_train_unit.old_version ~= nil then
+        singleTrainUnitModVersion = event.mod_changes.single_train_unit.old_version
+    else
+        singleTrainUnitModVersion = game.active_mods.single_train_unit
+    end
+
+    -- Remove the old forces groupings in global
+    if singleTrainUnitModVersion < "19.0.6" and global.entity.forces ~= nil then
         local trainCount = 0
         for _, forceGrouping in pairs(global.entity.forces) do
             for _, stu in pairs(forceGrouping.singleTrainUnits) do
@@ -69,21 +77,67 @@ Entity.OnMigration = function()
         end
         global.entity.forces = nil
     end
-    -- Fix the missing .type on earlier versions
-    for index, singleTrainUnit in pairs(global.entity.singleTrainUnits) do
-        if singleTrainUnit.wagons == nil or singleTrainUnit.wagons.middleCargo == nil or not singleTrainUnit.wagons.middleCargo.valid then
-            global.entity.singleTrainUnits[index] = nil
-        elseif singleTrainUnit.type == nil then
-            singleTrainUnit.type = StaticData.entityNames[singleTrainUnit.wagons.middleCargo.name].unitType
+
+    -- Populate wagonIds attribute for global singleTrainUnits valid wagons
+    if singleTrainUnitModVersion < "19.0.6" then
+        for _, singleTrainUnit in pairs(global.entity.singleTrainUnits) do
+            if singleTrainUnit.wagonIds == nil then
+                singleTrainUnit.wagonIds = {}
+                for _, wagon in pairs(singleTrainUnit.wagons) do
+                    if wagon.valid then
+                        table.insert(singleTrainUnit.wagonIds, wagon.unit_number)
+                    end
+                end
+            end
         end
     end
-    -- Fix any damaged loco parts now that only the wagon takes damage
+
+    -- Remove any invalid global singleTrainUnits - can happen from mods being removed that added unique ones in, etc. So always do it.
     for index, singleTrainUnit in pairs(global.entity.singleTrainUnits) do
-        if singleTrainUnit.wagons.forwardLoco.health <= singleTrainUnit.wagons.forwardLoco.prototype.max_health then
-            singleTrainUnit.wagons.forwardLoco.health = singleTrainUnit.wagons.forwardLoco.prototype.max_health
+        local invalidWagon = false
+        for _, wagon in pairs(singleTrainUnit.wagons) do
+            if not wagon.valid then
+                invalidWagon = true
+                break
+            end
         end
-        if singleTrainUnit.wagons.rearLoco.health <= singleTrainUnit.wagons.rearLoco.prototype.max_health then
-            singleTrainUnit.wagons.rearLoco.health = singleTrainUnit.wagons.rearLoco.prototype.max_health
+        if invalidWagon then
+            for _, wagonId in pairs(singleTrainUnit.wagonIds) do
+                global.entity.wagonIdToSingleTrainUnit[wagonId] = nil
+            end
+            global.entity.singleTrainUnits[index] = nil
+        end
+    end
+
+    -- Remove any orphaned global wagonIdToSingleTrainUnit entries - can happen from before the wagonIds where tracked in a single train unit.
+    if singleTrainUnitModVersion < "19.0.6" then
+        for wagonId, singleTrainUnit in pairs(global.entity.wagonIdToSingleTrainUnit) do
+            if global.entity.singleTrainUnits[singleTrainUnit.id] == nil then
+                global.entity.wagonIdToSingleTrainUnit[wagonId] = nil
+            end
+        end
+    end
+
+    -- Fix the missing .type on earlier versions
+    if singleTrainUnitModVersion < "19.0.4" then
+        for index, singleTrainUnit in pairs(global.entity.singleTrainUnits) do
+            if singleTrainUnit.wagons == nil or singleTrainUnit.wagons.middleCargo == nil or not singleTrainUnit.wagons.middleCargo.valid then
+                global.entity.singleTrainUnits[index] = nil
+            elseif singleTrainUnit.type == nil then
+                singleTrainUnit.type = StaticData.entityNames[singleTrainUnit.wagons.middleCargo.name].unitType
+            end
+        end
+    end
+
+    -- Fix any damaged loco parts now that only the wagon takes damage
+    if singleTrainUnitModVersion < "19.0.5" then
+        for index, singleTrainUnit in pairs(global.entity.singleTrainUnits) do
+            if singleTrainUnit.wagons.forwardLoco.health <= singleTrainUnit.wagons.forwardLoco.prototype.max_health then
+                singleTrainUnit.wagons.forwardLoco.health = singleTrainUnit.wagons.forwardLoco.prototype.max_health
+            end
+            if singleTrainUnit.wagons.rearLoco.health <= singleTrainUnit.wagons.rearLoco.prototype.max_health then
+                singleTrainUnit.wagons.rearLoco.health = singleTrainUnit.wagons.rearLoco.prototype.max_health
+            end
         end
     end
 end
@@ -319,10 +373,13 @@ Entity.RecordSingleUnit = function(wagons, type)
     global.entity.singleTrainUnits[singleTrainUnitId] = {
         id = singleTrainUnitId,
         wagons = wagons,
+        wagonIds = {},
         type = type
     }
+    local singleTrainUnit = global.entity.singleTrainUnits[singleTrainUnitId]
     for _, wagon in pairs(wagons) do
-        global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = global.entity.singleTrainUnits[singleTrainUnitId]
+        global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = singleTrainUnit
+        table.insert(singleTrainUnit.wagonIds, wagon.unit_number)
     end
 end
 
@@ -331,10 +388,8 @@ Entity.DeleteSingleUnitRecord = function(singleTrainUnitId)
     if singleTrainUnit == nil then
         return
     end
-    for _, wagon in pairs(singleTrainUnit.wagons) do
-        if wagon.valid then
-            global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = nil
-        end
+    for _, wagonId in pairs(singleTrainUnit.wagonIds) do
+        global.entity.wagonIdToSingleTrainUnit[wagonId] = nil
     end
     global.entity.singleTrainUnits[singleTrainUnitId] = nil
 end

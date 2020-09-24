@@ -12,12 +12,12 @@ end
 local function OnSettingChanged()
 end
 
-local function OnStartup()
+local function OnStartup(event)
     CreateGlobals()
     OnLoad()
     OnSettingChanged(nil)
 
-    Entity.OnStartup()
+    Entity.OnStartup(event)
 end
 
 script.on_init(OnStartup)

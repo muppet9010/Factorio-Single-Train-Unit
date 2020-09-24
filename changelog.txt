@@ -6,6 +6,8 @@ Date: XXXXX
     - Remove the mod tracking single train units via force grouping. Wasn't used for anything and prevent single train units parts changing force.
   Bugfixes:
     - Fix event mismatch error when loading the mod on to an existing save.
+    - Track Wagon unit numbers (ids) better so I can keep the global tables clean.
+    - Made the migration scripts only run for when upgrading from older versions than their features were introduced at.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.5
