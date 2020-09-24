@@ -13,17 +13,17 @@ end
 
 Entity.CreateGlobals = function()
     global.entity = global.entity or {}
-    global.entity.forces = global.entity.forces or {}
+    global.entity.singleTrainUnits = global.entity.singleTrainUnits or {}
     --[[
-    global.entity.forces[force.index].singleTrainUnits = {
+    global.entity.singleTrainUnits = {
         id = singleTrainUnitId,
         wagons = {
             forwardLoco = ENTITY, middleCargo = ENTITY, rearLoco = ENTITY
         },
         type = STATICDATA WAGON TYPE
-    } -- Force index entries are defined when first used and the intial force entry is generated.
+    }
     --]]
-    global.entity.wagonIdToSingleTrainUnit = global.entity.wagonIdToSingleTrainUnit or {} -- WagonId to lobal.entity.forces[force.index].singleTrainUnits entry
+    global.entity.wagonIdToSingleTrainUnit = global.entity.wagonIdToSingleTrainUnit or {} -- WagonId to global.entity.singleTrainUnits entry
     global.entity.damageSourcesTick = global.entity.damageSourcesTick or 0
     global.entity.damageSourcesThisTick = global.entity.damageSourcesThisTick or {}
 
@@ -57,25 +57,33 @@ Entity.OnStartup = function()
 end
 
 Entity.OnMigration = function()
-    -- Fix the missing .type on earlier versions
-    for _, force in pairs(global.entity.forces) do
-        for index, singleTrainUnit in pairs(force.singleTrainUnits) do
-            if singleTrainUnit.wagons == nil or singleTrainUnit.wagons.middleCargo == nil or not singleTrainUnit.wagons.middleCargo.valid then
-                force.singleTrainUnits[index] = nil
-            elseif singleTrainUnit.type == nil then
-                singleTrainUnit.type = StaticData.entityNames[singleTrainUnit.wagons.middleCargo.name].unitType
+    -- remove the old forces groupings in global
+    if global.entity.forces ~= nil then
+        local trainCount = 0
+        for _, forceGrouping in pairs(global.entity.forces) do
+            for _, stu in pairs(forceGrouping.singleTrainUnits) do
+                trainCount = trainCount + 1
+                global.entity.singleTrainUnits[trainCount] = stu
+                stu.id = trainCount
             end
+        end
+        global.entity.forces = nil
+    end
+    -- Fix the missing .type on earlier versions
+    for index, singleTrainUnit in pairs(global.entity.singleTrainUnits) do
+        if singleTrainUnit.wagons == nil or singleTrainUnit.wagons.middleCargo == nil or not singleTrainUnit.wagons.middleCargo.valid then
+            global.entity.singleTrainUnits[index] = nil
+        elseif singleTrainUnit.type == nil then
+            singleTrainUnit.type = StaticData.entityNames[singleTrainUnit.wagons.middleCargo.name].unitType
         end
     end
     -- Fix any damaged loco parts now that only the wagon takes damage
-    for _, force in pairs(global.entity.forces) do
-        for index, singleTrainUnit in pairs(force.singleTrainUnits) do
-            if singleTrainUnit.wagons.forwardLoco.health <= singleTrainUnit.wagons.forwardLoco.prototype.max_health then
-                singleTrainUnit.wagons.forwardLoco.health = singleTrainUnit.wagons.forwardLoco.prototype.max_health
-            end
-            if singleTrainUnit.wagons.rearLoco.health <= singleTrainUnit.wagons.rearLoco.prototype.max_health then
-                singleTrainUnit.wagons.rearLoco.health = singleTrainUnit.wagons.rearLoco.prototype.max_health
-            end
+    for index, singleTrainUnit in pairs(global.entity.singleTrainUnits) do
+        if singleTrainUnit.wagons.forwardLoco.health <= singleTrainUnit.wagons.forwardLoco.prototype.max_health then
+            singleTrainUnit.wagons.forwardLoco.health = singleTrainUnit.wagons.forwardLoco.prototype.max_health
+        end
+        if singleTrainUnit.wagons.rearLoco.health <= singleTrainUnit.wagons.rearLoco.prototype.max_health then
+            singleTrainUnit.wagons.rearLoco.health = singleTrainUnit.wagons.rearLoco.prototype.max_health
         end
     end
 end
@@ -250,7 +258,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
 
     wagons.middleCargo.health = health
 
-    Entity.RecordSingleUnit(force, wagons, wagonStaticData.unitType)
+    Entity.RecordSingleUnit(wagons, wagonStaticData.unitType)
 end
 
 Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
@@ -306,35 +314,29 @@ Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityP
     Entity.OnBuiltEntity_MUPlacement({created_entity = placedWagon, replaced = true, robot = event.robot, player_index = event.player_index})
 end
 
-Entity.RecordSingleUnit = function(force, wagons, type)
-    global.entity.forces[force.index] =
-        global.entity.forces[force.index] or
-        {
-            singleTrainUnits = {}
-        }
-    local forcesEntry = global.entity.forces[force.index]
-    local singleTrainUnitId = #forcesEntry.singleTrainUnits + 1
-    forcesEntry.singleTrainUnits[singleTrainUnitId] = {
+Entity.RecordSingleUnit = function(wagons, type)
+    local singleTrainUnitId = #global.entity.singleTrainUnits + 1
+    global.entity.singleTrainUnits[singleTrainUnitId] = {
         id = singleTrainUnitId,
         wagons = wagons,
         type = type
     }
     for _, wagon in pairs(wagons) do
-        global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = forcesEntry.singleTrainUnits[singleTrainUnitId]
+        global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = global.entity.singleTrainUnits[singleTrainUnitId]
     end
 end
 
-Entity.DeleteSingleUnitRecord = function(force, singleTrainUnitId)
-    local forcesEntry = global.entity.forces[force.index]
-    if forcesEntry == nil or forcesEntry.singleTrainUnits[singleTrainUnitId] == nil then
+Entity.DeleteSingleUnitRecord = function(singleTrainUnitId)
+    local singleTrainUnit = global.entity.singleTrainUnits[singleTrainUnitId]
+    if singleTrainUnit == nil then
         return
     end
-    for _, wagon in pairs(forcesEntry.singleTrainUnits[singleTrainUnitId].wagons) do
+    for _, wagon in pairs(singleTrainUnit.wagons) do
         if wagon.valid then
             global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = nil
         end
     end
-    forcesEntry.singleTrainUnits[singleTrainUnitId] = nil
+    global.entity.singleTrainUnits[singleTrainUnitId] = nil
 end
 
 Entity.OnTrainCreated = function(event)
@@ -386,7 +388,7 @@ Entity.OnPlayerMined_MUWagon = function(event)
 
     local player = game.get_player(event.player_index)
     local thisUnitsWagons = Utils.DeepCopy(singleTrainUnit.wagons)
-    Entity.DeleteSingleUnitRecord(force, singleTrainUnit.id)
+    Entity.DeleteSingleUnitRecord(singleTrainUnit.id)
     local thisWagonId = minedWagon.unit_number
 
     for _, wagon in pairs(thisUnitsWagons) do
@@ -488,7 +490,7 @@ Entity.OnEntityDied_MUWagon = function(event)
         end
     end
 
-    Entity.DeleteSingleUnitRecord(event.force, singleTrainUnit.id)
+    Entity.DeleteSingleUnitRecord(singleTrainUnit.id)
 end
 
 Entity.OnRobotMinedEntity_MUWagons = function(event)
@@ -508,8 +510,8 @@ Entity.OnRobotMinedEntity_MUWagons = function(event)
         end
     end
 
-    local thisUnitsWagons, force = Utils.DeepCopy(singleTrainUnit.wagons), minedWagon.force
-    Entity.DeleteSingleUnitRecord(force, singleTrainUnit.id)
+    local thisUnitsWagons = Utils.DeepCopy(singleTrainUnit.wagons)
+    Entity.DeleteSingleUnitRecord(singleTrainUnit.id)
     local thisWagonId = minedWagon.unit_number
 
     for _, wagon in pairs(thisUnitsWagons) do
