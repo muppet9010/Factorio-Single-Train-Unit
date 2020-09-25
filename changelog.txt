@@ -2,16 +2,17 @@
 Version: 19.0.6
 Date: XXXXX
   Features:
+    - When a single train unit is blueprinted its schedule is kept. Only supports a single train unit within a bluprint, otherwise all single train units in the blueprint get the same schedule.
+    - When a single train unit is blueprinted its cargo inventory filtering and limit (red bar) is applied to the pasted copies.
   Changes:
     - Remove the mod tracking single train units via force grouping. Wasn't used for anything and prevent single train units parts changing force.
     - Single Train Units with equipment grids added have them on all parts now, not just the wagon part. Means legs and shields can be used across the train.
   Bugfixes:
     - Fix event mismatch error when loading the mod on to an existing save.
-    - Track Wagon unit numbers (ids) better so I can keep the global tables clean.
     - Made the migration scripts only run for when upgrading from older versions than their features were introduced at.
     - Fix error if only tiles (no entities) are in a Blueprint.
-    - When a single train unit is blueprinted its schedule is kept. Only supports a single train unit within a bluprint, otherwise all single train units in the blueprint get the same schedule.
   Info:
+    - Track Wagon unit numbers (ids) better so I can keep the global tables clean.
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.5
 Date: 2020-09-19

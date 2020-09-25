@@ -257,6 +257,19 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
         Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Middle Cargo Wagon", event.replaced, event, fuelInventoryContents, health)
         return
     end
+    if event.tags ~= nil then
+        local cargoInventory = wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon)
+        if cargoInventory ~= nil then
+            if event.tags["single_train_unit-wagon_inventory_filters"] ~= nil then
+                for _, filteredSlot in pairs(event.tags["single_train_unit-wagon_inventory_filters"]) do
+                    cargoInventory.set_filter(filteredSlot.index, filteredSlot.name)
+                end
+            end
+            if event.tags["single_train_unit-wagon_inventory_bar"] ~= nil then
+                cargoInventory.set_bar(event.tags["single_train_unit-wagon_inventory_bar"])
+            end
+        end
+    end
 
     wagons.rearLoco = Entity.PlaceWagon(locoStaticData.name, rearLocoPosition, surface, force, rearLocoDirection)
     if wagons.rearLoco == nil then
@@ -579,7 +592,7 @@ Entity.OnRobotMinedEntity_MUWagons = function(event)
 end
 
 Entity.OnPlayerSetupBlueprint = function(event)
-    -- We could try and work out what parts relate to which single train units. Then use this to set the schedule and fuel uniquely per single train unit. But we don't as seems a lot of effort for real edge cases.
+    -- We could try and work out what parts relate to which single train units. Then use this to set the schedule fuel uniquely per single train unit. But we don't as seems a lot of effort for real edge cases.
     local player = game.get_player(event.player_index)
     local blueprint = player.blueprint_to_setup
     if not blueprint.valid_for_read then
@@ -610,6 +623,15 @@ Entity.OnPlayerSetupBlueprint = function(event)
                     entity.schedule = schedule
                 end
                 table.insert(placementWagons, entity)
+                if entity.inventory ~= nil then
+                    entity.tags = entity.tags or {}
+                    if entity.inventory.filters ~= nil then
+                        entity.tags["single_train_unit-wagon_inventory_filters"] = entity.inventory.filters
+                    end
+                    if entity.inventory.bar ~= nil then
+                        entity.tags["single_train_unit-wagon_inventory_bar"] = entity.inventory.bar
+                    end
+                end
             end
         end
     end
