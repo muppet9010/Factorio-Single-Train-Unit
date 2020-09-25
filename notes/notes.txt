@@ -1,9 +1,8 @@
 - TODO:
+	- Check that I add grids to all the train parts for FE+/FE. Shuttle train I think does it itself.
+	- Check how filtered wagons blueprint in vanilla and then if I do them. fix ore record limitation if needed.
     - Test all the different item, grid, fuel being decon'd and if it handles bots and players decon.
     - Error when an editor driving a train rammed another train and did damage and I then tried to get out of the train.
-	- Look at compatibility with SpaceX and Krastorio 2.
-	- Support for bobs trains: https://mods.factorio.com/mod/boblogistics
-	- Support for bobs vehicle equipment: https://mods.factorio.com/mod/bobvehicleequipment
 
 - Graphics:
     - Add direction indicator to placement graphics to help with snapping to stations.
@@ -18,6 +17,10 @@
          - Renai Transportation
     - Chase up with other mods support for mine:
         - Electric Trains
+	- Look at compatibility with SpaceX and Krastorio 2.
+	- Electronic Locomotives & Electronic Factorio Extended Locomotives (this shows how to use the remote call to register)
+	- Support for bobs trains: https://mods.factorio.com/mod/boblogistics
+	- Support for bobs vehicle equipment: https://mods.factorio.com/mod/bobvehicleequipment
 	- Do a single ended version, with a 4 tile large cargo area.
 
 - Not Possible (presently):

@@ -54,8 +54,7 @@ Compatible Mods
 Battery pack vesions of the trains are included when the mod is enabled.
 
 *Factorio Extended & Factorio Extended Plus*
-Additional tiers of single train units added to match the additional locomotive and wagon tiers.
-Please provide any feedback on recipe or balance of these trains as I am not familiar with these mods and had to make approximations.
+Additional tiers of single train units added if each mod is enabled to match the additional locomotive and wagon tiers they add.
 
 *Fill4Me*
 The Fill4Me mod's auto insertion of fuel is applied to both locomotive ends of the single train unit. If you don't have enough fuel then as much as is available will be spread between the 2 locomotives.

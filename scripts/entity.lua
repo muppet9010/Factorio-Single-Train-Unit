@@ -583,6 +583,9 @@ Entity.OnPlayerSetupBlueprint = function(event)
         return
     end
     local entities = blueprint.get_blueprint_entities()
+    if entities == nil then
+        return
+    end
     local placementWagons, fuelTrackingTable = {}, {}
     for index, entity in pairs(entities) do
         local staticData = global.entity.muWagonVariants[entity.name]

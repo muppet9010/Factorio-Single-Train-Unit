@@ -8,6 +8,7 @@ Date: XXXXX
     - Fix event mismatch error when loading the mod on to an existing save.
     - Track Wagon unit numbers (ids) better so I can keep the global tables clean.
     - Made the migration scripts only run for when upgrading from older versions than their features were introduced at.
+    - Fix error if only tiles (no entities) are in Blueprint.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.5
