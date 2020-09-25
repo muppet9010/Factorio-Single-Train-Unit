@@ -1,5 +1,4 @@
 - TODO:
-	- Check that I add grids to all the train parts for FE+/FE. Shuttle train I think does it itself.
 	- Check how filtered wagons blueprint in vanilla and then if I do them. fix ore record limitation if needed.
     - Test all the different item, grid, fuel being decon'd and if it handles bots and players decon.
     - Error when an editor driving a train rammed another train and did damage and I then tried to get out of the train.

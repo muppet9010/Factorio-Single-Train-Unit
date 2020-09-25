@@ -4,6 +4,7 @@ Date: XXXXX
   Features:
   Changes:
     - Remove the mod tracking single train units via force grouping. Wasn't used for anything and prevent single train units parts changing force.
+    - Single Train Units with equipment grids added have them on all parts now, not just the wagon part. Means legs and shields can be used across the train.
   Bugfixes:
     - Fix event mismatch error when loading the mod on to an existing save.
     - Track Wagon unit numbers (ids) better so I can keep the global tables clean.

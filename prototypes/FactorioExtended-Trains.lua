@@ -172,8 +172,10 @@ for mk, improvementDetails in pairs(improvementTiers) do
                 for key, value in pairs(improvementDetails[baseStaticData.unitType .. "-loco"]) do
                     entityVariant[key] = value
                 end
-                for key, value in pairs(placementDetails.prototypeAttributes) do
-                    entityVariant[key] = value
+                if placementDetails.prototypeAttributes ~= nil then
+                    for key, value in pairs(placementDetails.prototypeAttributes) do
+                        entityVariant[key] = value
+                    end
                 end
                 entityVariant.pictures.layers[1].tint = improvementDetails.generic.color
                 entityVariant.icons[1].tint = improvementDetails.generic.color
