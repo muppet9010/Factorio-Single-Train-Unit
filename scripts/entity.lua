@@ -240,6 +240,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     end
     local health = entity.health
     local fuelRequestProxy = surface.find_entities_filtered {position = entity.position, type = "item-request-proxy"}[1]
+    local schedule = entity.train.schedule
 
     entity.destroy()
     local wagons = {forwardLoco = nil, middleCargo = nil, rearLoco = nil}
@@ -249,6 +250,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
         Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Front Loco", event.replaced, event, fuelInventoryContents, health)
         return
     end
+    wagons.forwardLoco.train.schedule = schedule
 
     wagons.middleCargo = Entity.PlaceWagon(wagonStaticData.name, middleCargoPosition, surface, force, middleCargoDirection)
     if wagons.middleCargo == nil then
@@ -577,6 +579,7 @@ Entity.OnRobotMinedEntity_MUWagons = function(event)
 end
 
 Entity.OnPlayerSetupBlueprint = function(event)
+    -- We could try and work out what parts relate to which single train units. Then use this to set the schedule and fuel uniquely per single train unit. But we don't as seems a lot of effort for real edge cases.
     local player = game.get_player(event.player_index)
     local blueprint = player.blueprint_to_setup
     if not blueprint.valid_for_read then
@@ -586,7 +589,7 @@ Entity.OnPlayerSetupBlueprint = function(event)
     if entities == nil then
         return
     end
-    local placementWagons, fuelTrackingTable = {}, {}
+    local placementWagons, fuelTrackingTable, schedule = {}, {}, nil
     for index, entity in pairs(entities) do
         local staticData = global.entity.muWagonVariants[entity.name]
         if staticData ~= nil then
@@ -596,9 +599,16 @@ Entity.OnPlayerSetupBlueprint = function(event)
                         Utils.TrackBestFuelCount(fuelTrackingTable, itemName, itemCount)
                     end
                 end
+                if schedule == nil and entity.schedule then
+                    -- We apply the same schedule found to all Single Train Units in the BP.
+                    schedule = entity.schedule
+                end
                 entities[index] = nil
             elseif staticData.type == "wagon" then
                 entity.name = staticData.placementStaticData.name
+                if schedule ~= nil then
+                    entity.schedule = schedule
+                end
                 table.insert(placementWagons, entity)
             end
         end

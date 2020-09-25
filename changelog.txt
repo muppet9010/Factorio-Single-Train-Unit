@@ -9,7 +9,8 @@ Date: XXXXX
     - Fix event mismatch error when loading the mod on to an existing save.
     - Track Wagon unit numbers (ids) better so I can keep the global tables clean.
     - Made the migration scripts only run for when upgrading from older versions than their features were introduced at.
-    - Fix error if only tiles (no entities) are in Blueprint.
+    - Fix error if only tiles (no entities) are in a Blueprint.
+    - When a single train unit is blueprinted its schedule is kept. Only supports a single train unit within a bluprint, otherwise all single train units in the blueprint get the same schedule.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.5
