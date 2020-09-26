@@ -8,7 +8,7 @@ Adds a single train unit comprising of a small cargo/fluid wagon and a locomotiv
 Overview
 ============
 
-- Intended for use as single unit trains, but they be joined togeather or joined with other locomotives or wagons (see Limitations).
+- Intended for use as single unit trains, but they be joined together or joined with other locomotives or wagons (see Limitations).
 - The unit's first and last 2 tiles are for feeding fuel to the locos. For Cargo wagons the middle 2 tiles are for accessing the small cargo wagon. For Fluid wagons the middle third is for connecting one pump. See the images.
 - The units run between the performance of a single loco & wagon (1-1) and a dual headed train with a wagon (1-1-1). It consumes fuel at twice the usual loco rate to account for its compact dual direction nature.
 - The cargo/fluid wagon space is 1/2 of the standard capacity given its small size.
@@ -41,11 +41,11 @@ Limitations / Known Issues
 
 - Don't build a longer train with multiple single train units joined together out of order. Start at one end and place each one sequentially. As placing a middle single train unit between 2 other rail wagons may not place correctly.
 - You can not detach a single train unit from other carriages as the parts all face outwards. There is protection in the mod to prevent a single train unit being broken up. However, you can detach regular carriages (cargo, loco, fluid) from a single train unit. If you need to detach a single train unit from another, its often easiest to just mine one of them.
-- Single train units when being placed will only snap to a stations position if they are facing the right way. Theres no visual way to tell their direction at present, so just rotate them before placing if needed. Snapping on corners can be finikity.
+- Single train units when being placed will only snap to a stations position if they are facing the right way. There's no visual way to tell their direction at present, so just rotate them before placing if needed. Snapping on corners can be finickity.
 - When single train units are blueprinted with fuel in them the highest fuel value type and count across them all is noted and this is used in the ghosted request. As blueprints lose the relationship between the single train unit parts its not possible to keep the fuel to train parts exactly the same.
 - When one single train unit is blueprinted with a schedule, the schedule will be applied correctly. However, if a blueprint has multiple single train units in it, they will all get the same schedule.
 - A single action that does multiple damages at a time (i.e. explosive rocket) will only do the single max damage and not the total cumulative damage. In the case of explosive rockets this means it will lose the lower impact damage, but get the correct higher blast damage. This is the fairest balance solution I can find so far to damage across the multiple parts of the train unit.
-- When a player or bot mines a single train unit the mod will try and take all of the contents before removing the unit, however, in some cases things may still get dropped on the ground. This is simialr to some mining actions in vanilla Factorio.
+- When a player or bot mines a single train unit the mod will try and take all of the contents before removing the unit, however, in some cases things may still get dropped on the ground. This is similar to some mining actions in vanilla Factorio.
 - In an existing blueprint using the "Select new Contents" option will give a messed up blueprint contents. Core Factorio bug: https://forums.factorio.com/88100
 - Other mods that try to manipulate the train unit may have issues. Please report anything so I can review it if not listed below already.
 
@@ -54,7 +54,7 @@ Compatible Mods
 =============
 
 *Battery Pack*
-Battery pack vesions of the trains are included when the mod is enabled.
+Battery pack versions of the trains are included when the mod is enabled.
 
 *Factorio Extended & Factorio Extended Plus*
 Additional tiers of single train units added if each mod is enabled to match the additional locomotive and wagon tiers they add.
@@ -87,7 +87,7 @@ The Noxys Multidirectional Trains mod doesn't appear to get applied to Single Tr
 Mod isn't compatible with single train units due to how it creates the boxed train prototypes at present. Not raised to mod author so far due to lack of interest.
 
 *Renai Transportation*
-Mod isn't compatible as it manipulates the train entities when they land after flying. This may be suportable in the future, but not planned at present.
+Mod isn't compatible as it manipulates the train entities when they land after flying. This may be supportable in the future, but not planned at present.
 
 
 Upgrading from old POC mod version

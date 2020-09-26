@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.6
-Date: XXXXX
+Date: 2020-09-26
   Features:
     - When a single train unit is blueprinted its schedule is kept. Only supports a single train unit within a bluprint, otherwise all single train units in the blueprint get the same schedule.
     - When a single train unit is blueprinted its cargo inventory filtering and limit (red bar) is applied to the pasted copies.
