@@ -803,11 +803,17 @@ end
 
 Utils.TryMoveInventoriesLuaItemStacks = function(sourceInventory, targetInventory, dropUnmovedOnGround, ratioToMove)
     -- Moves the full Lua Item Stacks so handles items with data and other complicated items. Updates the passed in inventory object.
-    local sourceOwner, itemsNotMoved = nil, false
-    if sourceInventory.is_empty() then
-        return itemsNotMoved
+    -- Returns true/false if all items were moved successfully.
+    local sourceOwner, itemAllMoved = nil, true
+    if dropUnmovedOnGround == nil then
+        dropUnmovedOnGround = false
     end
-
+    if ratioToMove == nil then
+        ratioToMove = 1
+    end
+    if sourceInventory == nil or sourceInventory.is_empty() then
+        return itemAllMoved
+    end
     for index = 1, #sourceInventory do
         local itemStack = sourceInventory[index]
         if itemStack.valid_for_read then
@@ -820,43 +826,57 @@ Utils.TryMoveInventoriesLuaItemStacks = function(sourceInventory, targetInventor
                 itemStack.count = remaining
             end
             if remaining > 0 then
-                itemsNotMoved = true
+                itemAllMoved = false
                 if dropUnmovedOnGround then
-                    sourceOwner = sourceOwner or targetInventory.entity_owner
+                    sourceOwner = sourceOwner or targetInventory.entity_owner or targetInventory.player_owner
                     sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = itemStack.name, count = remaining}, true, sourceOwner.force, false)
                 end
             end
         end
     end
 
-    return not itemsNotMoved
+    return itemAllMoved
 end
 
 Utils.TryTakeGridsItems = function(sourceGrid, targetInventory, dropUnmovedOnGround)
     -- Can only move the item name and count via API, Facotrio doesn't support putting equipment objects in an inventory. Updates the passed in grid object.
-    local sourceOwner, itemsNotMoved = nil, false
+    -- Returns true/false if all items were moved successfully.
+    if sourceGrid == nil then
+        return
+    end
+    local sourceOwner, itemAllMoved = nil, true
+    if dropUnmovedOnGround == nil then
+        dropUnmovedOnGround = false
+    end
     for _, equipment in pairs(sourceGrid.equipment) do
         local moved = targetInventory.insert({name = equipment.name, count = 1})
         if moved > 0 then
             sourceGrid.take({equipment = equipment})
         end
         if moved == 0 then
-            itemsNotMoved = true
+            itemAllMoved = false
             if dropUnmovedOnGround then
-                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner = sourceOwner or targetInventory.entity_owner or targetInventory.player_owner
                 sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = equipment.name, count = 1}, true, sourceOwner.force, false)
             end
         end
     end
-    return not itemsNotMoved
+    return itemAllMoved
 end
 
 Utils.TryInsertInventoryContents = function(contents, targetInventory, dropUnmovedOnGround, ratioToMove)
     -- Just takes a list of item names and counts that you get from the inventory.get_contents(). Updates the passed in contents object.
-    if contents == nil then
+    -- Returns true/false if all items were moved successfully.
+    if contents == nil or #contents == 0 then
         return
     end
-    local sourceOwner, itemsNotMoved = nil, false
+    local sourceOwner, itemAllMoved = nil, true
+    if dropUnmovedOnGround == nil then
+        dropUnmovedOnGround = false
+    end
+    if ratioToMove == nil then
+        ratioToMove = 1
+    end
     for name, count in pairs(contents) do
         local toMove = math.ceil(count * ratioToMove)
         local moved = targetInventory.insert({name = name, count = toMove})
@@ -865,22 +885,29 @@ Utils.TryInsertInventoryContents = function(contents, targetInventory, dropUnmov
             contents[name] = remaining
         end
         if remaining > 0 then
-            itemsNotMoved = true
+            itemAllMoved = false
             if dropUnmovedOnGround then
-                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner = sourceOwner or targetInventory.entity_owner or targetInventory.player_owner
                 sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = name, count = remaining}, true, sourceOwner.force, false)
             end
         end
     end
-    return not itemsNotMoved
+    return itemAllMoved
 end
 
 Utils.TryInsertSimpleItems = function(contents, targetInventory, dropUnmovedOnGround, ratioToMove)
     -- Takes a table of SimpleItemStack and inserts them in to an inventory. Updates the passed in contents object.
+    -- Returns true/false if all items were moved successfully.
     if contents == nil or #contents == 0 then
         return
     end
-    local sourceOwner, itemsNotMoved = nil, false
+    local sourceOwner, itemAllMoved = nil, true
+    if dropUnmovedOnGround == nil then
+        dropUnmovedOnGround = false
+    end
+    if ratioToMove == nil then
+        ratioToMove = 1
+    end
     for index, simpleItemStack in pairs(contents) do
         local toMove = math.ceil(simpleItemStack.count * ratioToMove)
         local moved = targetInventory.insert({name = simpleItemStack.name, count = toMove, health = simpleItemStack.health, durability = simpleItemStack.durablilty, ammo = simpleItemStack.ammo})
@@ -889,14 +916,14 @@ Utils.TryInsertSimpleItems = function(contents, targetInventory, dropUnmovedOnGr
             contents[index].count = remaining
         end
         if remaining > 0 then
-            itemsNotMoved = true
+            itemAllMoved = false
             if dropUnmovedOnGround then
-                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner = sourceOwner or targetInventory.entity_owner or targetInventory.player_owner
                 sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = simpleItemStack.name, count = remaining}, true, sourceOwner.force, false)
             end
         end
     end
-    return not itemsNotMoved
+    return itemAllMoved
 end
 
 Utils.GetBuilderInventory = function(builder)

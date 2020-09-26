@@ -1,4 +1,23 @@
 ---------------------------------------------------------------------------------------------------
+Version: 19.0.6
+Date: 2020-09-26
+  Features:
+    - When a single train unit is blueprinted its schedule is kept. Only supports a single train unit within a bluprint, otherwise all single train units in the blueprint get the same schedule.
+    - When a single train unit is blueprinted its cargo inventory filtering and limit (red bar) is applied to the pasted copies.
+  Changes:
+    - Remove the mod tracking single train units via force grouping. Wasn't used for anything and prevent single train units parts changing force.
+    - Single Train Units with equipment grids added have them on all parts now, not just the wagon part. Means legs and shields can be used across the train.
+    - When mining any part of a single train unit the mod will take all the items from the other parts of the unit to try and fill your inventory first. This should reduce the games habit of mining things and dumping contents from other parts of the unit on the ground. This may lead to slightly odd items left in a train if you can't take it all, but better than leaving lots of contents on the floor.
+  Bugfixes:
+    - Fix event mismatch error when loading the mod on to an existing save.
+    - Made the migration scripts only run for when upgrading from older versions than their features were introduced at.
+    - Fix error if only tiles (no entities) are in a Blueprint.
+    - Fix loss of collecting cargo wagon contents before trying to mine a single unit train from previous change.
+    - Fix grid equipment beign lost if a player mined a unit and their inventory was filled, but Facotrio still mined the part of the single train unit.
+    - Fix error when player driven vehicle causes collision damage to single train unit.
+  Info:
+    - Track Wagon unit numbers (ids) better so I can keep the global tables clean.
+---------------------------------------------------------------------------------------------------
 Version: 19.0.5
 Date: 2020-09-19
   Features:

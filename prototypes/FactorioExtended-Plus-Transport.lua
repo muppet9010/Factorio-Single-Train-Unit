@@ -18,7 +18,8 @@ local improvementTiers = {
             color = {r = 0.4, g = 0.804, b = 0.667, a = 0.8},
             max_health = 2000,
             max_speed = 1.6,
-            air_resistance = 0.005
+            air_resistance = 0.005,
+            equipment_grid = "car-medium-equipment-grid"
         },
         ["cargo-loco"] = {
             reversing_power_modifier = 0.8,
@@ -26,8 +27,7 @@ local improvementTiers = {
         },
         ["cargo-wagon"] = {
             inventory_size = 60 / 2,
-            friction_force = 0.25,
-            equipment_grid = "car-medium-equipment-grid"
+            friction_force = 0.25
         },
         ["cargo-placement"] = {
             prototypeAttributes = {
@@ -47,8 +47,7 @@ local improvementTiers = {
         },
         ["fluid-wagon"] = {
             capacity = 75000 / 2,
-            friction_force = 0.25,
-            equipment_grid = "car-medium-equipment-grid"
+            friction_force = 0.25
         },
         ["fluid-placement"] = {
             prototypeAttributes = {
@@ -68,7 +67,8 @@ local improvementTiers = {
             color = {r = 0.690, g = 0.75, b = 1},
             max_health = 2000,
             max_speed = 2,
-            air_resistance = 0.0025
+            air_resistance = 0.0025,
+            equipment_grid = "car-large-equipment-grid"
         },
         ["cargo-loco"] = {
             reversing_power_modifier = 1,
@@ -76,13 +76,10 @@ local improvementTiers = {
         },
         ["cargo-wagon"] = {
             inventory_size = 100 / 2,
-            friction_force = 0.01,
-            equipment_grid = "car-large-equipment-grid"
+            friction_force = 0.01
         },
         ["cargo-placement"] = {
-            prototypeAttributes = {
-                equipment_grid = "car-large-equipment-grid"
-            },
+            prototypeAttributes = {},
             recipe = {
                 {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk2"), 2},
                 {"electric-engine-unit", 40},
@@ -98,13 +95,10 @@ local improvementTiers = {
         },
         ["fluid-wagon"] = {
             capacity = 175000 / 2,
-            friction_force = 0.01,
-            equipment_grid = "car-large-equipment-grid"
+            friction_force = 0.01
         },
         ["fluid-placement"] = {
-            prototypeAttributes = {
-                equipment_grid = "car-large-equipment-grid"
-            },
+            prototypeAttributes = {},
             recipe = {
                 {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk2"), 2},
                 {"electric-engine-unit", 40},
@@ -132,8 +126,10 @@ for mk, improvementDetails in pairs(improvementTiers) do
                 for key, value in pairs(improvementDetails[baseStaticData.unitType .. "-loco"]) do
                     entityVariant[key] = value
                 end
-                for key, value in pairs(placementDetails.prototypeAttributes) do
-                    entityVariant[key] = value
+                if placementDetails.prototypeAttributes ~= nil then
+                    for key, value in pairs(placementDetails.prototypeAttributes) do
+                        entityVariant[key] = value
+                    end
                 end
                 entityVariant.pictures.layers[1].tint = improvementDetails.generic.color
                 entityVariant.icons[1].tint = improvementDetails.generic.color

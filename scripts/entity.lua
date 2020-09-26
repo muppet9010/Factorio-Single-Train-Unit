@@ -13,17 +13,18 @@ end
 
 Entity.CreateGlobals = function()
     global.entity = global.entity or {}
-    global.entity.forces = global.entity.forces or {}
+    global.entity.singleTrainUnits = global.entity.singleTrainUnits or {}
     --[[
-    global.entity.forces[force.index].singleTrainUnits = {
+    global.entity.singleTrainUnits = {
         id = singleTrainUnitId,
         wagons = {
             forwardLoco = ENTITY, middleCargo = ENTITY, rearLoco = ENTITY
         },
+        wagonIds = {}
         type = STATICDATA WAGON TYPE
-    } -- Force index entries are defined when first used and the intial force entry is generated.
+    }
     --]]
-    global.entity.wagonIdToSingleTrainUnit = global.entity.wagonIdToSingleTrainUnit or {} -- WagonId to lobal.entity.forces[force.index].singleTrainUnits entry
+    global.entity.wagonIdToSingleTrainUnit = global.entity.wagonIdToSingleTrainUnit or {} -- WagonId to global.entity.singleTrainUnits entry
     global.entity.damageSourcesTick = global.entity.damageSourcesTick or 0
     global.entity.damageSourcesThisTick = global.entity.damageSourcesThisTick or {}
 
@@ -35,6 +36,10 @@ Entity.CreateGlobals = function()
 end
 
 Entity.OnLoad = function()
+    if global.entity.muWagonNamesFilter == nil or Utils.IsTableEmpty(global.entity.muWagonNamesFilter) then
+        -- If our globals are empty don't register and wait for the recall after globals populated in startup.
+        return
+    end
     Events.RegisterHandlerEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement, "Entity.OnBuiltEntity_MUPlacement", global.entity.muWagonPlacementNameFilter)
     Events.RegisterHandlerEvent(defines.events.on_train_created, "Entity.OnTrainCreated", Entity.OnTrainCreated)
     Events.RegisterHandlerEvent(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", Entity.OnPlayerMined_MUWagon, "Entity.OnPlayerMined_MUWagon", global.entity.muWagonNamesFilter)
@@ -46,8 +51,8 @@ Entity.OnLoad = function()
     Events.RegisterHandlerEvent(defines.events.on_player_setup_blueprint, "Entity.OnPlayerSetupBlueprint", Entity.OnPlayerSetupBlueprint)
 end
 
-Entity.OnStartup = function()
-    Entity.OnMigration()
+Entity.OnStartup = function(event)
+    Entity.OnMigration(event)
     global.entity.muWagonNamesFilter = Entity.GenerateMuWagonNamesFilter()
     global.entity.muWagonPlacementNameFilter = Entity.GenerateMuWagonPlacementNameFilter()
     local placementNameFilterForMerge = Utils.DeepCopy(global.entity.muWagonPlacementNameFilter)
@@ -56,20 +61,81 @@ Entity.OnStartup = function()
     Entity.OnLoad() -- need to update dynmaic filter registration lists
 end
 
-Entity.OnMigration = function()
+Entity.OnMigration = function(event)
+    local singleTrainUnitModVersion
+    if event ~= nil and event.mod_changes ~= nil and event.mod_changes.single_train_unit ~= nil and event.mod_changes.single_train_unit.old_version ~= nil then
+        singleTrainUnitModVersion = event.mod_changes.single_train_unit.old_version
+    else
+        singleTrainUnitModVersion = game.active_mods.single_train_unit
+    end
+
+    -- Remove the old forces groupings in global
+    if singleTrainUnitModVersion < "19.0.6" and global.entity.forces ~= nil then
+        local trainCount = 0
+        for _, forceGrouping in pairs(global.entity.forces) do
+            for _, stu in pairs(forceGrouping.singleTrainUnits) do
+                trainCount = trainCount + 1
+                global.entity.singleTrainUnits[trainCount] = stu
+                stu.id = trainCount
+            end
+        end
+        global.entity.forces = nil
+    end
+
+    -- Populate wagonIds attribute for global singleTrainUnits valid wagons
+    if singleTrainUnitModVersion < "19.0.6" then
+        for _, singleTrainUnit in pairs(global.entity.singleTrainUnits) do
+            if singleTrainUnit.wagonIds == nil then
+                singleTrainUnit.wagonIds = {}
+                for _, wagon in pairs(singleTrainUnit.wagons) do
+                    if wagon.valid then
+                        table.insert(singleTrainUnit.wagonIds, wagon.unit_number)
+                    end
+                end
+            end
+        end
+    end
+
+    -- Remove any invalid global singleTrainUnits - can happen from mods being removed that added unique ones in, etc. So always do it.
+    for index, singleTrainUnit in pairs(global.entity.singleTrainUnits) do
+        local invalidWagon = false
+        for _, wagon in pairs(singleTrainUnit.wagons) do
+            if not wagon.valid then
+                invalidWagon = true
+                break
+            end
+        end
+        if invalidWagon then
+            for _, wagonId in pairs(singleTrainUnit.wagonIds) do
+                global.entity.wagonIdToSingleTrainUnit[wagonId] = nil
+            end
+            global.entity.singleTrainUnits[index] = nil
+        end
+    end
+
+    -- Remove any orphaned global wagonIdToSingleTrainUnit entries - can happen from before the wagonIds where tracked in a single train unit.
+    if singleTrainUnitModVersion < "19.0.6" then
+        for wagonId, singleTrainUnit in pairs(global.entity.wagonIdToSingleTrainUnit) do
+            if global.entity.singleTrainUnits[singleTrainUnit.id] == nil then
+                global.entity.wagonIdToSingleTrainUnit[wagonId] = nil
+            end
+        end
+    end
+
     -- Fix the missing .type on earlier versions
-    for _, force in pairs(global.entity.forces) do
-        for index, singleTrainUnit in pairs(force.singleTrainUnits) do
+    if singleTrainUnitModVersion < "19.0.4" then
+        for index, singleTrainUnit in pairs(global.entity.singleTrainUnits) do
             if singleTrainUnit.wagons == nil or singleTrainUnit.wagons.middleCargo == nil or not singleTrainUnit.wagons.middleCargo.valid then
-                force.singleTrainUnits[index] = nil
+                global.entity.singleTrainUnits[index] = nil
             elseif singleTrainUnit.type == nil then
                 singleTrainUnit.type = StaticData.entityNames[singleTrainUnit.wagons.middleCargo.name].unitType
             end
         end
     end
+
     -- Fix any damaged loco parts now that only the wagon takes damage
-    for _, force in pairs(global.entity.forces) do
-        for index, singleTrainUnit in pairs(force.singleTrainUnits) do
+    if singleTrainUnitModVersion < "19.0.5" then
+        for index, singleTrainUnit in pairs(global.entity.singleTrainUnits) do
             if singleTrainUnit.wagons.forwardLoco.health <= singleTrainUnit.wagons.forwardLoco.prototype.max_health then
                 singleTrainUnit.wagons.forwardLoco.health = singleTrainUnit.wagons.forwardLoco.prototype.max_health
             end
@@ -178,25 +244,40 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     end
     local health = entity.health
     local fuelRequestProxy = surface.find_entities_filtered {position = entity.position, type = "item-request-proxy"}[1]
+    local schedule = entity.train.schedule
 
     entity.destroy()
     local wagons = {forwardLoco = nil, middleCargo = nil, rearLoco = nil}
 
     wagons.forwardLoco = Entity.PlaceWagon(locoStaticData.name, forwardLocoPosition, surface, force, forwardLocoDirection)
     if wagons.forwardLoco == nil then
-        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Front Loco", event.replaced, event, fuelInventoryContents, health)
+        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Front Loco", event.replaced, event, fuelInventoryContents, health, schedule)
         return
     end
+    wagons.forwardLoco.train.schedule = schedule
 
     wagons.middleCargo = Entity.PlaceWagon(wagonStaticData.name, middleCargoPosition, surface, force, middleCargoDirection)
     if wagons.middleCargo == nil then
-        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Middle Cargo Wagon", event.replaced, event, fuelInventoryContents, health)
+        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Middle Wagon", event.replaced, event, fuelInventoryContents, health, schedule)
         return
+    end
+    if event.tags ~= nil then
+        local cargoInventory = wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon)
+        if cargoInventory ~= nil then
+            if event.tags["single_train_unit-wagon_inventory_filters"] ~= nil then
+                for _, filteredSlot in pairs(event.tags["single_train_unit-wagon_inventory_filters"]) do
+                    cargoInventory.set_filter(filteredSlot.index, filteredSlot.name)
+                end
+            end
+            if event.tags["single_train_unit-wagon_inventory_bar"] ~= nil then
+                cargoInventory.set_bar(event.tags["single_train_unit-wagon_inventory_bar"])
+            end
+        end
     end
 
     wagons.rearLoco = Entity.PlaceWagon(locoStaticData.name, rearLocoPosition, surface, force, rearLocoDirection)
     if wagons.rearLoco == nil then
-        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Rear Loco", event.replaced, event, fuelInventoryContents, health)
+        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Rear Loco", event.replaced, event, fuelInventoryContents, health, schedule)
         return
     end
 
@@ -250,7 +331,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
 
     wagons.middleCargo.health = health
 
-    Entity.RecordSingleUnit(force, wagons, wagonStaticData.unitType)
+    Entity.RecordSingleUnit(wagons, wagonStaticData.unitType)
 end
 
 Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
@@ -271,7 +352,7 @@ Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
     return wagon
 end
 
-Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, failedOnName, eventReplaced, event, fuelInventoryContents, health)
+Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, failedOnName, eventReplaced, event, fuelInventoryContents, health, schedule)
     -- As we failed to place all the expected parts remove any placed. Then place the origional wagon placement entity back, but backwards. Calling the replacement process on this reversed placement wagon generally works for any standard use cases because Factorio.
     local builder = event.robot or game.get_player(event.player_index)
     local builderInventory = Utils.GetBuilderInventory(builder)
@@ -295,6 +376,7 @@ Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityP
     if placedWagon ~= nil then
         Utils.TryInsertInventoryContents(fuelInventoryContents, placedWagon.get_fuel_inventory(), true, 1)
         placedWagon.health = health
+        placedWagon.train.schedule = schedule
     else
         Logging.LogPrint("ERROR: " .. "failed to place origional " .. placedEntityName .. " back at " .. Logging.PositionToString(placedEntityPosition) .. " with new direction: " .. placedEntityDirection)
         Utils.TryInsertSimpleItems(placementSimpleItemStackTable, builderInventory, true, 1)
@@ -306,35 +388,30 @@ Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityP
     Entity.OnBuiltEntity_MUPlacement({created_entity = placedWagon, replaced = true, robot = event.robot, player_index = event.player_index})
 end
 
-Entity.RecordSingleUnit = function(force, wagons, type)
-    global.entity.forces[force.index] =
-        global.entity.forces[force.index] or
-        {
-            singleTrainUnits = {}
-        }
-    local forcesEntry = global.entity.forces[force.index]
-    local singleTrainUnitId = #forcesEntry.singleTrainUnits + 1
-    forcesEntry.singleTrainUnits[singleTrainUnitId] = {
+Entity.RecordSingleUnit = function(wagons, type)
+    local singleTrainUnitId = #global.entity.singleTrainUnits + 1
+    global.entity.singleTrainUnits[singleTrainUnitId] = {
         id = singleTrainUnitId,
         wagons = wagons,
+        wagonIds = {},
         type = type
     }
+    local singleTrainUnit = global.entity.singleTrainUnits[singleTrainUnitId]
     for _, wagon in pairs(wagons) do
-        global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = forcesEntry.singleTrainUnits[singleTrainUnitId]
+        global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = singleTrainUnit
+        table.insert(singleTrainUnit.wagonIds, wagon.unit_number)
     end
 end
 
-Entity.DeleteSingleUnitRecord = function(force, singleTrainUnitId)
-    local forcesEntry = global.entity.forces[force.index]
-    if forcesEntry == nil or forcesEntry.singleTrainUnits[singleTrainUnitId] == nil then
+Entity.DeleteSingleUnitRecord = function(singleTrainUnitId)
+    local singleTrainUnit = global.entity.singleTrainUnits[singleTrainUnitId]
+    if singleTrainUnit == nil then
         return
     end
-    for _, wagon in pairs(forcesEntry.singleTrainUnits[singleTrainUnitId].wagons) do
-        if wagon.valid then
-            global.entity.wagonIdToSingleTrainUnit[wagon.unit_number] = nil
-        end
+    for _, wagonId in pairs(singleTrainUnit.wagonIds) do
+        global.entity.wagonIdToSingleTrainUnit[wagonId] = nil
     end
-    forcesEntry.singleTrainUnits[singleTrainUnitId] = nil
+    global.entity.singleTrainUnits[singleTrainUnitId] = nil
 end
 
 Entity.OnTrainCreated = function(event)
@@ -385,11 +462,17 @@ Entity.OnPlayerMined_MUWagon = function(event)
     end
 
     local player = game.get_player(event.player_index)
+    local playerInventory = player.get_main_inventory()
     local thisUnitsWagons = Utils.DeepCopy(singleTrainUnit.wagons)
-    Entity.DeleteSingleUnitRecord(force, singleTrainUnit.id)
+    Entity.DeleteSingleUnitRecord(singleTrainUnit.id)
     local thisWagonId = minedWagon.unit_number
 
     for _, wagon in pairs(thisUnitsWagons) do
+        -- Take any grid equipment left over as otherwise it will be lost by this point.
+        local wagonGrid = wagon.grid
+        if wagonGrid ~= nil then
+            Utils.TryTakeGridsItems(wagonGrid, playerInventory, true)
+        end
         if wagon.valid and wagon.unit_number ~= thisWagonId then
             player.mine_entity(wagon, force)
         end
@@ -397,24 +480,57 @@ Entity.OnPlayerMined_MUWagon = function(event)
 end
 
 Entity.OnPrePlayerMined_MUWagon = function(event)
-    --This tries to take all the cargo items, then fuel before the actual MU Wagon entiies get mined. If the train contents are more than the players inventory space this will mean the players inventory fills up and then the game will naturally not try to mine the train entities themselves.
+    -- This tries to take all the other contents (cargo items, fuel, grid) of the train than the part you mined first. If the mined entity contents are more than the players inventory space this will mean the players inventory fills up and then the game will naturally not try to mine the train entities themselves. So we fill it up from other parts first to let the game behave naturally.
     local minedWagon = event.entity
     local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[minedWagon.unit_number]
     if singleTrainUnit == nil then
         return
     end
-
+    local minedWagonStaticData = global.entity.muWagonVariants[minedWagon.name]
     local player = game.get_player(event.player_index)
     local playerInventory = player.get_main_inventory()
-    if singleTrainUnit.type == "cargo-wagon" then
-        Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon), playerInventory, false, 1)
+
+    local cargoAllMoved, firstCargoStack, cargoWagonInventory = true, nil, nil
+    if singleTrainUnit.type == "cargo" then
+        cargoWagonInventory = singleTrainUnit.wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon)
+        if cargoWagonInventory ~= nil then
+            local cargoWagonInventoryContents = cargoWagonInventory.get_contents()
+            for name, count in pairs(cargoWagonInventoryContents) do
+                local itemPrototype = game.item_prototypes[name]
+                if itemPrototype.type == "item" then
+                    firstCargoStack = {name = name, count = math.min(itemPrototype.stack_size, count)}
+                    break
+                end
+            end
+            cargoAllMoved = Utils.TryMoveInventoriesLuaItemStacks(cargoWagonInventory, playerInventory)
+        end
     end
-    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory, false, 1)
-    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), playerInventory, false, 1)
+    if not cargoAllMoved then
+        return
+    elseif minedWagonStaticData.unitType == "cargo" and minedWagonStaticData.type == "wagon" and firstCargoStack ~= nil then
+        -- You are mining the wagon part, so put 1 stack back to block the final entity mine if we fill up from other parts of the train.
+        local inserted = cargoWagonInventory.insert(firstCargoStack)
+        playerInventory.remove({name = firstCargoStack.name, count = inserted})
+    end
+
+    local fuelAllMoved
+    fuelAllMoved = Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory)
+    if not fuelAllMoved then
+        return
+    end
+    fuelAllMoved = Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), playerInventory)
+    if not fuelAllMoved then
+        return
+    end
+
+    local gridAllMoved
     for _, wagon in pairs(singleTrainUnit.wagons) do
         local wagonGrid = wagon.grid
         if wagonGrid ~= nil then
-            Utils.TryTakeGridsItems(wagonGrid, playerInventory, false)
+            gridAllMoved = Utils.TryTakeGridsItems(wagonGrid, playerInventory)
+            if not gridAllMoved then
+                return
+            end
         end
     end
 end
@@ -425,10 +541,9 @@ Entity.GetDamageCauseString = function(event)
         causeString = "unknown"
     else
         causeString = event.cause.name
-        if event.cause.player then
+        if event.cause.type == "character" and event.cause.player then
             causeString = causeString .. "_" .. event.cause.player.name
-        end
-        if event.cause.unit_number then
+        elseif event.cause.unit_number then
             causeString = causeString .. "_" .. event.cause.unit_number
         end
     end
@@ -488,28 +603,28 @@ Entity.OnEntityDied_MUWagon = function(event)
         end
     end
 
-    Entity.DeleteSingleUnitRecord(event.force, singleTrainUnit.id)
+    Entity.DeleteSingleUnitRecord(singleTrainUnit.id)
 end
 
 Entity.OnRobotMinedEntity_MUWagons = function(event)
-    -- Try to move the fuel contents in to the robot picking up the item. In some cases the items will fall on the ground from the construction robot, but marked for decon, etc. This is vanilla behaviour, i.e rocks.
+    -- Try to move the various contents in to the robot picking up the item. In some cases the items will fall on the ground from the construction robot, but marked for decon, etc. This is vanilla behaviour, i.e rocks.
     local minedWagon, buffer = event.entity, event.buffer
     local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[minedWagon.unit_number]
     if singleTrainUnit == nil then
         return
     end
 
-    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), buffer, false, 1)
-    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), buffer, false, 1)
+    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), buffer)
+    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), buffer)
     for _, wagon in pairs(singleTrainUnit.wagons) do
         local wagonGrid = wagon.grid
         if wagonGrid ~= nil then
-            Utils.TryTakeGridsItems(wagonGrid, buffer, false)
+            Utils.TryTakeGridsItems(wagonGrid, buffer)
         end
     end
 
-    local thisUnitsWagons, force = Utils.DeepCopy(singleTrainUnit.wagons), minedWagon.force
-    Entity.DeleteSingleUnitRecord(force, singleTrainUnit.id)
+    local thisUnitsWagons = Utils.DeepCopy(singleTrainUnit.wagons)
+    Entity.DeleteSingleUnitRecord(singleTrainUnit.id)
     local thisWagonId = minedWagon.unit_number
 
     for _, wagon in pairs(thisUnitsWagons) do
@@ -520,13 +635,17 @@ Entity.OnRobotMinedEntity_MUWagons = function(event)
 end
 
 Entity.OnPlayerSetupBlueprint = function(event)
+    -- We could try and work out what parts relate to which single train units. Then use this to set the schedule fuel uniquely per single train unit. But we don't as seems a lot of effort for real edge cases.
     local player = game.get_player(event.player_index)
     local blueprint = player.blueprint_to_setup
     if not blueprint.valid_for_read then
         return
     end
     local entities = blueprint.get_blueprint_entities()
-    local placementWagons, fuelTrackingTable = {}, {}
+    if entities == nil then
+        return
+    end
+    local placementWagons, fuelTrackingTable, schedule = {}, {}, nil
     for index, entity in pairs(entities) do
         local staticData = global.entity.muWagonVariants[entity.name]
         if staticData ~= nil then
@@ -536,10 +655,26 @@ Entity.OnPlayerSetupBlueprint = function(event)
                         Utils.TrackBestFuelCount(fuelTrackingTable, itemName, itemCount)
                     end
                 end
+                if schedule == nil and entity.schedule then
+                    -- We apply the same schedule found to all Single Train Units in the BP.
+                    schedule = entity.schedule
+                end
                 entities[index] = nil
             elseif staticData.type == "wagon" then
                 entity.name = staticData.placementStaticData.name
+                if schedule ~= nil then
+                    entity.schedule = schedule
+                end
                 table.insert(placementWagons, entity)
+                if entity.inventory ~= nil then
+                    entity.tags = entity.tags or {}
+                    if entity.inventory.filters ~= nil then
+                        entity.tags["single_train_unit-wagon_inventory_filters"] = entity.inventory.filters
+                    end
+                    if entity.inventory.bar ~= nil then
+                        entity.tags["single_train_unit-wagon_inventory_bar"] = entity.inventory.bar
+                    end
+                end
             end
         end
     end

@@ -15,11 +15,15 @@ MOD.eventFilters = MOD.eventFilters or {}
 -- Called from OnLoad() from each script file. Registers the event in Factorio and the handler function for all event types and custom inputs.
 -- Filtered events have to expect to recieve results outside of their filter. As an event can only be registered one time, with multiple instances the most lienient or merged filters for all instances must be applied.
 -- Returns the eventId, useful for custom event names when you need to store the eventId to return via a remote interface call.
+-- If an empty table (not nil) is passed in to filterData then no event is registered and not eventId is returned. This is really for when a filter is dynamically generated and so we don;t want to do anything for an empty filer table oddity.
 Events.RegisterHandlerEvent = function(eventName, handlerName, handlerFunction, thisFilterName, thisFilterData)
     if eventName == nil or handlerName == nil or handlerFunction == nil then
         error("Events.RegisterHandler called with missing arguments")
     end
     local eventId = Events._RegisterEvent(eventName, thisFilterName, thisFilterData)
+    if eventId == nil then
+        return nil
+    end
     MOD.events[eventId] = MOD.events[eventId] or {}
     MOD.events[eventId][handlerName] = handlerFunction
     return eventId
@@ -94,15 +98,19 @@ Events._RegisterEvent = function(eventName, thisFilterName, thisFilterData)
     thisFilterData = Utils.DeepCopy(thisFilterData) -- Deepcopy it so if a persisted or shared table is passed in we don't cause changes to source table.
     if type(eventName) == "number" then
         eventId = eventName
-        if not Utils.IsTableEmpty(thisFilterData) then
+        if thisFilterData ~= nil then
+            if Utils.IsTableEmpty(thisFilterData) then
+                -- filter isn't nil, but has no data, so as this won't register to any filters just drop it.
+                return nil
+            end
             MOD.eventFilters[eventId] = MOD.eventFilters[eventId] or {}
             MOD.eventFilters[eventId][thisFilterName] = thisFilterData
             local currentFilter, currentHandler = script.get_event_filter(eventId), script.get_event_handler(eventId)
             if currentHandler ~= nil and currentFilter == nil then
-                --an event is registered already and has no filter, so already fully lienent.
+                -- an event is registered already and has no filter, so already fully lienent.
                 return eventId
             else
-                --add new filter to any existing old filter and let it be re-applied.
+                -- add new filter to any existing old filter and let it be re-applied.
                 filterData = {}
                 for _, filterTable in pairs(MOD.eventFilters[eventId]) do
                     filterTable[1].mode = "or"

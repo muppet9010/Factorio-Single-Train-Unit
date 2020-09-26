@@ -9,9 +9,15 @@
 	- Add a second graphic option to use a tram render suggested by Klonan: https://sketchfab.com/3d-models/tatra-t3-76aa08d7c06340fc89229551c45e3c3a
 
 - Deferred:
-    - Handle other mods placeing our placement entity. By raising events it may trigger mods that currently ignore us.
+    - Handle other mods placeing our placement entity. By raising events it may trigger mods that currently ignore us. i.e.
+         - Renai Transportation
     - Chase up with other mods support for mine:
         - Electric Trains
+	- Look at compatibility with SpaceX and Krastorio 2.
+	- Electronic Locomotives & Electronic Factorio Extended Locomotives (this shows how to use the remote call to register)
+	- Support for bobs trains: https://mods.factorio.com/mod/boblogistics
+	- Support for bobs vehicle equipment: https://mods.factorio.com/mod/bobvehicleequipment
+	- Do a single ended version, with a 4 tile large cargo area.
 
 - Not Possible (presently):
     - Share color settings on the 2 locos and apply to the single combined graphic. No simple event to flag when color is changed so not sure how to detect this. Maybe train the train GUI being opened/closed and apply colors then ?
@@ -19,6 +25,13 @@
     - Be able to detach single unit trains from other rolling stock. Not possible as the event is identical for when each part of a single unit train is being attached as to when a user tries to detach it. I currently track whne the unit is broken up and rejoin the correct bit. I would then need to track the joined event and somehow track which the old end of train unit part was and then detach the next non unit part of the train. Can't do it in the origonal event so will get very messy.
 
 
+Chopping Up Source Images
+------------------
 https://ezgif.com/sprite-cutter
 Locomotive HR Spritesheet: 474 x 458
 Cargo Wagon HR Spritesheet: 442 x 407
+
+Making New Sprite Sheets
+----------------------
+GlueIt - local exe downloaded
+https://github.com/Kavex/GlueIT
