@@ -36,6 +36,10 @@ Entity.CreateGlobals = function()
 end
 
 Entity.OnLoad = function()
+    if global.entity.muWagonNamesFilter == nil or Utils.IsTableEmpty(global.entity.muWagonNamesFilter) then
+        -- If our globals are empty don't register and wait for the recall after globals populated in startup.
+        return
+    end
     Events.RegisterHandlerEvent(defines.events.on_built_entity, "Entity.OnBuiltEntity_MUPlacement", Entity.OnBuiltEntity_MUPlacement, "Entity.OnBuiltEntity_MUPlacement", global.entity.muWagonPlacementNameFilter)
     Events.RegisterHandlerEvent(defines.events.on_train_created, "Entity.OnTrainCreated", Entity.OnTrainCreated)
     Events.RegisterHandlerEvent(defines.events.on_player_mined_entity, "Entity.OnPlayerMined_MUWagon", Entity.OnPlayerMined_MUWagon, "Entity.OnPlayerMined_MUWagon", global.entity.muWagonNamesFilter)
