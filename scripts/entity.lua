@@ -469,24 +469,57 @@ Entity.OnPlayerMined_MUWagon = function(event)
 end
 
 Entity.OnPrePlayerMined_MUWagon = function(event)
-    --This tries to take all the cargo items, then fuel before the actual MU Wagon entiies get mined. If the train contents are more than the players inventory space this will mean the players inventory fills up and then the game will naturally not try to mine the train entities themselves.
+    --This tries to take all the other contents (cargo items, fuel, grid) of the train than the part you mined first. If the mined entity contents are more than the players inventory space this will mean the players inventory fills up and then the game will naturally not try to mine the train entities themselves. So we fill it up from other parts first to let the game behave naturally.
     local minedWagon = event.entity
     local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[minedWagon.unit_number]
     if singleTrainUnit == nil then
         return
     end
-
+    local minedWagonStaticData = global.entity.muWagonVariants[minedWagon.name]
     local player = game.get_player(event.player_index)
     local playerInventory = player.get_main_inventory()
-    if singleTrainUnit.type == "cargo-wagon" then
-        Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon), playerInventory, false, 1)
+
+    local cargoAllMoved, firstCargoStack, cargoWagonInventory = true, nil, nil
+    if singleTrainUnit.type == "cargo" then
+        cargoWagonInventory = singleTrainUnit.wagons.middleCargo.get_inventory(defines.inventory.cargo_wagon)
+        if cargoWagonInventory ~= nil then
+            local cargoWagonInventoryContents = cargoWagonInventory.get_contents()
+            for name, count in pairs(cargoWagonInventoryContents) do
+                local itemPrototype = game.item_prototypes[name]
+                if itemPrototype.type == "item" then
+                    firstCargoStack = {name = name, count = math.min(itemPrototype.stack_size, count)}
+                    break
+                end
+            end
+            cargoAllMoved = Utils.TryMoveInventoriesLuaItemStacks(cargoWagonInventory, playerInventory)
+        end
     end
-    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory, false, 1)
-    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), playerInventory, false, 1)
+    if not cargoAllMoved then
+        return
+    elseif minedWagonStaticData.unitType == "cargo" and minedWagonStaticData.type == "wagon" and firstCargoStack ~= nil then
+        -- You are mining the wagon part, so put 1 stack back to block the final entity mine if we fill up from other parts of the train.
+        local inserted = cargoWagonInventory.insert(firstCargoStack)
+        playerInventory.remove({name = firstCargoStack.name, count = inserted})
+    end
+
+    local fuelAllMoved
+    fuelAllMoved = Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), playerInventory)
+    if not fuelAllMoved then
+        return
+    end
+    fuelAllMoved = Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), playerInventory)
+    if not fuelAllMoved then
+        return
+    end
+
+    local gridAllMoved
     for _, wagon in pairs(singleTrainUnit.wagons) do
         local wagonGrid = wagon.grid
         if wagonGrid ~= nil then
-            Utils.TryTakeGridsItems(wagonGrid, playerInventory, false)
+            gridAllMoved = Utils.TryTakeGridsItems(wagonGrid, playerInventory)
+            if not gridAllMoved then
+                return
+            end
         end
     end
 end
@@ -571,12 +604,12 @@ Entity.OnRobotMinedEntity_MUWagons = function(event)
         return
     end
 
-    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), buffer, false, 1)
-    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), buffer, false, 1)
+    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.forwardLoco.get_fuel_inventory(), buffer)
+    Utils.TryMoveInventoriesLuaItemStacks(singleTrainUnit.wagons.rearLoco.get_fuel_inventory(), buffer)
     for _, wagon in pairs(singleTrainUnit.wagons) do
         local wagonGrid = wagon.grid
         if wagonGrid ~= nil then
-            Utils.TryTakeGridsItems(wagonGrid, buffer, false)
+            Utils.TryTakeGridsItems(wagonGrid, buffer)
         end
     end
 

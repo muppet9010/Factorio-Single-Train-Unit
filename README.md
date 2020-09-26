@@ -45,6 +45,7 @@ Limitations / Known Issues
 - When single train units are blueprinted with fuel in them the highest fuel value type and count across them all is noted and this is used in the ghosted request. As blueprints lose the relationship between the single train unit parts its not possible to keep the fuel to train parts exactly the same.
 - When one single train unit is blueprinted with a schedule, the schedule will be applied correctly. However, if a blueprint has multiple single train units in it, they will all get the same schedule.
 - A single action that does multiple damages at a time (i.e. explosive rocket) will only do the single max damage and not the total cumulative damage. In the case of explosive rockets this means it will lose the lower impact damage, but get the correct higher blast damage. This is the fairest balance solution I can find so far to damage across the multiple parts of the train unit.
+- When a player mines a single train unit the mod will try and take all of the contents before removing the unit, however, in some cases things may still get dropped on the ground. For bot mining,
 - Other mods that try to manipulate the train unit may have issues. Please report anything so I can review it if not listed below already.
 
 
