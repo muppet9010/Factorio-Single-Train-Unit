@@ -537,10 +537,9 @@ Entity.GetDamageCauseString = function(event)
         causeString = "unknown"
     else
         causeString = event.cause.name
-        if event.cause.player then
+        if event.cause.type == "character" and event.cause.player then
             causeString = causeString .. "_" .. event.cause.player.name
-        end
-        if event.cause.unit_number then
+        elseif event.cause.unit_number then
             causeString = causeString .. "_" .. event.cause.unit_number
         end
     end

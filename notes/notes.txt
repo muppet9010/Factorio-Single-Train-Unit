@@ -1,5 +1,4 @@
 - TODO:
-    - Error when an editor driving a train rammed another train and did damage and I then tried to get out of the train.
 
 - Graphics:
     - Add direction indicator to placement graphics to help with snapping to stations.
