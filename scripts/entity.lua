@@ -457,11 +457,17 @@ Entity.OnPlayerMined_MUWagon = function(event)
     end
 
     local player = game.get_player(event.player_index)
+    local playerInventory = player.get_main_inventory()
     local thisUnitsWagons = Utils.DeepCopy(singleTrainUnit.wagons)
     Entity.DeleteSingleUnitRecord(singleTrainUnit.id)
     local thisWagonId = minedWagon.unit_number
 
     for _, wagon in pairs(thisUnitsWagons) do
+        -- Take any grid equipment left over as otherwise it will be lost by this point.
+        local wagonGrid = wagon.grid
+        if wagonGrid ~= nil then
+            Utils.TryTakeGridsItems(wagonGrid, playerInventory, true)
+        end
         if wagon.valid and wagon.unit_number ~= thisWagonId then
             player.mine_entity(wagon, force)
         end
@@ -469,7 +475,7 @@ Entity.OnPlayerMined_MUWagon = function(event)
 end
 
 Entity.OnPrePlayerMined_MUWagon = function(event)
-    --This tries to take all the other contents (cargo items, fuel, grid) of the train than the part you mined first. If the mined entity contents are more than the players inventory space this will mean the players inventory fills up and then the game will naturally not try to mine the train entities themselves. So we fill it up from other parts first to let the game behave naturally.
+    -- This tries to take all the other contents (cargo items, fuel, grid) of the train than the part you mined first. If the mined entity contents are more than the players inventory space this will mean the players inventory fills up and then the game will naturally not try to mine the train entities themselves. So we fill it up from other parts first to let the game behave naturally.
     local minedWagon = event.entity
     local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[minedWagon.unit_number]
     if singleTrainUnit == nil then
@@ -597,7 +603,7 @@ Entity.OnEntityDied_MUWagon = function(event)
 end
 
 Entity.OnRobotMinedEntity_MUWagons = function(event)
-    -- Try to move the fuel contents in to the robot picking up the item. In some cases the items will fall on the ground from the construction robot, but marked for decon, etc. This is vanilla behaviour, i.e rocks.
+    -- Try to move the various contents in to the robot picking up the item. In some cases the items will fall on the ground from the construction robot, but marked for decon, etc. This is vanilla behaviour, i.e rocks.
     local minedWagon, buffer = event.entity, event.buffer
     local singleTrainUnit = global.entity.wagonIdToSingleTrainUnit[minedWagon.unit_number]
     if singleTrainUnit == nil then

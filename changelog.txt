@@ -13,6 +13,7 @@ Date: XXXXX
     - Made the migration scripts only run for when upgrading from older versions than their features were introduced at.
     - Fix error if only tiles (no entities) are in a Blueprint.
     - Fix loss of collecting cargo wagon contents before trying to mine a single unit train from previous change.
+    - Fix grid equipment beign lost if a player mined a unit and their inventory was filled, but Facotrio still mined the part of the single train unit.
   Info:
     - Track Wagon unit numbers (ids) better so I can keep the global tables clean.
 ---------------------------------------------------------------------------------------------------

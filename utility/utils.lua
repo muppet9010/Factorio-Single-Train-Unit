@@ -828,7 +828,7 @@ Utils.TryMoveInventoriesLuaItemStacks = function(sourceInventory, targetInventor
             if remaining > 0 then
                 itemAllMoved = false
                 if dropUnmovedOnGround then
-                    sourceOwner = sourceOwner or targetInventory.entity_owner
+                    sourceOwner = sourceOwner or targetInventory.entity_owner or targetInventory.player_owner
                     sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = itemStack.name, count = remaining}, true, sourceOwner.force, false)
                 end
             end
@@ -856,7 +856,7 @@ Utils.TryTakeGridsItems = function(sourceGrid, targetInventory, dropUnmovedOnGro
         if moved == 0 then
             itemAllMoved = false
             if dropUnmovedOnGround then
-                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner = sourceOwner or targetInventory.entity_owner or targetInventory.player_owner
                 sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = equipment.name, count = 1}, true, sourceOwner.force, false)
             end
         end
@@ -887,7 +887,7 @@ Utils.TryInsertInventoryContents = function(contents, targetInventory, dropUnmov
         if remaining > 0 then
             itemAllMoved = false
             if dropUnmovedOnGround then
-                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner = sourceOwner or targetInventory.entity_owner or targetInventory.player_owner
                 sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = name, count = remaining}, true, sourceOwner.force, false)
             end
         end
@@ -918,7 +918,7 @@ Utils.TryInsertSimpleItems = function(contents, targetInventory, dropUnmovedOnGr
         if remaining > 0 then
             itemAllMoved = false
             if dropUnmovedOnGround then
-                sourceOwner = sourceOwner or targetInventory.entity_owner
+                sourceOwner = sourceOwner or targetInventory.entity_owner or targetInventory.player_owner
                 sourceOwner.surface.spill_item_stack(sourceOwner.position, {name = simpleItemStack.name, count = remaining}, true, sourceOwner.force, false)
             end
         end
