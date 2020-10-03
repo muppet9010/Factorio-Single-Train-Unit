@@ -1,4 +1,5 @@
 - TODO:
+	- Look at compatibility with SpaceX and Krastorio 2.
 
 - Graphics:
     - Add direction indicator to placement graphics to help with snapping to stations.
@@ -13,7 +14,6 @@
          - Renai Transportation
     - Chase up with other mods support for mine:
         - Electric Trains
-	- Look at compatibility with SpaceX and Krastorio 2.
 	- Electronic Locomotives & Electronic Factorio Extended Locomotives (this shows how to use the remote call to register)
 	- Support for bobs trains: https://mods.factorio.com/mod/boblogistics
 	- Support for bobs vehicle equipment: https://mods.factorio.com/mod/bobvehicleequipment

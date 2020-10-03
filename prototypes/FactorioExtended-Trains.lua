@@ -17,15 +17,15 @@ local mk3CargoRefPrototype = data.raw["cargo-wagon"]["cargo-wagon-3"]
 local mk1FluidRefPrototype = data.raw["fluid-wagon"]["fluid-wagon-1"]
 local mk2FluidRefPrototype = data.raw["fluid-wagon"]["fluid-wagon-2"]
 local mk3FluidRefPrototype = data.raw["fluid-wagon"]["fluid-wagon-3"]
-local mk1LocoRefRecipeIngredients = data.raw["recipe"]["locomotive-1"].ingredients
-local mk2LocoRefRecipeIngredients = data.raw["recipe"]["locomotive-2"].ingredients
-local mk3LocoRefRecipeIngredients = data.raw["recipe"]["locomotive-3"].ingredients
-local mk1CargoRefRecipeIngredients = data.raw["recipe"]["cargo-wagon-1"].ingredients
-local mk2CargoRefRecipeIngredients = data.raw["recipe"]["cargo-wagon-2"].ingredients
-local mk3CargoRefRecipeIngredients = data.raw["recipe"]["cargo-wagon-3"].ingredients
-local mk1FluidRefRecipeIngredients = data.raw["recipe"]["fluid-wagon-1"].ingredients
-local mk2FluidRefRecipeIngredients = data.raw["recipe"]["fluid-wagon-2"].ingredients
-local mk3FluidRefRecipeIngredients = data.raw["recipe"]["fluid-wagon-3"].ingredients
+local mk1LocoRefRecipeIngredients = data.raw["recipe"]["locomotive-1"].ingredients or data.raw["recipe"]["locomotive-1"].normal.ingredients
+local mk2LocoRefRecipeIngredients = data.raw["recipe"]["locomotive-2"].ingredients or data.raw["recipe"]["locomotive-2"].normal.ingredients
+local mk3LocoRefRecipeIngredients = data.raw["recipe"]["locomotive-3"].ingredients or data.raw["recipe"]["locomotive-3"].normal.ingredients
+local mk1CargoRefRecipeIngredients = data.raw["recipe"]["cargo-wagon-1"].ingredients or data.raw["recipe"]["cargo-wagon-1"].normal.ingredients
+local mk2CargoRefRecipeIngredients = data.raw["recipe"]["cargo-wagon-2"].ingredients or data.raw["recipe"]["cargo-wagon-2"].normal.ingredients
+local mk3CargoRefRecipeIngredients = data.raw["recipe"]["cargo-wagon-3"].ingredients or data.raw["recipe"]["cargo-wagon-3"].normal.ingredients
+local mk1FluidRefRecipeIngredients = data.raw["recipe"]["fluid-wagon-1"].ingredients or data.raw["recipe"]["fluid-wagon-1"].normal.ingredients
+local mk2FluidRefRecipeIngredients = data.raw["recipe"]["fluid-wagon-2"].ingredients or data.raw["recipe"]["fluid-wagon-2"].normal.ingredients
+local mk3FluidRefRecipeIngredients = data.raw["recipe"]["fluid-wagon-3"].ingredients or data.raw["recipe"]["fluid-wagon-3"].normal.ingredients
 
 --[[
     A lot of the values for the entity changes, graphics colors and item ordering is taken from the integratin mod at time of creation.
@@ -53,7 +53,7 @@ local improvementTiers = {
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetIngredientsAddedTogeather(
+            recipe = Utils.GetRecipeIngredientsAddedTogeather(
                 {
                     {
                         {
@@ -96,7 +96,7 @@ local improvementTiers = {
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetIngredientsAddedTogeather(
+            recipe = Utils.GetRecipeIngredientsAddedTogeather(
                 {
                     {
                         {
@@ -146,7 +146,7 @@ local improvementTiers = {
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetIngredientsAddedTogeather(
+            recipe = Utils.GetRecipeIngredientsAddedTogeather(
                 {
                     {
                         {
@@ -189,7 +189,7 @@ local improvementTiers = {
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetIngredientsAddedTogeather(
+            recipe = Utils.GetRecipeIngredientsAddedTogeather(
                 {
                     {
                         {
@@ -239,7 +239,7 @@ local improvementTiers = {
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetIngredientsAddedTogeather(
+            recipe = Utils.GetRecipeIngredientsAddedTogeather(
                 {
                     {
                         {
@@ -282,7 +282,7 @@ local improvementTiers = {
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetIngredientsAddedTogeather(
+            recipe = Utils.GetRecipeIngredientsAddedTogeather(
                 {
                     {
                         {
@@ -350,8 +350,22 @@ for mk, improvementDetails in pairs(improvementTiers) do
 
                 local recipeVariant = Utils.DeepCopy(data.raw["recipe"][baseName])
                 recipeVariant.name = entityVariant.name
-                recipeVariant.ingredients = placementDetails.recipe
-                recipeVariant.result = entityVariant.name
+                if placementDetails.recipe.ingredients ~= nil then
+                    recipeVariant.result = entityVariant.name
+                    recipeVariant.ingredients = placementDetails.recipe.ingredients
+                end
+                if placementDetails.recipe.normal ~= nil then
+                    recipeVariant.normal = {
+                        result = entityVariant.name,
+                        ingredients = placementDetails.recipe.normal
+                    }
+                end
+                if placementDetails.recipe.expensive ~= nil then
+                    recipeVariant.expensive = {
+                        result = entityVariant.name,
+                        ingredients = placementDetails.recipe.expensive
+                    }
+                end
                 data:extend({recipeVariant})
                 table.insert(data.raw["technology"][placementDetails.unlockTech].effects, {type = "unlock-recipe", recipe = entityVariant.name})
             end

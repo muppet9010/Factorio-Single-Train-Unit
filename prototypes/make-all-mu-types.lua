@@ -3,11 +3,11 @@ local StaticData = require("static-data")
 local Constants = require("constants")
 
 local refLocoPrototype = data.raw["locomotive"]["locomotive"]
-local refLocoRecipeIngredients = data.raw["recipe"]["locomotive"].ingredients
+local refLocoRecipe = data.raw["recipe"]["locomotive"]
 local refCargoWagonPrototype = data.raw["cargo-wagon"]["cargo-wagon"]
-local refCargoWagonRecipeIngredients = data.raw["recipe"]["cargo-wagon"].ingredients
+local refCargoWagonRecipe = data.raw["recipe"]["cargo-wagon"]
 local refFluidWagonPrototype = data.raw["fluid-wagon"]["fluid-wagon"]
-local refFluidWagonRecipeIngredients = data.raw["recipe"]["fluid-wagon"].ingredients
+local refFluidWagonRecipe = data.raw["recipe"]["fluid-wagon"]
 local weightMultiplier = settings.startup["single_train_unit-weight_percentage"].value / 100
 local cargoCapacityMultiplier = settings.startup["single_train_unit-wagon_capacity_percentage"].value / 100
 local locoBurnerEffectivityMultiplier = settings.startup["single_train_unit-burner_effectivity_percentage"].value / 100
@@ -227,12 +227,30 @@ end
 local function MakeMuWagonPlacementRecipePrototype(thisStaticData, prototypeData)
     local muWagonPlacementRecipe = {
         type = "recipe",
-        name = thisStaticData.name,
-        energy_required = 6,
-        enabled = false,
-        ingredients = prototypeData.recipeIngredients,
-        result = thisStaticData.name
+        name = thisStaticData.name
     }
+    if prototypeData.recipeIngredients.ingredients ~= nil then
+        muWagonPlacementRecipe.energy_required = Utils.GetRecipeAttribute(refLocoRecipe, "energy_required", "none") * 2
+        muWagonPlacementRecipe.enabled = false
+        muWagonPlacementRecipe.result = thisStaticData.name
+        muWagonPlacementRecipe.ingredients = prototypeData.recipeIngredients.ingredients
+    end
+    if prototypeData.recipeIngredients.normal ~= nil then
+        muWagonPlacementRecipe.normal = {
+            energy_required = Utils.GetRecipeAttribute(refLocoRecipe, "energy_required", "normal") * 2,
+            enabled = false,
+            result = thisStaticData.name,
+            ingredients = prototypeData.recipeIngredients.normal
+        }
+    end
+    if prototypeData.recipeIngredients.expensive ~= nil then
+        muWagonPlacementRecipe.expensive = {
+            energy_required = Utils.GetRecipeAttribute(refLocoRecipe, "energy_required", "expensive") * 2,
+            enabled = false,
+            result = thisStaticData.name,
+            ingredients = prototypeData.recipeIngredients.expensive
+        }
+    end
     data:extend({muWagonPlacementRecipe})
 end
 
@@ -251,7 +269,7 @@ local muCargoPrototypeData = {
             icon_mipmaps = 4
         }
     },
-    recipeIngredients = Utils.GetIngredientsAddedTogeather({{refLocoRecipeIngredients, "add", 2}, {refCargoWagonRecipeIngredients, "highest", 1}}),
+    recipeIngredients = Utils.GetRecipeIngredientsAddedTogeather({{refLocoRecipe, "add", 2}, {refCargoWagonRecipe, "highest", 1}}),
     weight = refCargoWagonPrototype.weight * weightMultiplier
 }
 MakeMULocoPrototype(StaticData.DoubleEndCargoLoco, muLocoPrototypeData)
@@ -269,7 +287,7 @@ local muFluidPrototypeData = {
             icon_mipmaps = 4
         }
     },
-    recipeIngredients = Utils.GetIngredientsAddedTogeather({{refLocoRecipeIngredients, "add", 2}, {refFluidWagonRecipeIngredients, "highest", 1}}),
+    recipeIngredients = Utils.GetRecipeIngredientsAddedTogeather({{refLocoRecipe, "add", 2}, {refFluidWagonRecipe, "highest", 1}}),
     weight = refFluidWagonPrototype.weight * weightMultiplier
 }
 MakeMULocoPrototype(StaticData.DoubleEndFluidLoco, muLocoPrototypeData)

@@ -50,14 +50,17 @@ Limitations / Known Issues
 - Other mods that try to manipulate the train unit may have issues. Please report anything so I can review it if not listed below already.
 
 
-Compatible Mods
+Compatible New Recipe & Tier Mods
+====================
+
+- Battery Pack
+- Factorio Extended
+- Factorio Extended Plus
+- Space Exploration
+- AAI Industry
+
+Compatible Usage Mods
 =============
-
-*Battery Pack*
-Battery pack versions of the trains are included when the mod is enabled.
-
-*Factorio Extended & Factorio Extended Plus*
-Additional tiers of single train units added if each mod is enabled to match the additional locomotive and wagon tiers they add.
 
 *Fill4Me*
 The Fill4Me mod's auto insertion of fuel is applied to both locomotive ends of the single train unit. If you don't have enough fuel then as much as is available will be spread between the 2 locomotives.

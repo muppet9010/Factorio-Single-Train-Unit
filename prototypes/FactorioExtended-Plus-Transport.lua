@@ -46,7 +46,7 @@ local improvementTiers = {
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetIngredientsAddedTogeather(
+            recipe = Utils.GetRecipeIngredientsAddedTogeather(
                 {
                     {
                         {
@@ -87,7 +87,7 @@ local improvementTiers = {
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetIngredientsAddedTogeather(
+            recipe = Utils.GetRecipeIngredientsAddedTogeather(
                 {
                     {
                         {
@@ -137,7 +137,7 @@ local improvementTiers = {
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetIngredientsAddedTogeather(
+            recipe = Utils.GetRecipeIngredientsAddedTogeather(
                 {
                     {
                         {
@@ -178,7 +178,7 @@ local improvementTiers = {
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetIngredientsAddedTogeather(
+            recipe = Utils.GetRecipeIngredientsAddedTogeather(
                 {
                     {
                         {
@@ -245,8 +245,22 @@ for mk, improvementDetails in pairs(improvementTiers) do
 
                 local recipeVariant = Utils.DeepCopy(data.raw["recipe"][baseName])
                 recipeVariant.name = entityVariant.name
-                recipeVariant.ingredients = placementDetails.recipe
-                recipeVariant.result = entityVariant.name
+                if placementDetails.recipe.ingredients ~= nil then
+                    recipeVariant.result = entityVariant.name
+                    recipeVariant.ingredients = placementDetails.recipe.ingredients
+                end
+                if placementDetails.recipe.normal ~= nil then
+                    recipeVariant.normal = {
+                        result = entityVariant.name,
+                        ingredients = placementDetails.recipe.normal
+                    }
+                end
+                if placementDetails.recipe.expensive ~= nil then
+                    recipeVariant.expensive = {
+                        result = entityVariant.name,
+                        ingredients = placementDetails.recipe.expensive
+                    }
+                end
                 data:extend({recipeVariant})
                 table.insert(data.raw["technology"][placementDetails.unlockTech].effects, {type = "unlock-recipe", recipe = entityVariant.name})
             end
