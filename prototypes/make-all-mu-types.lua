@@ -196,7 +196,7 @@ local function MakeMuWagonPlacementPrototype(thisStaticData, wagonPrototypeData,
     muWagonPlacement.wheels = Utils.EmptyRotatedSprite()
     muWagonPlacement.pictures = itsWagonPrototype.pictures
     muWagonPlacement.icons = wagonPrototypeData.icons
-    muWagonPlacement.weight = (locoPrototypeData.weight * 2) + wagonPrototypeData.weight -- Weight of both loco ends plus the wagon part
+    muWagonPlacement.weight = (locoPrototypeData.weight * 2) + wagonPrototypeData.weight -- Weight of both loco ends plus the wagon part - means you can look at the recipe details and work out the expected speed.
     muWagonPlacement.burner.fuel_inventory_size = locoPrototypeData.burner_fuel_inventory_size * 2 -- Make the placement twice the size of the loco as then when any fuel/request is split between the 2 loco ends it works out.
     muWagonPlacement.burner.effectivity = locoPrototypeData.burner_effectivity
     table.insert(muWagonPlacement.flags, "not-deconstructable")
@@ -230,7 +230,7 @@ local function MakeMuWagonPlacementRecipePrototype(thisStaticData, prototypeData
 end
 
 local muLocoPrototypeData = {
-    weight = (refLoco.weight + refCargoWagon.weight) / 1.75,
+    weight = refLoco.weight * 0.7,
     burner_fuel_inventory_size = 1,
     burner_effectivity = 0.5
 }
@@ -251,7 +251,7 @@ local muCargoPrototypeData = {
         {"iron-gear-wheel", 5},
         {"iron-plate", 10}
     },
-    weight = 1
+    weight = refCargoWagon.weight * 0.7
 }
 MakeMULocoPrototype(StaticData.DoubleEndCargoLoco, muLocoPrototypeData)
 MakeMUWagonPrototype(StaticData.DoubleEndCargoWagon, muCargoPrototypeData)
@@ -276,7 +276,7 @@ local muFluidPrototypeData = {
         {"pipe", 4},
         {"storage-tank", 1}
     },
-    weight = 1
+    weight = refFluidWagon.weight * 0.7
 }
 MakeMULocoPrototype(StaticData.DoubleEndFluidLoco, muLocoPrototypeData)
 MakeMUWagonPrototype(StaticData.DoubleEndFluidWagon, muFluidPrototypeData)
