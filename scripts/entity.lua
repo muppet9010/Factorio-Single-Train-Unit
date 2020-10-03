@@ -149,7 +149,7 @@ end
 Entity.GenerateMuWagonNamesFilter = function()
     local filterTable = {}
     for _, prototype in pairs(game.get_filtered_entity_prototypes({{filter = "rolling-stock"}})) do
-        for _, staticDataName in pairs({StaticData.mu_cargo_loco.name, StaticData.mu_cargo_wagon.name, StaticData.mu_fluid_loco.name, StaticData.mu_fluid_wagon.name}) do
+        for _, staticDataName in pairs({StaticData.DoubleEndCargoLoco.name, StaticData.DoubleEndCargoWagon.name, StaticData.DoubleEndFluidLoco.name, StaticData.DoubleEndFluidWagon.name}) do
             if string.find(prototype.name, staticDataName, 1, true) then
                 if #filterTable == 0 then
                     table.insert(filterTable, {filter = "name", name = prototype.name})
@@ -165,7 +165,7 @@ end
 Entity.GenerateMuWagonPlacementNameFilter = function()
     local filterTable = {}
     for _, prototype in pairs(game.get_filtered_entity_prototypes({{filter = "rolling-stock"}})) do
-        for _, staticDataName in pairs({StaticData.mu_cargo_placement.name, StaticData.mu_fluid_placement.name}) do
+        for _, staticDataName in pairs({StaticData.DoubleEndCargoPlacement.name, StaticData.DoubleEndFluidPlacement.name}) do
             if string.find(prototype.name, staticDataName, 1, true) then
                 if #filterTable == 0 then
                     table.insert(filterTable, {filter = "name", name = prototype.name})

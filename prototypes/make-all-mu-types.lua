@@ -6,7 +6,7 @@ local refLoco = data.raw.locomotive.locomotive
 local refCargoWagon = data.raw["cargo-wagon"]["cargo-wagon"]
 local refFluidWagon = data.raw["fluid-wagon"]["fluid-wagon"]
 
-local function MakeMULocoPrototype(thisStaticData, prototypeData)
+local function MakeMULocoPrototype(thisStaticData, locoPrototypeData)
     local placementStaticData = thisStaticData.placementStaticData
     local muLoco = Utils.DeepCopy(refLoco)
     muLoco.name = thisStaticData.name
@@ -29,9 +29,9 @@ local function MakeMULocoPrototype(thisStaticData, prototypeData)
     muLoco.joint_distance = thisStaticData.joint_distance
     muLoco.connection_distance = thisStaticData.connection_distance
     muLoco.connection_snap_distance = thisStaticData.connection_snap_distance
-    muLoco.weight = prototypeData.weight
-    muLoco.burner.fuel_inventory_size = prototypeData.burner_fuel_inventory_size
-    muLoco.burner.effectivity = prototypeData.burner_effectivity
+    muLoco.weight = locoPrototypeData.weight
+    muLoco.burner.fuel_inventory_size = locoPrototypeData.burner_fuel_inventory_size
+    muLoco.burner.effectivity = locoPrototypeData.burner_effectivity
     muLoco.minimap_representation = nil
     muLoco.selected_minimap_representation = nil
     muLoco.placeable_by = {item = placementStaticData.name, count = 1}
@@ -182,7 +182,7 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
     data:extend({muWagon})
 end
 
-local function MakeMuWagonPlacementPrototype(thisStaticData, wagonPlacementPrototypeData, locoPrototypeData)
+local function MakeMuWagonPlacementPrototype(thisStaticData, wagonPrototypeData, locoPrototypeData)
     local placedStaticDataWagon = thisStaticData.placedStaticDataWagon
     local itsWagonPrototype = data.raw[placedStaticDataWagon.prototypeType][placedStaticDataWagon.name]
     local muWagonPlacement
@@ -195,8 +195,8 @@ local function MakeMuWagonPlacementPrototype(thisStaticData, wagonPlacementProto
     muWagonPlacement.connection_snap_distance = thisStaticData.connection_snap_distance
     muWagonPlacement.wheels = Utils.EmptyRotatedSprite()
     muWagonPlacement.pictures = itsWagonPrototype.pictures
-    muWagonPlacement.icons = wagonPlacementPrototypeData.icons
-    muWagonPlacement.weight = (locoPrototypeData.weight * 2) + wagonPlacementPrototypeData.weight -- Weight of both loco ends plus the wagon part
+    muWagonPlacement.icons = wagonPrototypeData.icons
+    muWagonPlacement.weight = (locoPrototypeData.weight * 2) + wagonPrototypeData.weight -- Weight of both loco ends plus the wagon part
     muWagonPlacement.burner.fuel_inventory_size = locoPrototypeData.burner_fuel_inventory_size * 2 -- Make the placement twice the size of the loco as then when any fuel/request is split between the 2 loco ends it works out.
     muWagonPlacement.burner.effectivity = locoPrototypeData.burner_effectivity
     table.insert(muWagonPlacement.flags, "not-deconstructable")
@@ -229,17 +229,17 @@ local function MakeMuWagonPlacementRecipePrototype(thisStaticData, prototypeData
     data:extend({muWagonPlacementRecipe})
 end
 
-local mu_loco_placement_prototypedata = {
+local muLocoPrototypeData = {
     weight = (refLoco.weight + refCargoWagon.weight) / 1.75,
     burner_fuel_inventory_size = 1,
     burner_effectivity = 0.5
 }
 
-local mu_cargo_placement_prototypedata = {
+local muCargoPrototypeData = {
     itemOrder = "za0",
     icons = {
         {
-            icon = Constants.AssetModName .. "/graphics/icons/mu_cargo_wagon.png",
+            icon = Constants.AssetModName .. "/graphics/icons/" .. StaticData.DoubleEndCargoWagon.name .. ".png",
             icon_size = 64,
             icon_mipmaps = 4
         }
@@ -253,17 +253,17 @@ local mu_cargo_placement_prototypedata = {
     },
     weight = 1
 }
-MakeMULocoPrototype(StaticData.mu_cargo_loco, mu_loco_placement_prototypedata)
-MakeMUWagonPrototype(StaticData.mu_cargo_wagon, mu_cargo_placement_prototypedata)
-MakeMuWagonPlacementPrototype(StaticData.mu_cargo_placement, mu_cargo_placement_prototypedata, mu_loco_placement_prototypedata)
-MakeMuWagonPlacementItemPrototype(StaticData.mu_cargo_placement, mu_cargo_placement_prototypedata)
-MakeMuWagonPlacementRecipePrototype(StaticData.mu_cargo_placement, mu_cargo_placement_prototypedata)
+MakeMULocoPrototype(StaticData.DoubleEndCargoLoco, muLocoPrototypeData)
+MakeMUWagonPrototype(StaticData.DoubleEndCargoWagon, muCargoPrototypeData)
+MakeMuWagonPlacementPrototype(StaticData.DoubleEndCargoPlacement, muCargoPrototypeData, muLocoPrototypeData)
+MakeMuWagonPlacementItemPrototype(StaticData.DoubleEndCargoPlacement, muCargoPrototypeData)
+MakeMuWagonPlacementRecipePrototype(StaticData.DoubleEndCargoPlacement, muCargoPrototypeData)
 
-local mu_fluid_placement_prototypedata = {
+local muFluidPrototypeData = {
     itemOrder = "za1",
     icons = {
         {
-            icon = Constants.AssetModName .. "/graphics/icons/mu_fluid_wagon.png",
+            icon = Constants.AssetModName .. "/graphics/icons/" .. StaticData.DoubleEndFluidWagon.name .. ".png",
             icon_size = 64,
             icon_mipmaps = 4
         }
@@ -278,11 +278,11 @@ local mu_fluid_placement_prototypedata = {
     },
     weight = 1
 }
-MakeMULocoPrototype(StaticData.mu_fluid_loco, mu_loco_placement_prototypedata)
-MakeMUWagonPrototype(StaticData.mu_fluid_wagon, mu_fluid_placement_prototypedata)
-MakeMuWagonPlacementPrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata, mu_loco_placement_prototypedata)
-MakeMuWagonPlacementItemPrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata)
-MakeMuWagonPlacementRecipePrototype(StaticData.mu_fluid_placement, mu_fluid_placement_prototypedata)
+MakeMULocoPrototype(StaticData.DoubleEndFluidLoco, muLocoPrototypeData)
+MakeMUWagonPrototype(StaticData.DoubleEndFluidWagon, muFluidPrototypeData)
+MakeMuWagonPlacementPrototype(StaticData.DoubleEndFluidPlacement, muFluidPrototypeData, muLocoPrototypeData)
+MakeMuWagonPlacementItemPrototype(StaticData.DoubleEndFluidPlacement, muFluidPrototypeData)
+MakeMuWagonPlacementRecipePrototype(StaticData.DoubleEndFluidPlacement, muFluidPrototypeData)
 
 if mods["trainConstructionSite"] == nil then
     -- Don't add our recipes for Train Construction Site mod as it makes a loop
@@ -290,14 +290,14 @@ if mods["trainConstructionSite"] == nil then
         data.raw["technology"]["railway"].effects,
         {
             type = "unlock-recipe",
-            recipe = StaticData.mu_cargo_placement.name
+            recipe = StaticData.DoubleEndCargoPlacement.name
         }
     )
     table.insert(
         data.raw["technology"]["railway"].effects,
         {
             type = "unlock-recipe",
-            recipe = StaticData.mu_fluid_placement.name
+            recipe = StaticData.DoubleEndFluidPlacement.name
         }
     )
 end
