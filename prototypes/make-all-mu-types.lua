@@ -2,9 +2,12 @@ local Utils = require("utility/utils")
 local StaticData = require("static-data")
 local Constants = require("constants")
 
-local refLoco = data.raw.locomotive.locomotive
-local refCargoWagon = data.raw["cargo-wagon"]["cargo-wagon"]
-local refFluidWagon = data.raw["fluid-wagon"]["fluid-wagon"]
+local refLocoPrototype = data.raw["locomotive"]["locomotive"]
+local refLocoRecipeIngredients = data.raw["recipe"]["locomotive"].ingredients
+local refCargoWagonPrototype = data.raw["cargo-wagon"]["cargo-wagon"]
+local refCargoWagonRecipeIngredients = data.raw["recipe"]["cargo-wagon"].ingredients
+local refFluidWagonPrototype = data.raw["fluid-wagon"]["fluid-wagon"]
+local refFluidWagonRecipeIngredients = data.raw["recipe"]["fluid-wagon"].ingredients
 local weightMultiplier = settings.startup["single_train_unit-weight_percentage"].value / 100
 local cargoCapacityMultiplier = settings.startup["single_train_unit-wagon_capacity_percentage"].value / 100
 local locoBurnerEffectivityMultiplier = settings.startup["single_train_unit-burner_effectivity_percentage"].value / 100
@@ -12,7 +15,7 @@ local locoBurnerInventorySize = settings.startup["single_train_unit-burner_inven
 
 local function MakeMULocoPrototype(thisStaticData, locoPrototypeData)
     local placementStaticData = thisStaticData.placementStaticData
-    local muLoco = Utils.DeepCopy(refLoco)
+    local muLoco = Utils.DeepCopy(refLocoPrototype)
     muLoco.name = thisStaticData.name
     muLoco.localised_name = {"entity-name." .. placementStaticData.name}
     muLoco.minable.result = nil
@@ -51,10 +54,10 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
     local itsLocoPrototype = data.raw["locomotive"][placementStaticData.placedStaticDataLoco.name]
     local muWagon
     if thisStaticData.prototypeType == "cargo-wagon" then
-        muWagon = Utils.DeepCopy(refCargoWagon)
+        muWagon = Utils.DeepCopy(refCargoWagonPrototype)
         muWagon.inventory_size = math.floor(muWagon.inventory_size * cargoCapacityMultiplier)
     elseif thisStaticData.prototypeType == "fluid-wagon" then
-        muWagon = Utils.DeepCopy(refFluidWagon)
+        muWagon = Utils.DeepCopy(refFluidWagonPrototype)
         muWagon.capacity = math.floor(muWagon.capacity * cargoCapacityMultiplier)
         muWagon.tank_count = 1
     end
@@ -190,7 +193,7 @@ local function MakeMuWagonPlacementPrototype(thisStaticData, wagonPrototypeData,
     local placedStaticDataWagon = thisStaticData.placedStaticDataWagon
     local itsWagonPrototype = data.raw[placedStaticDataWagon.prototypeType][placedStaticDataWagon.name]
     local muWagonPlacement
-    muWagonPlacement = Utils.DeepCopy(refLoco) -- Loco type snaps to stations, whereas cargo types don't.
+    muWagonPlacement = Utils.DeepCopy(refLocoPrototype) -- Loco type snaps to stations, whereas cargo types don't.
     muWagonPlacement.name = thisStaticData.name
     muWagonPlacement.collision_box = thisStaticData.collision_box
     muWagonPlacement.selection_box = thisStaticData.selection_box
@@ -234,7 +237,7 @@ local function MakeMuWagonPlacementRecipePrototype(thisStaticData, prototypeData
 end
 
 local muLocoPrototypeData = {
-    weight = refLoco.weight * weightMultiplier,
+    weight = refLocoPrototype.weight * weightMultiplier,
     burner_fuel_inventory_size = locoBurnerInventorySize,
     burner_effectivity = locoBurnerEffectivityMultiplier
 }
@@ -248,14 +251,8 @@ local muCargoPrototypeData = {
             icon_mipmaps = 4
         }
     },
-    recipeIngredients = {
-        {"engine-unit", 40},
-        {"electronic-circuit", 20},
-        {"steel-plate", 30},
-        {"iron-gear-wheel", 5},
-        {"iron-plate", 10}
-    },
-    weight = refCargoWagon.weight * weightMultiplier
+    recipeIngredients = Utils.GetIngredientsAddedTogeather({{refLocoRecipeIngredients, "add", 2}, {refCargoWagonRecipeIngredients, "highest", 1}}),
+    weight = refCargoWagonPrototype.weight * weightMultiplier
 }
 MakeMULocoPrototype(StaticData.DoubleEndCargoLoco, muLocoPrototypeData)
 MakeMUWagonPrototype(StaticData.DoubleEndCargoWagon, muCargoPrototypeData)
@@ -272,15 +269,8 @@ local muFluidPrototypeData = {
             icon_mipmaps = 4
         }
     },
-    recipeIngredients = {
-        {"engine-unit", 40},
-        {"electronic-circuit", 20},
-        {"steel-plate", 30},
-        {"iron-gear-wheel", 5},
-        {"pipe", 4},
-        {"storage-tank", 1}
-    },
-    weight = refFluidWagon.weight * weightMultiplier
+    recipeIngredients = Utils.GetIngredientsAddedTogeather({{refLocoRecipeIngredients, "add", 2}, {refFluidWagonRecipeIngredients, "highest", 1}}),
+    weight = refFluidWagonPrototype.weight * weightMultiplier
 }
 MakeMULocoPrototype(StaticData.DoubleEndFluidLoco, muLocoPrototypeData)
 MakeMUWagonPrototype(StaticData.DoubleEndFluidWagon, muFluidPrototypeData)

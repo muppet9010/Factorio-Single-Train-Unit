@@ -970,4 +970,42 @@ Utils.TrackBestFuelCount = function(trackingTable, itemName, itemCount)
     return false
 end
 
+Utils.GetIngredientsAddedTogeather = function(ingredientHandlingTables)
+    --[[
+        Takes a table (list) of entries. Each entry is a table (list) of ingredients, handling type and ratioMultiplier (optional), i.e. {{ingredients1, "add"}, {ingredients2, "add", 0.5}, {ingredients3, "highest", 2}}
+        handling types:
+            - add: adds the ingredients from a list to the total
+            - subtract: removes the ingredients in this list from the total
+            - highest: just takes the highest counts of each ingredients across the 2 lists.
+        ratioMultiplier item counts for recipes are rounded up.
+    ]]
+    local ingredientsList, ingredientsTable = {}, {}
+    for _, ingredientHandlingTable in pairs(ingredientHandlingTables) do
+        local ingredients, handling, ratioMultiplier = ingredientHandlingTable[1], ingredientHandlingTable[2], ingredientHandlingTable[3]
+        if ratioMultiplier == nil then
+            ratioMultiplier = 1
+        end
+        for _, details in pairs(ingredients) do
+            local name, count = details[1], math.ceil(details[2] * ratioMultiplier)
+            if handling == "add" then
+                ingredientsList[name] = (ingredientsList[name] or 0) + count
+            elseif handling == "subtract" then
+                if ingredientsList[name] ~= nil then
+                    ingredientsList[name] = ingredientsList[name] - count
+                end
+            elseif handling == "highest" then
+                if count > (ingredientsList[name] or 0) then
+                    ingredientsList[name] = count
+                end
+            end
+        end
+    end
+    for name, count in pairs(ingredientsList) do
+        if ingredientsList[name] > 0 then
+            table.insert(ingredientsTable, {name, count})
+        end
+    end
+    return ingredientsTable
+end
+
 return Utils

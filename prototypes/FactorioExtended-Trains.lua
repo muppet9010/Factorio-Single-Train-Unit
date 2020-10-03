@@ -8,6 +8,25 @@ end
 local weightMultiplier = settings.startup["single_train_unit-weight_percentage"].value / 100
 local cargoCapacityMultiplier = settings.startup["single_train_unit-wagon_capacity_percentage"].value / 100
 
+local mk1LocoRefPrototype = data.raw["locomotive"]["locomotive-1"]
+local mk2LocoRefPrototype = data.raw["locomotive"]["locomotive-2"]
+local mk3LocoRefPrototype = data.raw["locomotive"]["locomotive-3"]
+local mk1CargoRefPrototype = data.raw["cargo-wagon"]["cargo-wagon-1"]
+local mk2CargoRefPrototype = data.raw["cargo-wagon"]["cargo-wagon-2"]
+local mk3CargoRefPrototype = data.raw["cargo-wagon"]["cargo-wagon-3"]
+local mk1FluidRefPrototype = data.raw["fluid-wagon"]["fluid-wagon-1"]
+local mk2FluidRefPrototype = data.raw["fluid-wagon"]["fluid-wagon-2"]
+local mk3FluidRefPrototype = data.raw["fluid-wagon"]["fluid-wagon-3"]
+local mk1LocoRefRecipeIngredients = data.raw["recipe"]["locomotive-1"].ingredients
+local mk2LocoRefRecipeIngredients = data.raw["recipe"]["locomotive-2"].ingredients
+local mk3LocoRefRecipeIngredients = data.raw["recipe"]["locomotive-3"].ingredients
+local mk1CargoRefRecipeIngredients = data.raw["recipe"]["cargo-wagon-1"].ingredients
+local mk2CargoRefRecipeIngredients = data.raw["recipe"]["cargo-wagon-2"].ingredients
+local mk3CargoRefRecipeIngredients = data.raw["recipe"]["cargo-wagon-3"].ingredients
+local mk1FluidRefRecipeIngredients = data.raw["recipe"]["fluid-wagon-1"].ingredients
+local mk2FluidRefRecipeIngredients = data.raw["recipe"]["fluid-wagon-2"].ingredients
+local mk3FluidRefRecipeIngredients = data.raw["recipe"]["fluid-wagon-3"].ingredients
+
 --[[
     A lot of the values for the entity changes, graphics colors and item ordering is taken from the integratin mod at time of creation.
 ]]
@@ -19,150 +38,279 @@ local improvementTiers = {
     mk1 = {
         ["generic"] = {
             color = {r = 0.72, g = 0.31, b = 0.02, a = 0.8},
-            max_health = 1500,
-            max_speed = 1.5
+            max_health = mk1LocoRefPrototype.max_health,
+            max_speed = mk1LocoRefPrototype.max_speed
         },
         ["cargo-loco"] = {
-            reversing_power_modifier = 0.8,
-            braking_force = 15,
-            max_power = "800kW",
-            weight = 2250 * weightMultiplier
+            reversing_power_modifier = mk1LocoRefPrototype.reversing_power_modifier,
+            braking_force = mk1LocoRefPrototype.braking_force,
+            max_power = mk1LocoRefPrototype.max_power,
+            weight = mk1LocoRefPrototype.weight * weightMultiplier
         },
         ["cargo-wagon"] = {
-            inventory_size = 80 * cargoCapacityMultiplier,
-            weight = 1200 * weightMultiplier
+            inventory_size = mk1CargoRefPrototype.inventory_size * cargoCapacityMultiplier,
+            weight = mk1CargoRefPrototype.weight * weightMultiplier
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
-            recipe = {
-                {StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), 1},
-                {"electric-engine-unit", 20},
-                {"advanced-circuit", 20},
-                {"stainless-steel", 30},
-                {"iron-gear-wheel", 20}
-            },
+            recipe = Utils.GetIngredientsAddedTogeather(
+                {
+                    {
+                        {
+                            {StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), 1}
+                        },
+                        "add",
+                        1
+                    },
+                    {
+                        mk1LocoRefRecipeIngredients,
+                        "add",
+                        2
+                    },
+                    {
+                        mk1CargoRefRecipeIngredients,
+                        "highest",
+                        1
+                    },
+                    {
+                        {
+                            {"locomotive", 10},
+                            {"cargo-wagon", 10}
+                        },
+                        "subtract",
+                        1
+                    }
+                }
+            ),
             unlockTech = "stainless-steel-trains"
         },
         ["fluid-loco"] = {
-            reversing_power_modifier = 0.8,
-            braking_force = 15,
-            max_power = "800kW",
-            weight = 2250 * weightMultiplier
+            reversing_power_modifier = mk1LocoRefPrototype.reversing_power_modifier,
+            braking_force = mk1LocoRefPrototype.braking_force,
+            max_power = mk1LocoRefPrototype.max_power,
+            weight = mk1LocoRefPrototype.weight * weightMultiplier
         },
         ["fluid-wagon"] = {
-            capacity = 50000 * cargoCapacityMultiplier,
-            weight = 1200 * weightMultiplier
+            capacity = mk1FluidRefPrototype.capacity * cargoCapacityMultiplier,
+            weight = mk1FluidRefPrototype.weight * weightMultiplier
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
-            recipe = {
-                {StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), 1},
-                {"electric-engine-unit", 20},
-                {"advanced-circuit", 20},
-                {"stainless-steel", 30},
-                {"pipe-1", 4},
-                {"storage-tank-1", 1}
-            },
+            recipe = Utils.GetIngredientsAddedTogeather(
+                {
+                    {
+                        {
+                            {StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), 1}
+                        },
+                        "add",
+                        1
+                    },
+                    {
+                        mk1LocoRefRecipeIngredients,
+                        "add",
+                        2
+                    },
+                    {
+                        mk1FluidRefRecipeIngredients,
+                        "highest",
+                        1
+                    },
+                    {
+                        {
+                            {"locomotive", 10},
+                            {"fluid-wagon", 10}
+                        },
+                        "subtract",
+                        1
+                    }
+                }
+            ),
             unlockTech = "stainless-steel-trains"
         }
     },
     mk2 = {
         ["generic"] = {
             color = {r = 0, g = 0.68, b = 0.08, a = 0.8},
-            max_health = 2000,
-            max_speed = 2
+            max_health = mk2LocoRefPrototype.max_health,
+            max_speed = mk2LocoRefPrototype.max_speed
         },
         ["cargo-loco"] = {
-            reversing_power_modifier = 1,
-            braking_force = 20,
-            max_power = "1.0MW",
-            weight = 2500 * weightMultiplier
+            reversing_power_modifier = mk2LocoRefPrototype.reversing_power_modifier,
+            braking_force = mk2LocoRefPrototype.braking_force,
+            max_power = mk2LocoRefPrototype.max_power,
+            weight = mk2LocoRefPrototype.weight * weightMultiplier
         },
         ["cargo-wagon"] = {
-            inventory_size = 160 * cargoCapacityMultiplier,
-            weight = 1400 * weightMultiplier
+            inventory_size = mk2CargoRefPrototype.inventory_size * cargoCapacityMultiplier,
+            weight = mk2CargoRefPrototype.weight * weightMultiplier
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
-            recipe = {
-                {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk1"), 2},
-                {"electric-engine-unit", 20},
-                {"advanced-circuit", 20},
-                {"titanium-rod", 30},
-                {"iron-gear-wheel", 20}
-            },
+            recipe = Utils.GetIngredientsAddedTogeather(
+                {
+                    {
+                        {
+                            {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk1"), 1}
+                        },
+                        "add",
+                        1
+                    },
+                    {
+                        mk2LocoRefRecipeIngredients,
+                        "add",
+                        2
+                    },
+                    {
+                        mk2CargoRefRecipeIngredients,
+                        "highest",
+                        1
+                    },
+                    {
+                        {
+                            {"locomotive-1", 10},
+                            {"cargo-wagon-1", 10}
+                        },
+                        "subtract",
+                        1
+                    }
+                }
+            ),
             unlockTech = "titanium-trains"
         },
         ["fluid-loco"] = {
-            reversing_power_modifier = 1,
-            braking_force = 20,
-            max_power = "1.0MW",
-            weight = 2500 * weightMultiplier
+            reversing_power_modifier = mk2LocoRefPrototype.reversing_power_modifier,
+            braking_force = mk2LocoRefPrototype.braking_force,
+            max_power = mk2LocoRefPrototype.max_power,
+            weight = mk2LocoRefPrototype.weight * weightMultiplier
         },
         ["fluid-wagon"] = {
-            capacity = 75000 * cargoCapacityMultiplier,
-            weight = 1400 * weightMultiplier
+            capacity = mk2FluidRefPrototype.capacity * cargoCapacityMultiplier,
+            weight = mk2FluidRefPrototype.weight * weightMultiplier
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
-            recipe = {
-                {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk1"), 2},
-                {"electric-engine-unit", 20},
-                {"advanced-circuit", 20},
-                {"titanium-rod", 30},
-                {"pipe-2", 4},
-                {"storage-tank-2", 1}
-            },
+            recipe = Utils.GetIngredientsAddedTogeather(
+                {
+                    {
+                        {
+                            {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk1"), 1}
+                        },
+                        "add",
+                        1
+                    },
+                    {
+                        mk2LocoRefRecipeIngredients,
+                        "add",
+                        2
+                    },
+                    {
+                        mk2FluidRefRecipeIngredients,
+                        "highest",
+                        1
+                    },
+                    {
+                        {
+                            {"locomotive-1", 10},
+                            {"fluid-wagon-1", 10}
+                        },
+                        "subtract",
+                        1
+                    }
+                }
+            ),
             unlockTech = "titanium-trains"
         }
     },
     mk3 = {
         ["generic"] = {
             color = {r = 0.49, g = 0.10, b = 0.76, a = 0.8},
-            max_health = 2500,
-            max_speed = 2.5
+            max_health = mk3LocoRefPrototype.max_health,
+            max_speed = mk3LocoRefPrototype.max_speed
         },
         ["cargo-loco"] = {
-            reversing_power_modifier = 1.4,
-            braking_force = 25,
-            max_power = "1.2MW",
-            weight = 3000 * weightMultiplier
+            reversing_power_modifier = mk3LocoRefPrototype.reversing_power_modifier,
+            braking_force = mk3LocoRefPrototype.braking_force,
+            max_power = mk3LocoRefPrototype.max_power,
+            weight = mk3LocoRefPrototype.weight * weightMultiplier
         },
         ["cargo-wagon"] = {
-            inventory_size = 320 * cargoCapacityMultiplier,
-            weight = 1600 * weightMultiplier
+            inventory_size = mk3CargoRefPrototype.inventory_size * cargoCapacityMultiplier,
+            weight = mk3CargoRefPrototype.weight * weightMultiplier
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
-            recipe = {
-                {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk2"), 2},
-                {"electric-engine-unit", 20},
-                {"advanced-circuit", 20},
-                {"graphene", 30},
-                {"iron-gear-wheel", 20}
-            },
+            recipe = Utils.GetIngredientsAddedTogeather(
+                {
+                    {
+                        {
+                            {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk2"), 1}
+                        },
+                        "add",
+                        1
+                    },
+                    {
+                        mk3LocoRefRecipeIngredients,
+                        "add",
+                        2
+                    },
+                    {
+                        mk3CargoRefRecipeIngredients,
+                        "highest",
+                        1
+                    },
+                    {
+                        {
+                            {"locomotive-2", 10},
+                            {"cargo-wagon-2", 10}
+                        },
+                        "subtract",
+                        1
+                    }
+                }
+            ),
             unlockTech = "graphene-trains"
         },
         ["fluid-loco"] = {
-            reversing_power_modifier = 1.4,
-            braking_force = 25,
-            max_power = "1.2MW",
-            weight = 3000 * weightMultiplier
+            reversing_power_modifier = mk3LocoRefPrototype.reversing_power_modifier,
+            braking_force = mk3LocoRefPrototype.braking_force,
+            max_power = mk3LocoRefPrototype.max_power,
+            weight = mk3LocoRefPrototype.weight * weightMultiplier
         },
         ["fluid-wagon"] = {
-            capacity = 100000 * cargoCapacityMultiplier,
-            weight = 1600 * weightMultiplier
+            capacity = mk3FluidRefPrototype.capacity * cargoCapacityMultiplier,
+            weight = mk3FluidRefPrototype.weight * weightMultiplier
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
-            recipe = {
-                {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk2"), 2},
-                {"electric-engine-unit", 20},
-                {"advanced-circuit", 20},
-                {"graphene", 30},
-                {"pipe-3", 4},
-                {"storage-tank-3", 1}
-            },
+            recipe = Utils.GetIngredientsAddedTogeather(
+                {
+                    {
+                        {
+                            {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk2"), 1}
+                        },
+                        "add",
+                        1
+                    },
+                    {
+                        mk3LocoRefRecipeIngredients,
+                        "add",
+                        2
+                    },
+                    {
+                        mk3FluidRefRecipeIngredients,
+                        "highest",
+                        1
+                    },
+                    {
+                        {
+                            {"locomotive-2", 10},
+                            {"fluid-wagon-2", 10}
+                        },
+                        "subtract",
+                        1
+                    }
+                }
+            ),
             unlockTech = "graphene-trains"
         }
     }
