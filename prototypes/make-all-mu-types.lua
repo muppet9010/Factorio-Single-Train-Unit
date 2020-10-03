@@ -298,7 +298,7 @@ if mods["trainConstructionSite"] == nil then
         }
     )
     table.insert(
-        data.raw["technology"]["railway"].effects,
+        data.raw["technology"]["fluid-wagon"].effects,
         {
             type = "unlock-recipe",
             recipe = StaticData.DoubleEndFluidPlacement.name

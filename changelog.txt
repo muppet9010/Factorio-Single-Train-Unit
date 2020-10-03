@@ -5,6 +5,7 @@ Date: 2020-xxxxxxxx
     - Cargo capacity, weight, burner effectivity and burner inventory size mod configurable.
   Changes:
   Bugfixes:
+    - Single Train Unit fluid wagon type is locked behind the fluid wagon research.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.6
