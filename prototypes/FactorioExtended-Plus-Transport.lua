@@ -63,7 +63,7 @@ local improvementTiers = {
                     {
                         mk2CargoRefRecipeIngredients,
                         "highest",
-                        1
+                        2
                     },
                     {
                         {
@@ -104,7 +104,7 @@ local improvementTiers = {
                     {
                         mk2FluidRefRecipeIngredients,
                         "highest",
-                        1
+                        2
                     },
                     {
                         {
@@ -154,7 +154,7 @@ local improvementTiers = {
                     {
                         mk3CargoRefRecipeIngredients,
                         "highest",
-                        1
+                        2
                     },
                     {
                         {
@@ -195,7 +195,7 @@ local improvementTiers = {
                     {
                         mk3FluidRefRecipeIngredients,
                         "highest",
-                        1
+                        2
                     },
                     {
                         {

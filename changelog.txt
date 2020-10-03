@@ -2,9 +2,9 @@
 Version: 19.0.7
 Date: 2020-xxxxxxxx
   Features:
-    - Cargo capacity, weight, burner effectivity and burner inventory size mod configurable.
+    - Cargo capacity, weight, burner effectivity and burner inventory size are mod configurable.
   Changes:
-    - Recipes are auto generated now. They are 2 locomotives and any missing or higher ingredient count from the wagon part.
+    - Recipes are auto generated now. They are generally 2 locomotives and any missing or higher ingredient count from the wagon part. However, some mods have different balance to corrispond to their own tier costs.
   Bugfixes:
     - Single Train Unit fluid wagon type is locked behind the fluid wagon research.
   Info:
