@@ -10,11 +10,11 @@ Overview
 
 - Intended for use as single unit trains, but they be joined together or joined with other locomotives or wagons (see Limitations).
 - The unit's first and last 2 tiles are for feeding fuel to the locos. For Cargo wagons the middle 2 tiles are for accessing the small cargo wagon. For Fluid wagons the middle third is for connecting one pump. See the images.
-- The units run between the performance of a single loco & wagon (1-1) and a dual headed train with a wagon (1-1-1). It consumes fuel at twice the usual loco rate to account for its compact dual direction nature.
-- The cargo/fluid wagon space is 1/2 of the standard capacity given its small size.
-- The unit is unlocked with the standard Railway research.
+- The units run between the performance of a single loco & wagon (1-1) and a dual headed train with a wagon (1-1-1). It consumes fuel at twice the usual loco rate to account for its compact dual direction nature. These are all changable via mod settings.
+- The cargo/fluid wagon space is 1/2 of the standard capacity given its small size. These are changable via mod settings.
+- The units are unlocked with the standard Railway research or modded variant research.
 - Place the dual headed cargo/fluid wagon in the usual manner and it will be replaced out for the 2 mini locos and a mini cargo wagon.
-- The unit will be mined by the player as a whole and will be damaged/destroyed as a whole, with damage shared across all parts.
+- The unit will be mined by the player as a whole and will be damaged/destroyed as a whole.
 - While the graphics look as one, there are actually 2 separate locomotives and a wagon there. So you must fuel both locomotive ends separately and select the right part of the Single Train Unit for giving train orders, entering to drive it, viewing the cargo, etc.
 - UPS efficient as there is no continuously running active code in the mod, so no ongoing CPU load added to the game.
 - The original trains and wagons are unaffected by this mod.

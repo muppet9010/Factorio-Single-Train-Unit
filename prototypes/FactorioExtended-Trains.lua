@@ -5,6 +5,9 @@ if not mods["FactorioExtended-Trains"] then
     return
 end
 
+local weightMultiplier = settings.startup["single_train_unit-weight_percentage"].value / 100
+local cargoCapacityMultiplier = settings.startup["single_train_unit-wagon_capacity_percentage"].value / 100
+
 --[[
     A lot of the values for the entity changes, graphics colors and item ordering is taken from the integratin mod at time of creation.
 ]]
@@ -23,11 +26,11 @@ local improvementTiers = {
             reversing_power_modifier = 0.8,
             braking_force = 15,
             max_power = "800kW",
-            weight = 2250 * 0.7
+            weight = 2250 * weightMultiplier
         },
         ["cargo-wagon"] = {
-            inventory_size = 80 / 2,
-            weight = 1200 * 0.7
+            inventory_size = 80 * cargoCapacityMultiplier,
+            weight = 1200 * weightMultiplier
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
@@ -44,11 +47,11 @@ local improvementTiers = {
             reversing_power_modifier = 0.8,
             braking_force = 15,
             max_power = "800kW",
-            weight = 2250 * 0.7
+            weight = 2250 * weightMultiplier
         },
         ["fluid-wagon"] = {
-            capacity = 50000 / 2,
-            weight = 1200 * 0.7
+            capacity = 50000 * cargoCapacityMultiplier,
+            weight = 1200 * weightMultiplier
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
@@ -73,11 +76,11 @@ local improvementTiers = {
             reversing_power_modifier = 1,
             braking_force = 20,
             max_power = "1.0MW",
-            weight = 2500 * 0.7
+            weight = 2500 * weightMultiplier
         },
         ["cargo-wagon"] = {
-            inventory_size = 160 / 2,
-            weight = 1400 * 0.7
+            inventory_size = 160 * cargoCapacityMultiplier,
+            weight = 1400 * weightMultiplier
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
@@ -94,11 +97,11 @@ local improvementTiers = {
             reversing_power_modifier = 1,
             braking_force = 20,
             max_power = "1.0MW",
-            weight = 2500 * 0.7
+            weight = 2500 * weightMultiplier
         },
         ["fluid-wagon"] = {
-            capacity = 75000 / 2,
-            weight = 1400 * 0.7
+            capacity = 75000 * cargoCapacityMultiplier,
+            weight = 1400 * weightMultiplier
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
@@ -123,11 +126,11 @@ local improvementTiers = {
             reversing_power_modifier = 1.4,
             braking_force = 25,
             max_power = "1.2MW",
-            weight = 3000 * 0.7
+            weight = 3000 * weightMultiplier
         },
         ["cargo-wagon"] = {
-            inventory_size = 320 / 2,
-            weight = 1600 * 0.7
+            inventory_size = 320 * cargoCapacityMultiplier,
+            weight = 1600 * weightMultiplier
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
@@ -144,11 +147,11 @@ local improvementTiers = {
             reversing_power_modifier = 1.4,
             braking_force = 25,
             max_power = "1.2MW",
-            weight = 3000 * 0.7
+            weight = 3000 * weightMultiplier
         },
         ["fluid-wagon"] = {
-            capacity = 100000 / 2,
-            weight = 1600 * 0.7
+            capacity = 100000 * cargoCapacityMultiplier,
+            weight = 1600 * weightMultiplier
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},

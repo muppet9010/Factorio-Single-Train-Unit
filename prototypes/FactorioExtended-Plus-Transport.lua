@@ -5,6 +5,8 @@ if not mods["FactorioExtended-Plus-Transport"] then
     return
 end
 
+local cargoCapacityMultiplier = settings.startup["single_train_unit-wagon_capacity_percentage"].value / 100
+
 --[[
     A lot of the values for the entity changes, graphics colors and item ordering is taken from the integratin mod at time of creation.
 ]]
@@ -26,7 +28,7 @@ local improvementTiers = {
             braking_force = 15
         },
         ["cargo-wagon"] = {
-            inventory_size = 60 / 2,
+            inventory_size = 60 * cargoCapacityMultiplier,
             friction_force = 0.25
         },
         ["cargo-placement"] = {
@@ -46,7 +48,7 @@ local improvementTiers = {
             braking_force = 15
         },
         ["fluid-wagon"] = {
-            capacity = 75000 / 2,
+            capacity = 75000 * cargoCapacityMultiplier,
             friction_force = 0.25
         },
         ["fluid-placement"] = {
@@ -75,7 +77,7 @@ local improvementTiers = {
             braking_force = 20
         },
         ["cargo-wagon"] = {
-            inventory_size = 100 / 2,
+            inventory_size = 100 * cargoCapacityMultiplier,
             friction_force = 0.01
         },
         ["cargo-placement"] = {
@@ -94,7 +96,7 @@ local improvementTiers = {
             braking_force = 20
         },
         ["fluid-wagon"] = {
-            capacity = 175000 / 2,
+            capacity = 175000 * cargoCapacityMultiplier,
             friction_force = 0.01
         },
         ["fluid-placement"] = {

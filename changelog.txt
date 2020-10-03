@@ -2,6 +2,7 @@
 Version: 19.0.7
 Date: 2020-xxxxxxxx
   Features:
+    - Cargo capacity, weight, burner effectivity and burner inventory size mod configurable.
   Changes:
   Bugfixes:
   Info:
