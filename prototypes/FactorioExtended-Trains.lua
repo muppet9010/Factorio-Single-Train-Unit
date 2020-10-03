@@ -23,10 +23,11 @@ local improvementTiers = {
             reversing_power_modifier = 0.8,
             braking_force = 15,
             max_power = "800kW",
-            weight = (2250 + 1200) / 1.75
+            weight = 2250 * 0.7
         },
         ["cargo-wagon"] = {
-            inventory_size = 80 / 2
+            inventory_size = 80 / 2,
+            weight = 1200 * 0.7
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
@@ -43,10 +44,11 @@ local improvementTiers = {
             reversing_power_modifier = 0.8,
             braking_force = 15,
             max_power = "800kW",
-            weight = (2250 + 1200) / 1.75
+            weight = 2250 * 0.7
         },
         ["fluid-wagon"] = {
-            capacity = 50000 / 2
+            capacity = 50000 / 2,
+            weight = 1200 * 0.7
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
@@ -71,10 +73,11 @@ local improvementTiers = {
             reversing_power_modifier = 1,
             braking_force = 20,
             max_power = "1.0MW",
-            weight = (2500 + 1400) / 1.75
+            weight = 2500 * 0.7
         },
         ["cargo-wagon"] = {
-            inventory_size = 160 / 2
+            inventory_size = 160 / 2,
+            weight = 1400 * 0.7
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
@@ -91,10 +94,11 @@ local improvementTiers = {
             reversing_power_modifier = 1,
             braking_force = 20,
             max_power = "1.0MW",
-            weight = (2500 + 1400) / 1.75
+            weight = 2500 * 0.7
         },
         ["fluid-wagon"] = {
-            capacity = 75000 / 2
+            capacity = 75000 / 2,
+            weight = 1400 * 0.7
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
@@ -119,10 +123,11 @@ local improvementTiers = {
             reversing_power_modifier = 1.4,
             braking_force = 25,
             max_power = "1.2MW",
-            weight = (3000 + 1600) / 1.75
+            weight = 3000 * 0.7
         },
         ["cargo-wagon"] = {
-            inventory_size = 320 / 2
+            inventory_size = 320 / 2,
+            weight = 1600 * 0.7
         },
         ["cargo-placement"] = {
             prototypeAttributes = {},
@@ -138,10 +143,12 @@ local improvementTiers = {
         ["fluid-loco"] = {
             reversing_power_modifier = 1.4,
             braking_force = 25,
-            max_power = "1.2MW"
+            max_power = "1.2MW",
+            weight = 3000 * 0.7
         },
         ["fluid-wagon"] = {
-            capacity = 100000 / 2
+            capacity = 100000 / 2,
+            weight = 1600 * 0.7
         },
         ["fluid-placement"] = {
             prototypeAttributes = {},
@@ -172,6 +179,7 @@ for mk, improvementDetails in pairs(improvementTiers) do
                 for key, value in pairs(improvementDetails[baseStaticData.unitType .. "-loco"]) do
                     entityVariant[key] = value
                 end
+                entityVariant.weight = (improvementDetails[baseStaticData.unitType .. "-loco"].weight * 2) + improvementDetails[baseStaticData.unitType .. "-wagon"].weight
                 if placementDetails.prototypeAttributes ~= nil then
                     for key, value in pairs(placementDetails.prototypeAttributes) do
                         entityVariant[key] = value
