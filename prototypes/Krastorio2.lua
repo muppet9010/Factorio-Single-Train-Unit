@@ -1,5 +1,6 @@
 local Utils = require("utility/utils")
 local StaticData = require("static-data")
+local SharedFunctions = require("prototypes.shared-functions")
 
 if not mods["Krastorio2"] then
     return
@@ -7,9 +8,6 @@ end
 if data.raw["locomotive"]["kr-nuclear-locomotive"] == nil then
     return -- added locos are optional from the look of it.
 end
-
-local weightMultiplier = settings.startup["single_train_unit-weight_percentage"].value / 100
-local cargoCapacityMultiplier = settings.startup["single_train_unit-wagon_capacity_percentage"].value / 100
 
 local nuclearLocoRefPrototype = data.raw["locomotive"]["kr-nuclear-locomotive"]
 local nuclearLocoRefRecipe = data.raw["recipe"]["kr-nuclear-locomotive"]
@@ -25,27 +23,24 @@ local MakeMkName = function(name, identifier)
     return name .. "-krastorio2-" .. identifier
 end
 
---TODO: Resistances, Burner Effectivity, Max Consumption, etc
+local locoBurnerEffectivityMultiplier = settings.startup["single_train_unit-burner_effectivity_percentage"].value / 100
 
 local improvementTiers = {
     nuclear = {
-        ["generic"] = {
-            color = {r = 60, g = 170, b = 25, a = 0.8},
-            max_health = nuclearLocoRefPrototype.max_health,
-            max_speed = nuclearLocoRefPrototype.max_speed,
-            air_resistance = nuclearLocoRefPrototype.air_resistance,
-            equipment_grid = nuclearLocoRefPrototype.equipment_grid
-        },
-        ["cargo-loco"] = {
-            max_power = nuclearLocoRefPrototype.max_power,
-            braking_force = nuclearLocoRefPrototype.braking_force,
-            reversing_power_modifier = nuclearLocoRefPrototype.reversing_power_modifier,
-            weight = nuclearLocoRefPrototype.weight * weightMultiplier
-        },
-        ["cargo-wagon"] = {
-            inventory_size = refCargoWagonPrototype.inventory_size * cargoCapacityMultiplier,
-            weight = refCargoWagonPrototype.weight * weightMultiplier
-        },
+        ["generic"] = SharedFunctions.GetGenericSettingsFromReference(nuclearLocoRefPrototype, {color = {r = 60, g = 170, b = 25, a = 204}}),
+        ["cargo-loco"] = SharedFunctions.GetLocoSettingsFromReference(
+            nuclearLocoRefPrototype,
+            {
+                burner = {
+                    fuel_category = nuclearLocoRefPrototype.burner.fuel_category,
+                    effectivity = nuclearLocoRefPrototype.burner.effectivity * locoBurnerEffectivityMultiplier,
+                    fuel_inventory_size = nuclearLocoRefPrototype.burner.fuel_inventory_size,
+                    burnt_inventory_size = nuclearLocoRefPrototype.burner.burnt_inventory_size,
+                    smoke = nuclearLocoRefPrototype.burner.smoke
+                }
+            }
+        ),
+        ["cargo-wagon"] = SharedFunctions.GetCargoSettingsFromReference(refCargoWagonPrototype),
         ["cargo-placement"] = {
             prototypeAttributes = {},
             recipe = Utils.GetRecipeIngredientsAddedTogeather(
@@ -79,16 +74,19 @@ local improvementTiers = {
             ),
             unlockTech = "kr-nuclear-locomotive"
         },
-        ["fluid-loco"] = {
-            max_power = nuclearLocoRefPrototype.max_power,
-            braking_force = nuclearLocoRefPrototype.braking_force,
-            reversing_power_modifier = nuclearLocoRefPrototype.reversing_power_modifier,
-            weight = nuclearLocoRefPrototype.weight * weightMultiplier
-        },
-        ["fluid-wagon"] = {
-            capacity = refFluidWagonPrototype.capacity * cargoCapacityMultiplier,
-            weight = refCargoWagonPrototype.weight * weightMultiplier
-        },
+        ["fluid-loco"] = SharedFunctions.GetLocoSettingsFromReference(
+            nuclearLocoRefPrototype,
+            {
+                burner = {
+                    fuel_category = nuclearLocoRefPrototype.burner.fuel_category,
+                    effectivity = nuclearLocoRefPrototype.burner.effectivity * locoBurnerEffectivityMultiplier,
+                    fuel_inventory_size = nuclearLocoRefPrototype.burner.fuel_inventory_size,
+                    burnt_inventory_size = nuclearLocoRefPrototype.burner.burnt_inventory_size,
+                    smoke = nuclearLocoRefPrototype.burner.smoke
+                }
+            }
+        ),
+        ["fluid-wagon"] = SharedFunctions.GetFluidSettingsFromReference(refFluidWagonPrototype),
         ["fluid-placement"] = {
             prototypeAttributes = {},
             recipe = Utils.GetRecipeIngredientsAddedTogeather(
@@ -139,6 +137,7 @@ for identifier, improvementDetails in pairs(improvementTiers) do
                 for key, value in pairs(improvementDetails[baseStaticData.unitType .. "-loco"]) do
                     entityVariant[key] = value
                 end
+                entityVariant.weight = (improvementDetails[baseStaticData.unitType .. "-loco"].weight * 2) + improvementDetails[baseStaticData.unitType .. "-wagon"].weight
                 if placementDetails.prototypeAttributes ~= nil then
                     for key, value in pairs(placementDetails.prototypeAttributes) do
                         entityVariant[key] = value

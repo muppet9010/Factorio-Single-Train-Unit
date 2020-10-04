@@ -23,17 +23,10 @@ Overview
 Not Implemented Yet / TODO
 ================
 
-- Graphics are a WIP: cargo unit, fluid unit, train wheels.
+- Graphics are a work in progress and there is a mod setting to turn them on. By default the vanilla game's cargo wagon and fluid tanker graphics are used. Graphics for when stopped at stations are being done first, with the rotations being done in stages after this.
 - Method for players to colour the train unit.
 - Add direction indicator to placement graphics to help with snapping to stations.
 - Support for other mods to place the single train units, i.e. Train Construction Site.
-
-
-Graphics Work In Progress
-=================
-
-The graphics are a work in progress and there is a mod setting to turn them on. By default the vanilla game's cargo wagon and fluid tanker graphics are used.
-At present the cargo wagon has WIP graphics when stopped at a station and for some of the rotations, at other items its graphics will change to a vanilla locomotive. The fluid wagon has no custom graphics yet. The train wheels may show as doubled up.
 
 
 Limitations / Known Issues
@@ -58,6 +51,7 @@ Compatible New Recipe & Tier Mods
 - Factorio Extended Plus
 - Space Exploration
 - AAI Industry
+- Krastorio 2
 
 Compatible Usage Mods
 =============

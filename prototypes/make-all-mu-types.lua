@@ -4,6 +4,7 @@ local Constants = require("constants")
 
 local refLocoPrototype = data.raw["locomotive"]["locomotive"]
 local refLocoRecipe = data.raw["recipe"]["locomotive"]
+local refLocoItem = data.raw["item-with-entity-data"]["locomotive"]
 local refCargoWagonPrototype = data.raw["cargo-wagon"]["cargo-wagon"]
 local refCargoWagonRecipe = data.raw["recipe"]["cargo-wagon"]
 local refFluidWagonPrototype = data.raw["fluid-wagon"]["fluid-wagon"]
@@ -216,7 +217,7 @@ local function MakeMuWagonPlacementItemPrototype(thisStaticData, prototypeData)
         type = "item-with-entity-data",
         name = thisStaticData.name,
         icons = prototypeData.icons,
-        subgroup = "train-transport",
+        subgroup = prototypeData.itemSubgroup,
         order = prototypeData.itemOrder,
         place_result = thisStaticData.name,
         stack_size = 5
@@ -270,7 +271,8 @@ local muCargoPrototypeData = {
         }
     },
     recipeIngredients = Utils.GetRecipeIngredientsAddedTogeather({{refLocoRecipe, "add", 2}, {refCargoWagonRecipe, "highest", 1}}),
-    weight = refCargoWagonPrototype.weight * weightMultiplier
+    weight = refCargoWagonPrototype.weight * weightMultiplier,
+    itemSubgroup = refLocoItem.subgroup
 }
 MakeMULocoPrototype(StaticData.DoubleEndCargoLoco, muLocoPrototypeData)
 MakeMUWagonPrototype(StaticData.DoubleEndCargoWagon, muCargoPrototypeData)
@@ -288,7 +290,8 @@ local muFluidPrototypeData = {
         }
     },
     recipeIngredients = Utils.GetRecipeIngredientsAddedTogeather({{refLocoRecipe, "add", 2}, {refFluidWagonRecipe, "highest", 1}}),
-    weight = refFluidWagonPrototype.weight * weightMultiplier
+    weight = refFluidWagonPrototype.weight * weightMultiplier,
+    itemSubgroup = refLocoItem.subgroup
 }
 MakeMULocoPrototype(StaticData.DoubleEndFluidLoco, muLocoPrototypeData)
 MakeMUWagonPrototype(StaticData.DoubleEndFluidWagon, muFluidPrototypeData)
@@ -296,20 +299,17 @@ MakeMuWagonPlacementPrototype(StaticData.DoubleEndFluidPlacement, muFluidPrototy
 MakeMuWagonPlacementItemPrototype(StaticData.DoubleEndFluidPlacement, muFluidPrototypeData)
 MakeMuWagonPlacementRecipePrototype(StaticData.DoubleEndFluidPlacement, muFluidPrototypeData)
 
-if mods["trainConstructionSite"] == nil then
-    -- Don't add our recipes for Train Construction Site mod as it makes a loop
-    table.insert(
-        data.raw["technology"]["railway"].effects,
-        {
-            type = "unlock-recipe",
-            recipe = StaticData.DoubleEndCargoPlacement.name
-        }
-    )
-    table.insert(
-        data.raw["technology"]["fluid-wagon"].effects,
-        {
-            type = "unlock-recipe",
-            recipe = StaticData.DoubleEndFluidPlacement.name
-        }
-    )
-end
+table.insert(
+    data.raw["technology"]["railway"].effects,
+    {
+        type = "unlock-recipe",
+        recipe = StaticData.DoubleEndCargoPlacement.name
+    }
+)
+table.insert(
+    data.raw["technology"]["fluid-wagon"].effects,
+    {
+        type = "unlock-recipe",
+        recipe = StaticData.DoubleEndFluidPlacement.name
+    }
+)

@@ -1,12 +1,10 @@
 local Utils = require("utility/utils")
 local StaticData = require("static-data")
+local SharedFunctions = require("prototypes.shared-functions")
 
 if not mods["FactorioExtended-Trains"] then
     return
 end
-
-local weightMultiplier = settings.startup["single_train_unit-weight_percentage"].value / 100
-local cargoCapacityMultiplier = settings.startup["single_train_unit-wagon_capacity_percentage"].value / 100
 
 local mk1LocoRefPrototype = data.raw["locomotive"]["locomotive-1"]
 local mk2LocoRefPrototype = data.raw["locomotive"]["locomotive-2"]
@@ -30,27 +28,15 @@ local mk3FluidRefRecipe = data.raw["recipe"]["fluid-wagon-3"]
 --[[
     A lot of the values for the entity changes, graphics colors and item ordering is taken from the integratin mod at time of creation.
 ]]
-local MakeMkName = function(name, mk)
-    return name .. "-factorio_extended_trains-" .. mk
+local MakeMkName = function(name, identifier)
+    return name .. "-factorio_extended_trains-" .. identifier
 end
 
 local improvementTiers = {
     mk1 = {
-        ["generic"] = {
-            color = {r = 0.72, g = 0.31, b = 0.02, a = 0.8},
-            max_health = mk1LocoRefPrototype.max_health,
-            max_speed = mk1LocoRefPrototype.max_speed
-        },
-        ["cargo-loco"] = {
-            reversing_power_modifier = mk1LocoRefPrototype.reversing_power_modifier,
-            braking_force = mk1LocoRefPrototype.braking_force,
-            max_power = mk1LocoRefPrototype.max_power,
-            weight = mk1LocoRefPrototype.weight * weightMultiplier
-        },
-        ["cargo-wagon"] = {
-            inventory_size = mk1CargoRefPrototype.inventory_size * cargoCapacityMultiplier,
-            weight = mk1CargoRefPrototype.weight * weightMultiplier
-        },
+        ["generic"] = SharedFunctions.GetGenericSettingsFromReference(mk1LocoRefPrototype, {color = {r = 124, g = 17, b = 15, a = 204}}),
+        ["cargo-loco"] = SharedFunctions.GetLocoSettingsFromReference(mk1LocoRefPrototype),
+        ["cargo-wagon"] = SharedFunctions.GetCargoSettingsFromReference(mk1CargoRefPrototype),
         ["cargo-placement"] = {
             prototypeAttributes = {},
             recipe = Utils.GetRecipeIngredientsAddedTogeather(
@@ -84,16 +70,8 @@ local improvementTiers = {
             ),
             unlockTech = "stainless-steel-trains"
         },
-        ["fluid-loco"] = {
-            reversing_power_modifier = mk1LocoRefPrototype.reversing_power_modifier,
-            braking_force = mk1LocoRefPrototype.braking_force,
-            max_power = mk1LocoRefPrototype.max_power,
-            weight = mk1LocoRefPrototype.weight * weightMultiplier
-        },
-        ["fluid-wagon"] = {
-            capacity = mk1FluidRefPrototype.capacity * cargoCapacityMultiplier,
-            weight = mk1FluidRefPrototype.weight * weightMultiplier
-        },
+        ["fluid-loco"] = SharedFunctions.GetLocoSettingsFromReference(mk1LocoRefPrototype),
+        ["fluid-wagon"] = SharedFunctions.GetFluidSettingsFromReference(mk1FluidRefPrototype),
         ["fluid-placement"] = {
             prototypeAttributes = {},
             recipe = Utils.GetRecipeIngredientsAddedTogeather(
@@ -129,21 +107,9 @@ local improvementTiers = {
         }
     },
     mk2 = {
-        ["generic"] = {
-            color = {r = 0, g = 0.68, b = 0.08, a = 0.8},
-            max_health = mk2LocoRefPrototype.max_health,
-            max_speed = mk2LocoRefPrototype.max_speed
-        },
-        ["cargo-loco"] = {
-            reversing_power_modifier = mk2LocoRefPrototype.reversing_power_modifier,
-            braking_force = mk2LocoRefPrototype.braking_force,
-            max_power = mk2LocoRefPrototype.max_power,
-            weight = mk2LocoRefPrototype.weight * weightMultiplier
-        },
-        ["cargo-wagon"] = {
-            inventory_size = mk2CargoRefPrototype.inventory_size * cargoCapacityMultiplier,
-            weight = mk2CargoRefPrototype.weight * weightMultiplier
-        },
+        ["generic"] = SharedFunctions.GetGenericSettingsFromReference(mk2LocoRefPrototype, {color = {r = 12, g = 76, b = 22, a = 204}}),
+        ["cargo-loco"] = SharedFunctions.GetLocoSettingsFromReference(mk2LocoRefPrototype),
+        ["cargo-wagon"] = SharedFunctions.GetCargoSettingsFromReference(mk2CargoRefPrototype),
         ["cargo-placement"] = {
             prototypeAttributes = {},
             recipe = Utils.GetRecipeIngredientsAddedTogeather(
@@ -177,16 +143,8 @@ local improvementTiers = {
             ),
             unlockTech = "titanium-trains"
         },
-        ["fluid-loco"] = {
-            reversing_power_modifier = mk2LocoRefPrototype.reversing_power_modifier,
-            braking_force = mk2LocoRefPrototype.braking_force,
-            max_power = mk2LocoRefPrototype.max_power,
-            weight = mk2LocoRefPrototype.weight * weightMultiplier
-        },
-        ["fluid-wagon"] = {
-            capacity = mk2FluidRefPrototype.capacity * cargoCapacityMultiplier,
-            weight = mk2FluidRefPrototype.weight * weightMultiplier
-        },
+        ["fluid-loco"] = SharedFunctions.GetLocoSettingsFromReference(mk2LocoRefPrototype),
+        ["fluid-wagon"] = SharedFunctions.GetFluidSettingsFromReference(mk2FluidRefPrototype),
         ["fluid-placement"] = {
             prototypeAttributes = {},
             recipe = Utils.GetRecipeIngredientsAddedTogeather(
@@ -222,21 +180,9 @@ local improvementTiers = {
         }
     },
     mk3 = {
-        ["generic"] = {
-            color = {r = 0.49, g = 0.10, b = 0.76, a = 0.8},
-            max_health = mk3LocoRefPrototype.max_health,
-            max_speed = mk3LocoRefPrototype.max_speed
-        },
-        ["cargo-loco"] = {
-            reversing_power_modifier = mk3LocoRefPrototype.reversing_power_modifier,
-            braking_force = mk3LocoRefPrototype.braking_force,
-            max_power = mk3LocoRefPrototype.max_power,
-            weight = mk3LocoRefPrototype.weight * weightMultiplier
-        },
-        ["cargo-wagon"] = {
-            inventory_size = mk3CargoRefPrototype.inventory_size * cargoCapacityMultiplier,
-            weight = mk3CargoRefPrototype.weight * weightMultiplier
-        },
+        ["generic"] = SharedFunctions.GetGenericSettingsFromReference(mk3LocoRefPrototype, {color = {r = 113, g = 22, b = 88, a = 204}}),
+        ["cargo-loco"] = SharedFunctions.GetLocoSettingsFromReference(mk3LocoRefPrototype),
+        ["cargo-wagon"] = SharedFunctions.GetCargoSettingsFromReference(mk3CargoRefPrototype),
         ["cargo-placement"] = {
             prototypeAttributes = {},
             recipe = Utils.GetRecipeIngredientsAddedTogeather(
@@ -270,16 +216,8 @@ local improvementTiers = {
             ),
             unlockTech = "graphene-trains"
         },
-        ["fluid-loco"] = {
-            reversing_power_modifier = mk3LocoRefPrototype.reversing_power_modifier,
-            braking_force = mk3LocoRefPrototype.braking_force,
-            max_power = mk3LocoRefPrototype.max_power,
-            weight = mk3LocoRefPrototype.weight * weightMultiplier
-        },
-        ["fluid-wagon"] = {
-            capacity = mk3FluidRefPrototype.capacity * cargoCapacityMultiplier,
-            weight = mk3FluidRefPrototype.weight * weightMultiplier
-        },
+        ["fluid-loco"] = SharedFunctions.GetLocoSettingsFromReference(mk3LocoRefPrototype),
+        ["fluid-wagon"] = SharedFunctions.GetFluidSettingsFromReference(mk3FluidRefPrototype),
         ["fluid-placement"] = {
             prototypeAttributes = {},
             recipe = Utils.GetRecipeIngredientsAddedTogeather(
