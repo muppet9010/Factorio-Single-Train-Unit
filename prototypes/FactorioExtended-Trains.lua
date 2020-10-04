@@ -17,15 +17,15 @@ local mk3CargoRefPrototype = data.raw["cargo-wagon"]["cargo-wagon-3"]
 local mk1FluidRefPrototype = data.raw["fluid-wagon"]["fluid-wagon-1"]
 local mk2FluidRefPrototype = data.raw["fluid-wagon"]["fluid-wagon-2"]
 local mk3FluidRefPrototype = data.raw["fluid-wagon"]["fluid-wagon-3"]
-local mk1LocoRefRecipeIngredients = data.raw["recipe"]["locomotive-1"].ingredients or data.raw["recipe"]["locomotive-1"].normal.ingredients
-local mk2LocoRefRecipeIngredients = data.raw["recipe"]["locomotive-2"].ingredients or data.raw["recipe"]["locomotive-2"].normal.ingredients
-local mk3LocoRefRecipeIngredients = data.raw["recipe"]["locomotive-3"].ingredients or data.raw["recipe"]["locomotive-3"].normal.ingredients
-local mk1CargoRefRecipeIngredients = data.raw["recipe"]["cargo-wagon-1"].ingredients or data.raw["recipe"]["cargo-wagon-1"].normal.ingredients
-local mk2CargoRefRecipeIngredients = data.raw["recipe"]["cargo-wagon-2"].ingredients or data.raw["recipe"]["cargo-wagon-2"].normal.ingredients
-local mk3CargoRefRecipeIngredients = data.raw["recipe"]["cargo-wagon-3"].ingredients or data.raw["recipe"]["cargo-wagon-3"].normal.ingredients
-local mk1FluidRefRecipeIngredients = data.raw["recipe"]["fluid-wagon-1"].ingredients or data.raw["recipe"]["fluid-wagon-1"].normal.ingredients
-local mk2FluidRefRecipeIngredients = data.raw["recipe"]["fluid-wagon-2"].ingredients or data.raw["recipe"]["fluid-wagon-2"].normal.ingredients
-local mk3FluidRefRecipeIngredients = data.raw["recipe"]["fluid-wagon-3"].ingredients or data.raw["recipe"]["fluid-wagon-3"].normal.ingredients
+local mk1LocoRefRecipe = data.raw["recipe"]["locomotive-1"]
+local mk2LocoRefRecipe = data.raw["recipe"]["locomotive-2"]
+local mk3LocoRefRecipe = data.raw["recipe"]["locomotive-3"]
+local mk1CargoRefRecipe = data.raw["recipe"]["cargo-wagon-1"]
+local mk2CargoRefRecipe = data.raw["recipe"]["cargo-wagon-2"]
+local mk3CargoRefRecipe = data.raw["recipe"]["cargo-wagon-3"]
+local mk1FluidRefRecipe = data.raw["recipe"]["fluid-wagon-1"]
+local mk2FluidRefRecipe = data.raw["recipe"]["fluid-wagon-2"]
+local mk3FluidRefRecipe = data.raw["recipe"]["fluid-wagon-3"]
 
 --[[
     A lot of the values for the entity changes, graphics colors and item ordering is taken from the integratin mod at time of creation.
@@ -63,12 +63,12 @@ local improvementTiers = {
                         1
                     },
                     {
-                        mk1LocoRefRecipeIngredients,
+                        mk1LocoRefRecipe,
                         "add",
                         2
                     },
                     {
-                        mk1CargoRefRecipeIngredients,
+                        mk1CargoRefRecipe,
                         "highest",
                         1
                     },
@@ -106,12 +106,12 @@ local improvementTiers = {
                         1
                     },
                     {
-                        mk1LocoRefRecipeIngredients,
+                        mk1LocoRefRecipe,
                         "add",
                         2
                     },
                     {
-                        mk1FluidRefRecipeIngredients,
+                        mk1FluidRefRecipe,
                         "highest",
                         1
                     },
@@ -156,12 +156,12 @@ local improvementTiers = {
                         1
                     },
                     {
-                        mk2LocoRefRecipeIngredients,
+                        mk2LocoRefRecipe,
                         "add",
                         2
                     },
                     {
-                        mk2CargoRefRecipeIngredients,
+                        mk2CargoRefRecipe,
                         "highest",
                         1
                     },
@@ -199,12 +199,12 @@ local improvementTiers = {
                         1
                     },
                     {
-                        mk2LocoRefRecipeIngredients,
+                        mk2LocoRefRecipe,
                         "add",
                         2
                     },
                     {
-                        mk2FluidRefRecipeIngredients,
+                        mk2FluidRefRecipe,
                         "highest",
                         1
                     },
@@ -249,12 +249,12 @@ local improvementTiers = {
                         1
                     },
                     {
-                        mk3LocoRefRecipeIngredients,
+                        mk3LocoRefRecipe,
                         "add",
                         2
                     },
                     {
-                        mk3CargoRefRecipeIngredients,
+                        mk3CargoRefRecipe,
                         "highest",
                         1
                     },
@@ -292,12 +292,12 @@ local improvementTiers = {
                         1
                     },
                     {
-                        mk3LocoRefRecipeIngredients,
+                        mk3LocoRefRecipe,
                         "add",
                         2
                     },
                     {
-                        mk3FluidRefRecipeIngredients,
+                        mk3FluidRefRecipe,
                         "highest",
                         1
                     },

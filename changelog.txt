@@ -3,7 +3,7 @@ Version: 19.0.7
 Date: 2020-xxxxxxxx
   Features:
     - Cargo capacity, weight, burner effectivity and burner inventory size are mod configurable.
-    - Compatible with Space Exploration & AAI Industry.
+    - Compatible with Space Exploration, AAI Industry & Krastorio2.
   Changes:
     - Recipes are auto generated now. They are generally 2 locomotives and any missing or higher ingredient count from the wagon part. However, some mods have different balance to corrispond to their own tier costs.
   Bugfixes:

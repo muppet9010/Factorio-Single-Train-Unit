@@ -12,7 +12,8 @@
         "? FactorioExtended-Trains",
         "? BatteryPack",
         "? space-exploration",
-        "? aai-industry"
+        "? aai-industry",
+        "? Krastorio2"
     ],
     "description": "Adds a single train unit that is the standard length, but include storage and can travel in both directions"
 }
