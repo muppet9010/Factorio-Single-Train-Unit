@@ -31,7 +31,7 @@ end
 
 local improvementTiers = {
     mk1 = {
-        ["generic"] = SharedFunctions.GetGenericSettingsFromReference(mk1LocoRefPrototype, {color = {r = 124, g = 17, b = 15, a = 204}}),
+        ["generic"] = SharedFunctions.GetGenericSettingsFromReference(mk1LocoRefPrototype, {color = {r = 124, g = 17, b = 15}}),
         ["cargo-loco"] = SharedFunctions.GetLocoSettingsFromReference(mk1LocoRefPrototype),
         ["cargo-wagon"] = SharedFunctions.GetCargoSettingsFromReference(mk1CargoRefPrototype),
         ["cargo-placement"] = {
@@ -104,7 +104,7 @@ local improvementTiers = {
         }
     },
     mk2 = {
-        ["generic"] = SharedFunctions.GetGenericSettingsFromReference(mk2LocoRefPrototype, {color = {r = 12, g = 76, b = 22, a = 204}}),
+        ["generic"] = SharedFunctions.GetGenericSettingsFromReference(mk2LocoRefPrototype, {color = {r = 12, g = 76, b = 22}}),
         ["cargo-loco"] = SharedFunctions.GetLocoSettingsFromReference(mk2LocoRefPrototype),
         ["cargo-wagon"] = SharedFunctions.GetCargoSettingsFromReference(mk2CargoRefPrototype),
         ["cargo-placement"] = {
@@ -177,7 +177,7 @@ local improvementTiers = {
         }
     },
     mk3 = {
-        ["generic"] = SharedFunctions.GetGenericSettingsFromReference(mk3LocoRefPrototype, {color = {r = 113, g = 22, b = 88, a = 204}}),
+        ["generic"] = SharedFunctions.GetGenericSettingsFromReference(mk3LocoRefPrototype, {color = {r = 113, g = 22, b = 88}}),
         ["cargo-loco"] = SharedFunctions.GetLocoSettingsFromReference(mk3LocoRefPrototype),
         ["cargo-wagon"] = SharedFunctions.GetCargoSettingsFromReference(mk3CargoRefPrototype),
         ["cargo-placement"] = {

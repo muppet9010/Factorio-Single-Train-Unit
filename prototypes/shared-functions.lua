@@ -135,6 +135,13 @@ SharedFunctions.MakeModdedVariations = function(improvementTiers, MakeIdentifier
                     end
                     if baseStaticData.type == "wagon" then
                         entityVariant.pictures.layers[1].tint = improvementDetails.generic.color
+                        if baseStaticData.unitType == "cargo" then
+                            for _, directionLayers in pairs({entityVariant.horizontal_doors.layers, entityVariant.vertical_doors.layers}) do
+                                for _, layer in pairs(directionLayers) do
+                                    layer.tint = improvementDetails.generic.color
+                                end
+                            end
+                        end
                         entityVariant.icons[1].tint = improvementDetails.generic.color
                         entityVariant.minable.result = placementName
                     end

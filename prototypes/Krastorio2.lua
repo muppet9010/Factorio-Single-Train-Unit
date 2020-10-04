@@ -24,7 +24,7 @@ local locoBurnerEffectivityMultiplier = settings.startup["single_train_unit-burn
 
 local improvementTiers = {
     nuclear = {
-        ["generic"] = SharedFunctions.GetGenericSettingsFromReference(nuclearLocoRefPrototype, {color = {r = 60, g = 170, b = 25, a = 204}}),
+        ["generic"] = SharedFunctions.GetGenericSettingsFromReference(nuclearLocoRefPrototype, {color = {r = 60, g = 170, b = 25}}),
         ["cargo-loco"] = SharedFunctions.GetLocoSettingsFromReference(
             nuclearLocoRefPrototype,
             {
