@@ -19,10 +19,7 @@ local mk3CargoRefRecipe = data.raw["recipe"]["cargo-wagon-mk3"]
 local mk2FluidRefRecipe = data.raw["recipe"]["fluid-wagon-mk2"]
 local mk3FluidRefRecipe = data.raw["recipe"]["fluid-wagon-mk3"]
 
---[[
-    A lot of the values for the entity changes, graphics colors and item ordering is taken from the integratin mod at time of creation.
-]]
-local MakeMkName = function(name, identifier)
+local MakeIdentifierName = function(name, identifier)
     return name .. "-factorio_extended_plus_transport-" .. identifier
 end
 
@@ -110,7 +107,7 @@ local improvementTiers = {
                 {
                     {
                         {
-                            {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk2"), 1}
+                            {MakeIdentifierName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk2"), 1}
                         },
                         "add",
                         1
@@ -145,7 +142,7 @@ local improvementTiers = {
                 {
                     {
                         {
-                            {MakeMkName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk2"), 1}
+                            {MakeIdentifierName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk2"), 1}
                         },
                         "add",
                         1
@@ -175,79 +172,4 @@ local improvementTiers = {
     }
 }
 
-for mk, improvementDetails in pairs(improvementTiers) do
-    for baseName, baseStaticData in pairs(StaticData.entityNames) do
-        local improvementTierName = baseStaticData.unitType .. "-" .. baseStaticData.type
-        if baseStaticData.type == "placement" then
-            if improvementDetails[improvementTierName] ~= nil then
-                local placementDetails = improvementDetails[improvementTierName]
-                local entityVariant = Utils.DeepCopy(data.raw["locomotive"][baseName])
-                entityVariant.name = MakeMkName(entityVariant.name, mk)
-                for key, value in pairs(improvementDetails.generic) do
-                    entityVariant[key] = value
-                end
-                for key, value in pairs(improvementDetails[baseStaticData.unitType .. "-loco"]) do
-                    entityVariant[key] = value
-                end
-                entityVariant.weight = (improvementDetails[baseStaticData.unitType .. "-loco"].weight * 2) + improvementDetails[baseStaticData.unitType .. "-wagon"].weight
-                if placementDetails.prototypeAttributes ~= nil then
-                    for key, value in pairs(placementDetails.prototypeAttributes) do
-                        entityVariant[key] = value
-                    end
-                end
-                entityVariant.pictures.layers[1].tint = improvementDetails.generic.color
-                entityVariant.icons[1].tint = improvementDetails.generic.color
-                data:extend({entityVariant})
-
-                local itemVariant = Utils.DeepCopy(data.raw["item-with-entity-data"][baseName])
-                itemVariant.name = entityVariant.name
-                itemVariant.place_result = entityVariant.name
-                itemVariant.icons[1].tint = improvementDetails.generic.color
-                itemVariant.subgroup = "fb-vehicle"
-                itemVariant.order = "j" .. itemVariant.order .. "-" .. mk
-                data:extend({itemVariant})
-
-                local recipeVariant = Utils.DeepCopy(data.raw["recipe"][baseName])
-                recipeVariant.name = entityVariant.name
-                if placementDetails.recipe.ingredients ~= nil then
-                    recipeVariant.result = entityVariant.name
-                    recipeVariant.ingredients = placementDetails.recipe.ingredients
-                end
-                if placementDetails.recipe.normal ~= nil then
-                    recipeVariant.normal = {
-                        result = entityVariant.name,
-                        ingredients = placementDetails.recipe.normal
-                    }
-                end
-                if placementDetails.recipe.expensive ~= nil then
-                    recipeVariant.expensive = {
-                        result = entityVariant.name,
-                        ingredients = placementDetails.recipe.expensive
-                    }
-                end
-                data:extend({recipeVariant})
-                table.insert(data.raw["technology"][placementDetails.unlockTech].effects, {type = "unlock-recipe", recipe = entityVariant.name})
-            end
-        else
-            if improvementDetails[improvementTierName] ~= nil then
-                local placementName = MakeMkName(baseStaticData.placementStaticData.name, mk)
-                local entityVariant = Utils.DeepCopy(data.raw[baseStaticData.prototypeType][baseName])
-                entityVariant.name = MakeMkName(entityVariant.name, mk)
-                for key, value in pairs(improvementDetails.generic) do
-                    entityVariant[key] = value
-                end
-                for key, value in pairs(improvementDetails[improvementTierName]) do
-                    entityVariant[key] = value
-                end
-                if baseStaticData.type == "wagon" then
-                    entityVariant.pictures.layers[1].tint = improvementDetails.generic.color
-                    entityVariant.icons[1].tint = improvementDetails.generic.color
-                    entityVariant.minable.result = placementName
-                end
-                entityVariant.localised_name = {"entity-name." .. placementName}
-                entityVariant.placeable_by = {item = placementName, count = 1}
-                data:extend({entityVariant})
-            end
-        end
-    end
-end
+SharedFunctions.MakeModdedVariations(improvementTiers, MakeIdentifierName, {subgroup = "fb-vehicle", orderPrefix = "j"})
