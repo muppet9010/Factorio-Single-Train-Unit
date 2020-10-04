@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.7
-Date: 2020-xxxxxxxx
+Date: 2020-10-04
   Features:
     - Cargo capacity, weight, burner effectivity and burner inventory size are mod configurable.
     - Compatible with Space Exploration, AAI Industry & Krastorio2 (individually and togeather).
