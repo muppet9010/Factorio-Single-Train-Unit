@@ -1,4 +1,19 @@
 ---------------------------------------------------------------------------------------------------
+Version: 19.0.7
+Date: 2020-xxxxxxxx
+  Features:
+    - Cargo capacity, weight, burner effectivity and burner inventory size are mod configurable.
+    - Compatible with Space Exploration, AAI Industry & Krastorio2 (individually and togeather).
+  Changes:
+    - Recipes are auto generated now. They are generally 2 locomotives and any missing or higher ingredient count from the wagon part. However, some mods have different balance to corrispond to their own tier costs.
+  Bugfixes:
+    - Single Train Unit fluid wagon type is locked behind the fluid wagon research.
+    - Includes expensive recipes where the other train types include them.
+    - Other mod versions of Single Train Units should cover all prototype attributes now.
+    - Wagon door images are tinted when in station.
+  Info:
+    - Mod's data stage is all done on final stage now to react to other mods changing recipes and prototype details.
+---------------------------------------------------------------------------------------------------
 Version: 19.0.6
 Date: 2020-09-26
   Features:

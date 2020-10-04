@@ -10,11 +10,11 @@ Overview
 
 - Intended for use as single unit trains, but they be joined together or joined with other locomotives or wagons (see Limitations).
 - The unit's first and last 2 tiles are for feeding fuel to the locos. For Cargo wagons the middle 2 tiles are for accessing the small cargo wagon. For Fluid wagons the middle third is for connecting one pump. See the images.
-- The units run between the performance of a single loco & wagon (1-1) and a dual headed train with a wagon (1-1-1). It consumes fuel at twice the usual loco rate to account for its compact dual direction nature.
-- The cargo/fluid wagon space is 1/2 of the standard capacity given its small size.
-- The unit is unlocked with the standard Railway research.
+- The units run between the performance of a single loco & wagon (1-1) and a dual headed train with a wagon (1-1-1). It consumes fuel at twice the usual loco rate to account for its compact dual direction nature. These are all changeable via mod settings.
+- The cargo/fluid wagon space is 1/2 of the standard capacity given its small size. These are changeable via mod settings.
+- The units are unlocked with the standard Railway research or modded variant research.
 - Place the dual headed cargo/fluid wagon in the usual manner and it will be replaced out for the 2 mini locos and a mini cargo wagon.
-- The unit will be mined by the player as a whole and will be damaged/destroyed as a whole, with damage shared across all parts.
+- The unit will be mined by the player as a whole and will be damaged/destroyed as a whole.
 - While the graphics look as one, there are actually 2 separate locomotives and a wagon there. So you must fuel both locomotive ends separately and select the right part of the Single Train Unit for giving train orders, entering to drive it, viewing the cargo, etc.
 - UPS efficient as there is no continuously running active code in the mod, so no ongoing CPU load added to the game.
 - The original trains and wagons are unaffected by this mod.
@@ -23,17 +23,10 @@ Overview
 Not Implemented Yet / TODO
 ================
 
-- Graphics are a WIP: cargo unit, fluid unit, train wheels.
+- Graphics are a work in progress and there is a mod setting to turn them on. By default the vanilla game's cargo wagon and fluid tanker graphics are used. Graphics for when stopped at stations are being done first, with the rotations being done in stages after this.
 - Method for players to colour the train unit.
 - Add direction indicator to placement graphics to help with snapping to stations.
 - Support for other mods to place the single train units, i.e. Train Construction Site.
-
-
-Graphics Work In Progress
-=================
-
-The graphics are a work in progress and there is a mod setting to turn them on. By default the vanilla game's cargo wagon and fluid tanker graphics are used.
-At present the cargo wagon has WIP graphics when stopped at a station and for some of the rotations, at other items its graphics will change to a vanilla locomotive. The fluid wagon has no custom graphics yet. The train wheels may show as doubled up.
 
 
 Limitations / Known Issues
@@ -50,14 +43,18 @@ Limitations / Known Issues
 - Other mods that try to manipulate the train unit may have issues. Please report anything so I can review it if not listed below already.
 
 
-Compatible Mods
+Compatible New Recipe & Tier Mods
+====================
+
+- Battery Pack
+- Factorio Extended
+- Factorio Extended Plus
+- Space Exploration
+- AAI Industry
+- Krastorio 2
+
+Compatible Usage Mods
 =============
-
-*Battery Pack*
-Battery pack versions of the trains are included when the mod is enabled.
-
-*Factorio Extended & Factorio Extended Plus*
-Additional tiers of single train units added if each mod is enabled to match the additional locomotive and wagon tiers they add.
 
 *Fill4Me*
 The Fill4Me mod's auto insertion of fuel is applied to both locomotive ends of the single train unit. If you don't have enough fuel then as much as is available will be spread between the 2 locomotives.

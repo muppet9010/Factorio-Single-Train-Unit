@@ -12,7 +12,7 @@ local staticDataPlacementNamePrefix = "BatteryPack-"
 for _, placementPrototype in pairs(data.raw["locomotive"]) do
     if string.find(placementPrototype.name, staticDataPlacementNamePrefix .. "single_train_unit", 1, true) then
         local staticDataPlacementName, suffixStart = nil, 0
-        for _, staticDataName in pairs({StaticData.mu_cargo_placement.name, StaticData.mu_fluid_placement.name}) do
+        for _, staticDataName in pairs({StaticData.DoubleEndCargoPlacement.name, StaticData.DoubleEndFluidPlacement.name}) do
             _, suffixStart = string.find(placementPrototype.name, staticDataName, 1, true)
             if suffixStart ~= nil then
                 staticDataPlacementName = staticDataName

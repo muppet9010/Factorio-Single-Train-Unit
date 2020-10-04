@@ -970,4 +970,92 @@ Utils.TrackBestFuelCount = function(trackingTable, itemName, itemCount)
     return false
 end
 
+Utils.GetRecipeIngredientsAddedTogeather = function(recipeIngredientHandlingTables)
+    --[[
+        Is for handling a mix of recipes and ingredient list. Supports recipe ingredients, normal and expensive.
+        Returns the widest range of types fed in as a table of result tables (nil for non required returns): {ingredients, normal, expensive}
+        Takes a table (list) of entries. Each entry is a table (list) of recipe/ingredients, handling type and ratioMultiplier (optional), i.e. {{ingredients1, "add"}, {recipe1, "add", 0.5}, {ingredients2, "highest", 2}}
+        handling types:
+            - add: adds the ingredients from a list to the total
+            - subtract: removes the ingredients in this list from the total
+            - highest: just takes the highest counts of each ingredients across the 2 lists.
+        ratioMultiplier item counts for recipes are rounded up. Defaults to ration of 1 if not provided.
+    ]]
+    local ingredientsTable, ingredientTypes = {}, {}
+    for _, recipeIngredientHandlingTable in pairs(recipeIngredientHandlingTables) do
+        if recipeIngredientHandlingTable[1].normal ~= nil then
+            ingredientTypes.normal = true
+        end
+        if recipeIngredientHandlingTable[1].expensive ~= nil then
+            ingredientTypes.expensive = true
+        end
+    end
+    if Utils.IsTableEmpty(ingredientTypes) then
+        ingredientTypes.ingredients = true
+    end
+
+    for ingredientType in pairs(ingredientTypes) do
+        local ingredientsList = {}
+        for _, recipeIngredientHandlingTable in pairs(recipeIngredientHandlingTables) do
+            local ingredients  --try to find the correct ingredients for our desired type, if not found just try all of them to find one to use. Assume its a simple ingredient list last.
+            if recipeIngredientHandlingTable[1][ingredientType] ~= nil then
+                ingredients = recipeIngredientHandlingTable[1][ingredientType].ingredients or recipeIngredientHandlingTable[1][ingredientType]
+            elseif recipeIngredientHandlingTable[1]["ingredients"] ~= nil then
+                ingredients = recipeIngredientHandlingTable[1]["ingredients"]
+            elseif recipeIngredientHandlingTable[1]["normal"] ~= nil then
+                ingredients = recipeIngredientHandlingTable[1]["normal"].ingredients
+            elseif recipeIngredientHandlingTable[1]["expensive"] ~= nil then
+                ingredients = recipeIngredientHandlingTable[1]["expensive"].ingredients
+            else
+                ingredients = recipeIngredientHandlingTable[1]
+            end
+            local handling, ratioMultiplier = recipeIngredientHandlingTable[2], recipeIngredientHandlingTable[3]
+            if ratioMultiplier == nil then
+                ratioMultiplier = 1
+            end
+            for _, details in pairs(ingredients) do
+                local name, count = details[1] or details.name, math.ceil((details[2] or details.amount) * ratioMultiplier)
+                if handling == "add" then
+                    ingredientsList[name] = (ingredientsList[name] or 0) + count
+                elseif handling == "subtract" then
+                    if ingredientsList[name] ~= nil then
+                        ingredientsList[name] = ingredientsList[name] - count
+                    end
+                elseif handling == "highest" then
+                    if count > (ingredientsList[name] or 0) then
+                        ingredientsList[name] = count
+                    end
+                end
+            end
+        end
+        ingredientsTable[ingredientType] = {}
+        for name, count in pairs(ingredientsList) do
+            if ingredientsList[name] > 0 then
+                table.insert(ingredientsTable[ingredientType], {name, count})
+            end
+        end
+    end
+    return ingredientsTable
+end
+
+Utils.GetRecipeAttribute = function(recipe, attributeName, recipeCostType)
+    -- recipeType defaults to the no cost type if not supplied. Values are: "none", "normal" and "expensive".
+    recipeCostType = recipeCostType or "none"
+    if recipeCostType == "none" and recipe[attributeName] ~= nil then
+        return recipe[attributeName]
+    elseif recipe[recipeCostType] ~= nil and recipe[recipeCostType][attributeName] ~= nil then
+        return recipe[recipeCostType][attributeName]
+    end
+
+    if recipe[attributeName] ~= nil then
+        return recipe[attributeName]
+    elseif recipe["normal"] ~= nil and recipe["normal"][attributeName] ~= nil then
+        return recipe["normal"][attributeName]
+    elseif recipe["expensive"] ~= nil and recipe["expensive"][attributeName] ~= nil then
+        return recipe["expensive"][attributeName]
+    end
+
+    return nil
+end
+
 return Utils

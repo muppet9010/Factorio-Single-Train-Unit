@@ -35,7 +35,7 @@ end
     placement references wagons and locos via "placedStaticDataWagon" and "placedStaticDataLoco".
     All final parts have a "type".
 ]]
-StaticData.mu_cargo_wagon = {
+StaticData.DoubleEndCargoWagon = {
     collision_box = centreWagonDetails.collision_box,
     selection_box = centreWagonDetails.selection_box,
     connection_distance = centreWagonDetails.connection_distance,
@@ -46,10 +46,10 @@ StaticData.mu_cargo_wagon = {
     prototypeType = "cargo-wagon",
     locoConfiguration = "double_end"
 }
-StaticData.mu_cargo_wagon.name = StaticData.MakeName(StaticData.mu_cargo_wagon)
-StaticData.entityNames[StaticData.mu_cargo_wagon.name] = StaticData.mu_cargo_wagon
+StaticData.DoubleEndCargoWagon.name = StaticData.MakeName(StaticData.DoubleEndCargoWagon)
+StaticData.entityNames[StaticData.DoubleEndCargoWagon.name] = StaticData.DoubleEndCargoWagon
 
-StaticData.mu_cargo_loco = {
+StaticData.DoubleEndCargoLoco = {
     collision_box = locoDetails.collision_box,
     selection_box = locoDetails.selection_box,
     connection_distance = locoDetails.connection_distance,
@@ -60,29 +60,29 @@ StaticData.mu_cargo_loco = {
     prototypeType = "locomotive",
     locoConfiguration = "double_end"
 }
-StaticData.mu_cargo_loco.name = StaticData.MakeName(StaticData.mu_cargo_loco)
-StaticData.entityNames[StaticData.mu_cargo_loco.name] = StaticData.mu_cargo_loco
+StaticData.DoubleEndCargoLoco.name = StaticData.MakeName(StaticData.DoubleEndCargoLoco)
+StaticData.entityNames[StaticData.DoubleEndCargoLoco.name] = StaticData.DoubleEndCargoLoco
 
-StaticData.mu_cargo_placement = {
+StaticData.DoubleEndCargoPlacement = {
     collision_box = placementDetails.collision_box,
     selection_box = placementDetails.selection_box,
     connection_distance = placementDetails.connection_distance,
     connection_snap_distance = placementDetails.connection_snap_distance,
     joint_distance = placementDetails.joint_distance,
-    placedStaticDataWagon = StaticData.mu_cargo_wagon,
-    placedStaticDataLoco = StaticData.mu_cargo_loco,
+    placedStaticDataWagon = StaticData.DoubleEndCargoWagon,
+    placedStaticDataLoco = StaticData.DoubleEndCargoLoco,
     unitType = "cargo",
     type = "placement",
     prototypeType = "locomotive",
     locoConfiguration = "double_end"
 }
-StaticData.mu_cargo_placement.name = StaticData.MakeName(StaticData.mu_cargo_placement)
-StaticData.entityNames[StaticData.mu_cargo_placement.name] = StaticData.mu_cargo_placement
+StaticData.DoubleEndCargoPlacement.name = StaticData.MakeName(StaticData.DoubleEndCargoPlacement)
+StaticData.entityNames[StaticData.DoubleEndCargoPlacement.name] = StaticData.DoubleEndCargoPlacement
 
-StaticData.mu_cargo_wagon.placementStaticData = StaticData.mu_cargo_placement
-StaticData.mu_cargo_loco.placementStaticData = StaticData.mu_cargo_placement
+StaticData.DoubleEndCargoWagon.placementStaticData = StaticData.DoubleEndCargoPlacement
+StaticData.DoubleEndCargoLoco.placementStaticData = StaticData.DoubleEndCargoPlacement
 
-StaticData.mu_fluid_wagon = {
+StaticData.DoubleEndFluidWagon = {
     collision_box = centreWagonDetails.collision_box,
     selection_box = centreWagonDetails.selection_box,
     connection_distance = centreWagonDetails.connection_distance,
@@ -93,10 +93,10 @@ StaticData.mu_fluid_wagon = {
     prototypeType = "fluid-wagon",
     locoConfiguration = "double_end"
 }
-StaticData.mu_fluid_wagon.name = StaticData.MakeName(StaticData.mu_fluid_wagon)
-StaticData.entityNames[StaticData.mu_fluid_wagon.name] = StaticData.mu_fluid_wagon
+StaticData.DoubleEndFluidWagon.name = StaticData.MakeName(StaticData.DoubleEndFluidWagon)
+StaticData.entityNames[StaticData.DoubleEndFluidWagon.name] = StaticData.DoubleEndFluidWagon
 
-StaticData.mu_fluid_loco = {
+StaticData.DoubleEndFluidLoco = {
     collision_box = locoDetails.collision_box,
     selection_box = locoDetails.selection_box,
     connection_distance = locoDetails.connection_distance,
@@ -107,26 +107,26 @@ StaticData.mu_fluid_loco = {
     prototypeType = "locomotive",
     locoConfiguration = "double_end"
 }
-StaticData.mu_fluid_loco.name = StaticData.MakeName(StaticData.mu_fluid_loco)
-StaticData.entityNames[StaticData.mu_fluid_loco.name] = StaticData.mu_fluid_loco
+StaticData.DoubleEndFluidLoco.name = StaticData.MakeName(StaticData.DoubleEndFluidLoco)
+StaticData.entityNames[StaticData.DoubleEndFluidLoco.name] = StaticData.DoubleEndFluidLoco
 
-StaticData.mu_fluid_placement = {
+StaticData.DoubleEndFluidPlacement = {
     collision_box = placementDetails.collision_box,
     selection_box = placementDetails.selection_box,
     connection_distance = placementDetails.connection_distance,
     connection_snap_distance = placementDetails.connection_snap_distance,
     joint_distance = placementDetails.joint_distance,
-    placedStaticDataWagon = StaticData.mu_fluid_wagon,
-    placedStaticDataLoco = StaticData.mu_fluid_loco,
+    placedStaticDataWagon = StaticData.DoubleEndFluidWagon,
+    placedStaticDataLoco = StaticData.DoubleEndFluidLoco,
     unitType = "fluid",
     type = "placement",
     prototypeType = "locomotive",
     locoConfiguration = "double_end"
 }
-StaticData.mu_fluid_placement.name = StaticData.MakeName(StaticData.mu_fluid_placement)
-StaticData.entityNames[StaticData.mu_fluid_placement.name] = StaticData.mu_fluid_placement
+StaticData.DoubleEndFluidPlacement.name = StaticData.MakeName(StaticData.DoubleEndFluidPlacement)
+StaticData.entityNames[StaticData.DoubleEndFluidPlacement.name] = StaticData.DoubleEndFluidPlacement
 
-StaticData.mu_fluid_wagon.placementStaticData = StaticData.mu_fluid_placement
-StaticData.mu_fluid_loco.placementStaticData = StaticData.mu_fluid_placement
+StaticData.DoubleEndFluidWagon.placementStaticData = StaticData.DoubleEndFluidPlacement
+StaticData.DoubleEndFluidLoco.placementStaticData = StaticData.DoubleEndFluidPlacement
 
 return StaticData
