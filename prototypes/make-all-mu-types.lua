@@ -47,6 +47,7 @@ local function MakeMULocoPrototype(thisStaticData, locoPrototypeData)
     muLoco.alert_icon_shift = {0, -0.5}
     table.insert(muLoco.flags, "not-deconstructable")
     table.insert(muLoco.flags, "placeable-off-grid")
+    table.insert(muLoco.flags, "hidden")
     data:extend({muLoco})
 end
 
@@ -187,6 +188,7 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
         }
     end
     table.insert(muWagon.flags, "placeable-off-grid")
+    table.insert(muWagon.flags, "hidden")
     data:extend({muWagon})
 end
 

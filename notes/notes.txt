@@ -1,4 +1,6 @@
 - TODO:
+	- 2 recipes are shown at present for each vehicle type and no nuclear type is shown on the modpack used on Friends of JD server.
+	- put chanegs back in to correct data stage - see discussion on mod portal.
 
 - Graphics:
     - Add direction indicator to placement graphics to help with snapping to stations.
