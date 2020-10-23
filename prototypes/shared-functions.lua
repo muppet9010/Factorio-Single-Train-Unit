@@ -1,6 +1,7 @@
 local SharedFunctions = {}
 local StaticData = require("static-data")
 local Utils = require("utility/utils")
+local Logging = require("utility/logging")
 
 local weightMultiplier = settings.startup["single_train_unit-weight_percentage"].value / 100
 local cargoCapacityMultiplier = settings.startup["single_train_unit-wagon_capacity_percentage"].value / 100
@@ -106,20 +107,28 @@ SharedFunctions.MakeModdedVariations = function(improvementTiers, MakeIdentifier
                     if placementDetails.recipe.ingredients ~= nil then
                         recipeVariant.result = entityVariant.name
                         recipeVariant.ingredients = placementDetails.recipe.ingredients
+                    else
+                        recipeVariant.result = nil
+                        recipeVariant.ingredients = nil
                     end
                     if placementDetails.recipe.normal ~= nil then
                         recipeVariant.normal = {
                             result = entityVariant.name,
                             ingredients = placementDetails.recipe.normal
                         }
+                    else
+                        recipeVariant.normal = nil
                     end
                     if placementDetails.recipe.expensive ~= nil then
                         recipeVariant.expensive = {
                             result = entityVariant.name,
                             ingredients = placementDetails.recipe.expensive
                         }
+                    else
+                        recipeVariant.expensive = nil
                     end
                     data:extend({recipeVariant})
+                    Logging.Log(Utils.TableContentsToJSON(recipeVariant))
                     table.insert(data.raw["technology"][placementDetails.unlockTech].effects, {type = "unlock-recipe", recipe = entityVariant.name})
                 end
             else
