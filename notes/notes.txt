@@ -1,5 +1,4 @@
 - TODO:
-    - SharedFunctions.MakeModdedVariations - doesn't handle energy_required and enabled
 	- put changes back in to correct data stage - see discussion on mod portal.
 
 - Graphics:

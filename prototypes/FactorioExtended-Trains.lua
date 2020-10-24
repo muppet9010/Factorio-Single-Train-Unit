@@ -36,70 +36,86 @@ local improvementTiers = {
         ["cargo-wagon"] = SharedFunctions.GetCargoSettingsFromReference(mk1CargoRefPrototype),
         ["cargo-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetRecipeIngredientsAddedTogeather(
-                {
+            recipe = {
+                enabled = false,
+                ingredientLists = Utils.GetRecipeIngredientsAddedTogeather(
                     {
                         {
-                            {StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), 1}
+                            {
+                                {StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), 1}
+                            },
+                            "add",
+                            1
                         },
-                        "add",
-                        1
-                    },
-                    {
-                        mk1LocoRefRecipe,
-                        "add",
-                        2
-                    },
-                    {
-                        mk1CargoRefRecipe,
-                        "highest",
-                        1
-                    },
-                    {
                         {
-                            {"locomotive", 10},
-                            {"cargo-wagon", 10}
+                            mk1LocoRefRecipe,
+                            "add",
+                            2
                         },
-                        "subtract",
-                        1
+                        {
+                            mk1CargoRefRecipe,
+                            "highest",
+                            1
+                        },
+                        {
+                            {
+                                {"locomotive", 10},
+                                {"cargo-wagon", 10}
+                            },
+                            "subtract",
+                            1
+                        }
                     }
+                ),
+                energyLists = {
+                    ingredients = Utils.GetRecipeAttribute(mk1LocoRefRecipe, "energy_required", "ingredients") * 2,
+                    normal = Utils.GetRecipeAttribute(mk1LocoRefRecipe, "energy_required", "normal") * 2,
+                    expensive = Utils.GetRecipeAttribute(mk1LocoRefRecipe, "energy_required", "expensive") * 2
                 }
-            ),
+            },
             unlockTech = "stainless-steel-trains"
         },
         ["fluid-loco"] = SharedFunctions.GetLocoSettingsFromReference(mk1LocoRefPrototype),
         ["fluid-wagon"] = SharedFunctions.GetFluidSettingsFromReference(mk1FluidRefPrototype),
         ["fluid-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetRecipeIngredientsAddedTogeather(
-                {
+            recipe = {
+                enabled = false,
+                ingredientLists = Utils.GetRecipeIngredientsAddedTogeather(
                     {
                         {
-                            {StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), 1}
+                            {
+                                {StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), 1}
+                            },
+                            "add",
+                            1
                         },
-                        "add",
-                        1
-                    },
-                    {
-                        mk1LocoRefRecipe,
-                        "add",
-                        2
-                    },
-                    {
-                        mk1FluidRefRecipe,
-                        "highest",
-                        1
-                    },
-                    {
                         {
-                            {"locomotive", 10},
-                            {"fluid-wagon", 10}
+                            mk1LocoRefRecipe,
+                            "add",
+                            2
                         },
-                        "subtract",
-                        1
+                        {
+                            mk1FluidRefRecipe,
+                            "highest",
+                            1
+                        },
+                        {
+                            {
+                                {"locomotive", 10},
+                                {"fluid-wagon", 10}
+                            },
+                            "subtract",
+                            1
+                        }
                     }
+                ),
+                energyLists = {
+                    ingredients = Utils.GetRecipeAttribute(mk1LocoRefRecipe, "energy_required", "ingredients") * 2,
+                    normal = Utils.GetRecipeAttribute(mk1LocoRefRecipe, "energy_required", "normal") * 2,
+                    expensive = Utils.GetRecipeAttribute(mk1LocoRefRecipe, "energy_required", "expensive") * 2
                 }
-            ),
+            },
             unlockTech = "stainless-steel-trains"
         }
     },
@@ -109,70 +125,86 @@ local improvementTiers = {
         ["cargo-wagon"] = SharedFunctions.GetCargoSettingsFromReference(mk2CargoRefPrototype),
         ["cargo-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetRecipeIngredientsAddedTogeather(
-                {
+            recipe = {
+                enabled = false,
+                ingredientLists = Utils.GetRecipeIngredientsAddedTogeather(
                     {
                         {
-                            {MakeIdentifierName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk1"), 1}
+                            {
+                                {MakeIdentifierName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk1"), 1}
+                            },
+                            "add",
+                            1
                         },
-                        "add",
-                        1
-                    },
-                    {
-                        mk2LocoRefRecipe,
-                        "add",
-                        2
-                    },
-                    {
-                        mk2CargoRefRecipe,
-                        "highest",
-                        1
-                    },
-                    {
                         {
-                            {"locomotive-1", 10},
-                            {"cargo-wagon-1", 10}
+                            mk2LocoRefRecipe,
+                            "add",
+                            2
                         },
-                        "subtract",
-                        1
+                        {
+                            mk2CargoRefRecipe,
+                            "highest",
+                            1
+                        },
+                        {
+                            {
+                                {"locomotive-1", 10},
+                                {"cargo-wagon-1", 10}
+                            },
+                            "subtract",
+                            1
+                        }
                     }
+                ),
+                energyLists = {
+                    ingredients = Utils.GetRecipeAttribute(mk2LocoRefRecipe, "energy_required", "ingredients") * 2,
+                    normal = Utils.GetRecipeAttribute(mk2LocoRefRecipe, "energy_required", "normal") * 2,
+                    expensive = Utils.GetRecipeAttribute(mk2LocoRefRecipe, "energy_required", "expensive") * 2
                 }
-            ),
+            },
             unlockTech = "titanium-trains"
         },
         ["fluid-loco"] = SharedFunctions.GetLocoSettingsFromReference(mk2LocoRefPrototype),
         ["fluid-wagon"] = SharedFunctions.GetFluidSettingsFromReference(mk2FluidRefPrototype),
         ["fluid-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetRecipeIngredientsAddedTogeather(
-                {
+            recipe = {
+                enabled = false,
+                ingredientLists = Utils.GetRecipeIngredientsAddedTogeather(
                     {
                         {
-                            {MakeIdentifierName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk1"), 1}
+                            {
+                                {MakeIdentifierName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk1"), 1}
+                            },
+                            "add",
+                            1
                         },
-                        "add",
-                        1
-                    },
-                    {
-                        mk2LocoRefRecipe,
-                        "add",
-                        2
-                    },
-                    {
-                        mk2FluidRefRecipe,
-                        "highest",
-                        1
-                    },
-                    {
                         {
-                            {"locomotive-1", 10},
-                            {"fluid-wagon-1", 10}
+                            mk2LocoRefRecipe,
+                            "add",
+                            2
                         },
-                        "subtract",
-                        1
+                        {
+                            mk2FluidRefRecipe,
+                            "highest",
+                            1
+                        },
+                        {
+                            {
+                                {"locomotive-1", 10},
+                                {"fluid-wagon-1", 10}
+                            },
+                            "subtract",
+                            1
+                        }
                     }
+                ),
+                energyLists = {
+                    ingredients = Utils.GetRecipeAttribute(mk2LocoRefRecipe, "energy_required", "ingredients") * 2,
+                    normal = Utils.GetRecipeAttribute(mk2LocoRefRecipe, "energy_required", "normal") * 2,
+                    expensive = Utils.GetRecipeAttribute(mk2LocoRefRecipe, "energy_required", "expensive") * 2
                 }
-            ),
+            },
             unlockTech = "titanium-trains"
         }
     },
@@ -182,70 +214,86 @@ local improvementTiers = {
         ["cargo-wagon"] = SharedFunctions.GetCargoSettingsFromReference(mk3CargoRefPrototype),
         ["cargo-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetRecipeIngredientsAddedTogeather(
-                {
+            recipe = {
+                enabled = false,
+                ingredientLists = Utils.GetRecipeIngredientsAddedTogeather(
                     {
                         {
-                            {MakeIdentifierName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk2"), 1}
+                            {
+                                {MakeIdentifierName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), "mk2"), 1}
+                            },
+                            "add",
+                            1
                         },
-                        "add",
-                        1
-                    },
-                    {
-                        mk3LocoRefRecipe,
-                        "add",
-                        2
-                    },
-                    {
-                        mk3CargoRefRecipe,
-                        "highest",
-                        1
-                    },
-                    {
                         {
-                            {"locomotive-2", 10},
-                            {"cargo-wagon-2", 10}
+                            mk3LocoRefRecipe,
+                            "add",
+                            2
                         },
-                        "subtract",
-                        1
+                        {
+                            mk3CargoRefRecipe,
+                            "highest",
+                            1
+                        },
+                        {
+                            {
+                                {"locomotive-2", 10},
+                                {"cargo-wagon-2", 10}
+                            },
+                            "subtract",
+                            1
+                        }
                     }
+                ),
+                energyLists = {
+                    ingredients = Utils.GetRecipeAttribute(mk3LocoRefRecipe, "energy_required", "ingredients") * 2,
+                    normal = Utils.GetRecipeAttribute(mk3LocoRefRecipe, "energy_required", "normal") * 2,
+                    expensive = Utils.GetRecipeAttribute(mk3LocoRefRecipe, "energy_required", "expensive") * 2
                 }
-            ),
+            },
             unlockTech = "graphene-trains"
         },
         ["fluid-loco"] = SharedFunctions.GetLocoSettingsFromReference(mk3LocoRefPrototype),
         ["fluid-wagon"] = SharedFunctions.GetFluidSettingsFromReference(mk3FluidRefPrototype),
         ["fluid-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetRecipeIngredientsAddedTogeather(
-                {
+            recipe = {
+                enabled = false,
+                ingredientLists = Utils.GetRecipeIngredientsAddedTogeather(
                     {
                         {
-                            {MakeIdentifierName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk2"), 1}
+                            {
+                                {MakeIdentifierName(StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), "mk2"), 1}
+                            },
+                            "add",
+                            1
                         },
-                        "add",
-                        1
-                    },
-                    {
-                        mk3LocoRefRecipe,
-                        "add",
-                        2
-                    },
-                    {
-                        mk3FluidRefRecipe,
-                        "highest",
-                        1
-                    },
-                    {
                         {
-                            {"locomotive-2", 10},
-                            {"fluid-wagon-2", 10}
+                            mk3LocoRefRecipe,
+                            "add",
+                            2
                         },
-                        "subtract",
-                        1
+                        {
+                            mk3FluidRefRecipe,
+                            "highest",
+                            1
+                        },
+                        {
+                            {
+                                {"locomotive-2", 10},
+                                {"fluid-wagon-2", 10}
+                            },
+                            "subtract",
+                            1
+                        }
                     }
+                ),
+                energyLists = {
+                    ingredients = Utils.GetRecipeAttribute(mk3LocoRefRecipe, "energy_required", "ingredients") * 2,
+                    normal = Utils.GetRecipeAttribute(mk3LocoRefRecipe, "energy_required", "normal") * 2,
+                    expensive = Utils.GetRecipeAttribute(mk3LocoRefRecipe, "energy_required", "expensive") * 2
                 }
-            ),
+            },
             unlockTech = "graphene-trains"
         }
     }
