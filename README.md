@@ -32,6 +32,7 @@ Not Implemented Yet / TODO
 Limitations / Known Issues
 ================
 
+- You can't get out of a fast moving train some times. This is a core Factorio limitation.
 - Don't build a longer train with multiple single train units joined together out of order. Start at one end and place each one sequentially. As placing a middle single train unit between 2 other rail wagons may not place correctly.
 - You can not detach a single train unit from other carriages as the parts all face outwards. There is protection in the mod to prevent a single train unit being broken up. However, you can detach regular carriages (cargo, loco, fluid) from a single train unit. If you need to detach a single train unit from another, its often easiest to just mine one of them.
 - Single train units when being placed will only snap to a stations position if they are facing the right way. There's no visual way to tell their direction at present, so just rotate them before placing if needed. Snapping on corners can be finickity.

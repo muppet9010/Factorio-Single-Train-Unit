@@ -67,6 +67,11 @@ end
 
 SharedFunctions.MakeModdedVariations = function(improvementTiers, MakeIdentifierNameFunction, itemDetails)
     --[[
+        improvementTiers = {
+            [tierName] = {
+                type details...
+            }
+        }
         itemDetails = {subgroup, orderPrefix}
     ]]
     for identifier, improvementDetails in pairs(improvementTiers) do
@@ -101,24 +106,7 @@ SharedFunctions.MakeModdedVariations = function(improvementTiers, MakeIdentifier
                     itemVariant.order = itemDetails.orderPrefix .. itemVariant.order .. "-" .. identifier
                     data:extend({itemVariant})
 
-                    local recipeVariant = Utils.DeepCopy(data.raw["recipe"][baseName])
-                    recipeVariant.name = entityVariant.name
-                    if placementDetails.recipe.ingredients ~= nil then
-                        recipeVariant.result = entityVariant.name
-                        recipeVariant.ingredients = placementDetails.recipe.ingredients
-                    end
-                    if placementDetails.recipe.normal ~= nil then
-                        recipeVariant.normal = {
-                            result = entityVariant.name,
-                            ingredients = placementDetails.recipe.normal
-                        }
-                    end
-                    if placementDetails.recipe.expensive ~= nil then
-                        recipeVariant.expensive = {
-                            result = entityVariant.name,
-                            ingredients = placementDetails.recipe.expensive
-                        }
-                    end
+                    local recipeVariant = Utils.MakeRecipePrototype(entityVariant.name, entityVariant.name, placementDetails.recipe.enabled, placementDetails.recipe.ingredientLists, placementDetails.recipe.energyLists)
                     data:extend({recipeVariant})
                     table.insert(data.raw["technology"][placementDetails.unlockTech].effects, {type = "unlock-recipe", recipe = entityVariant.name})
                 end

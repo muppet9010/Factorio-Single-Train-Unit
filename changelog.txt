@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 19.0.9
+Date: 2020-10-24
+  Features:
+  Changes:
+  Bugfixes:
+    - Only 1 entry in the bonus screen now per unit type.
+    - Space Exploration with Krastorio 2 no longer messes up the nuclear train recipe.
+  Info:
+---------------------------------------------------------------------------------------------------
 Version: 19.0.8
 Date: 2020-10-18
   Features:

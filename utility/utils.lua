@@ -970,6 +970,41 @@ Utils.TrackBestFuelCount = function(trackingTable, itemName, itemCount)
     return false
 end
 
+Utils.MakeRecipePrototype = function(recipeName, resultItemName, enabled, ingredientLists, energyLists)
+    --[[
+        Takes tables of the various recipe types (normal, expensive and ingredients) and makes the required recipe prototypes from them. Only makes the version if the ingredientsList includes the type. So supplying just energyLists types doesn't make new versions.
+        ingredientLists is a table with optional tables for "normal", "expensive" and "ingredients" tables within them. Often generatered by Utils.GetRecipeIngredientsAddedTogeather().
+        energyLists is a table with optional keys for "normal", "expensive" and "ingredients". The value of the keys is the energy_required value.
+    ]]
+    local recipePrototype = {
+        type = "recipe",
+        name = recipeName
+    }
+    if ingredientLists.ingredients ~= nil then
+        recipePrototype.energy_required = energyLists.ingredients
+        recipePrototype.enabled = enabled
+        recipePrototype.result = resultItemName
+        recipePrototype.ingredients = ingredientLists.ingredients
+    end
+    if ingredientLists.normal ~= nil then
+        recipePrototype.normal = {
+            energy_required = energyLists.normal or energyLists.ingredients,
+            enabled = enabled,
+            result = resultItemName,
+            ingredients = ingredientLists.normal
+        }
+    end
+    if ingredientLists.expensive ~= nil then
+        recipePrototype.expensive = {
+            energy_required = energyLists.expensive or energyLists.ingredients,
+            enabled = enabled,
+            result = resultItemName,
+            ingredients = ingredientLists.expensive
+        }
+    end
+    return recipePrototype
+end
+
 Utils.GetRecipeIngredientsAddedTogeather = function(recipeIngredientHandlingTables)
     --[[
         Is for handling a mix of recipes and ingredient list. Supports recipe ingredients, normal and expensive.
@@ -1039,9 +1074,12 @@ Utils.GetRecipeIngredientsAddedTogeather = function(recipeIngredientHandlingTabl
 end
 
 Utils.GetRecipeAttribute = function(recipe, attributeName, recipeCostType)
-    -- recipeType defaults to the no cost type if not supplied. Values are: "none", "normal" and "expensive".
-    recipeCostType = recipeCostType or "none"
-    if recipeCostType == "none" and recipe[attributeName] ~= nil then
+    --[[
+        Returns the attributeName for the recipeCostType if available, otherwise the inline ingredients version.
+        recipeType defaults to the no cost type if not supplied. Values are: "ingredients", "normal" and "expensive".
+    --]]
+    recipeCostType = recipeCostType or "ingredients"
+    if recipeCostType == "ingredients" and recipe[attributeName] ~= nil then
         return recipe[attributeName]
     elseif recipe[recipeCostType] ~= nil and recipe[recipeCostType][attributeName] ~= nil then
         return recipe[recipeCostType][attributeName]

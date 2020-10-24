@@ -40,35 +40,43 @@ local improvementTiers = {
         ["cargo-wagon"] = SharedFunctions.GetCargoSettingsFromReference(refCargoWagonPrototype),
         ["cargo-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetRecipeIngredientsAddedTogeather(
-                {
+            recipe = {
+                enabled = false,
+                ingredientLists = Utils.GetRecipeIngredientsAddedTogeather(
                     {
                         {
-                            {StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), 1}
+                            {
+                                {StaticData.MakeName({locoConfiguration = "double_end", unitType = "cargo", type = "placement"}), 1}
+                            },
+                            "add",
+                            1
                         },
-                        "add",
-                        1
-                    },
-                    {
-                        nuclearLocoRefRecipe,
-                        "add",
-                        2
-                    },
-                    {
-                        refCargoWagonRecipe,
-                        "highest",
-                        1
-                    },
-                    {
                         {
-                            {"locomotive", 10},
-                            {"cargo-wagon", 10}
+                            nuclearLocoRefRecipe,
+                            "add",
+                            2
                         },
-                        "subtract",
-                        1
+                        {
+                            refCargoWagonRecipe,
+                            "highest",
+                            1
+                        },
+                        {
+                            {
+                                {"locomotive", 10},
+                                {"cargo-wagon", 10}
+                            },
+                            "subtract",
+                            1
+                        }
                     }
+                ),
+                energyLists = {
+                    ingredients = Utils.GetRecipeAttribute(nuclearLocoRefRecipe, "energy_required", "ingredients") * 2,
+                    normal = Utils.GetRecipeAttribute(nuclearLocoRefRecipe, "energy_required", "normal") * 2,
+                    expensive = Utils.GetRecipeAttribute(nuclearLocoRefRecipe, "energy_required", "expensive") * 2
                 }
-            ),
+            },
             unlockTech = "kr-nuclear-locomotive"
         },
         ["fluid-loco"] = SharedFunctions.GetLocoSettingsFromReference(
@@ -86,35 +94,43 @@ local improvementTiers = {
         ["fluid-wagon"] = SharedFunctions.GetFluidSettingsFromReference(refFluidWagonPrototype),
         ["fluid-placement"] = {
             prototypeAttributes = {},
-            recipe = Utils.GetRecipeIngredientsAddedTogeather(
-                {
+            recipe = {
+                enabled = false,
+                ingredientLists = Utils.GetRecipeIngredientsAddedTogeather(
                     {
                         {
-                            {StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), 1}
+                            {
+                                {StaticData.MakeName({locoConfiguration = "double_end", unitType = "fluid", type = "placement"}), 1}
+                            },
+                            "add",
+                            1
                         },
-                        "add",
-                        1
-                    },
-                    {
-                        nuclearLocoRefRecipe,
-                        "add",
-                        2
-                    },
-                    {
-                        refFluidWagonRecipe,
-                        "highest",
-                        1
-                    },
-                    {
                         {
-                            {"locomotive", 10},
-                            {"fluid-wagon", 10}
+                            nuclearLocoRefRecipe,
+                            "add",
+                            2
                         },
-                        "subtract",
-                        1
+                        {
+                            refFluidWagonRecipe,
+                            "highest",
+                            1
+                        },
+                        {
+                            {
+                                {"locomotive", 10},
+                                {"fluid-wagon", 10}
+                            },
+                            "subtract",
+                            1
+                        }
                     }
+                ),
+                energyLists = {
+                    ingredients = Utils.GetRecipeAttribute(nuclearLocoRefRecipe, "energy_required", "ingredients") * 2,
+                    normal = Utils.GetRecipeAttribute(nuclearLocoRefRecipe, "energy_required", "normal") * 2,
+                    expensive = Utils.GetRecipeAttribute(nuclearLocoRefRecipe, "energy_required", "expensive") * 2
                 }
-            ),
+            },
             unlockTech = "kr-nuclear-locomotive"
         }
     }

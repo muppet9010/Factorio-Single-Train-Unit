@@ -47,6 +47,7 @@ local function MakeMULocoPrototype(thisStaticData, locoPrototypeData)
     muLoco.alert_icon_shift = {0, -0.5}
     table.insert(muLoco.flags, "not-deconstructable")
     table.insert(muLoco.flags, "placeable-off-grid")
+    table.insert(muLoco.flags, "hidden")
     data:extend({muLoco})
 end
 
@@ -187,6 +188,7 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
         }
     end
     table.insert(muWagon.flags, "placeable-off-grid")
+    table.insert(muWagon.flags, "hidden")
     data:extend({muWagon})
 end
 
@@ -226,32 +228,18 @@ local function MakeMuWagonPlacementItemPrototype(thisStaticData, prototypeData)
 end
 
 local function MakeMuWagonPlacementRecipePrototype(thisStaticData, prototypeData)
-    local muWagonPlacementRecipe = {
-        type = "recipe",
-        name = thisStaticData.name
-    }
-    if prototypeData.recipeIngredients.ingredients ~= nil then
-        muWagonPlacementRecipe.energy_required = Utils.GetRecipeAttribute(refLocoRecipe, "energy_required", "none") * 2
-        muWagonPlacementRecipe.enabled = false
-        muWagonPlacementRecipe.result = thisStaticData.name
-        muWagonPlacementRecipe.ingredients = prototypeData.recipeIngredients.ingredients
-    end
-    if prototypeData.recipeIngredients.normal ~= nil then
-        muWagonPlacementRecipe.normal = {
-            energy_required = Utils.GetRecipeAttribute(refLocoRecipe, "energy_required", "normal") * 2,
-            enabled = false,
-            result = thisStaticData.name,
-            ingredients = prototypeData.recipeIngredients.normal
+    local muWagonPlacementRecipe =
+        Utils.MakeRecipePrototype(
+        thisStaticData.name,
+        thisStaticData.name,
+        false,
+        prototypeData.recipeIngredients,
+        {
+            ingredients = Utils.GetRecipeAttribute(refLocoRecipe, "energy_required", "ingredients") * 2,
+            normal = Utils.GetRecipeAttribute(refLocoRecipe, "energy_required", "normal") * 2,
+            expensive = Utils.GetRecipeAttribute(refLocoRecipe, "energy_required", "expensive") * 2
         }
-    end
-    if prototypeData.recipeIngredients.expensive ~= nil then
-        muWagonPlacementRecipe.expensive = {
-            energy_required = Utils.GetRecipeAttribute(refLocoRecipe, "energy_required", "expensive") * 2,
-            enabled = false,
-            result = thisStaticData.name,
-            ingredients = prototypeData.recipeIngredients.expensive
-        }
-    end
+    )
     data:extend({muWagonPlacementRecipe})
 end
 
