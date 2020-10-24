@@ -233,7 +233,7 @@ local function MakeMuWagonPlacementRecipePrototype(thisStaticData, prototypeData
         name = thisStaticData.name
     }
     if prototypeData.recipeIngredients.ingredients ~= nil then
-        muWagonPlacementRecipe.energy_required = Utils.GetRecipeAttribute(refLocoRecipe, "energy_required", "none") * 2
+        muWagonPlacementRecipe.energy_required = Utils.GetRecipeAttribute(refLocoRecipe, "energy_required", "ingredients") * 2
         muWagonPlacementRecipe.enabled = false
         muWagonPlacementRecipe.result = thisStaticData.name
         muWagonPlacementRecipe.ingredients = prototypeData.recipeIngredients.ingredients
