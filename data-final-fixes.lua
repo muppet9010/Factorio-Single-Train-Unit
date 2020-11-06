@@ -6,3 +6,6 @@ require("prototypes/FactorioExtended-Trains")
 require("prototypes/BatteryPack")
 require("prototypes/Krastorio2")
 require("prototypes/TrainConstructionSite")
+
+-- Do final changes
+require("prototypes/disable-regular-rolling-stock")

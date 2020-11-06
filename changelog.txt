@@ -2,6 +2,7 @@
 Version: 19.0.10
 Date: 2020-XXXX
   Features:
+    - Option to disable non single train unit locomitives and wagons. Artillery wagons are left in the game with this setting.
   Changes:
   Bugfixes:
   Info:

@@ -1,5 +1,4 @@
 - TODO:
-	- add mod setting to remove vanilla train types to force just my trains to be used.
 	- put changes back in to correct data stage - see discussion on mod portal.
 
 - Graphics:

@@ -17,7 +17,8 @@ Overview
 - The unit will be mined by the player as a whole and will be damaged/destroyed as a whole.
 - While the graphics look as one, there are actually 2 separate locomotives and a wagon there. So you must fuel both locomotive ends separately and select the right part of the Single Train Unit for giving train orders, entering to drive it, viewing the cargo, etc.
 - UPS efficient as there is no continuously running active code in the mod, so no ongoing CPU load added to the game.
-- The original trains and wagons are unaffected by this mod.
+- The original locomotives and wagons are unaffected by this mod.
+- A mod setting exists to disable the standard larger locomotives and wagons, with artillery wagons remaining. If this is applied mid game it won't remove any existing standard rolling stock or set recipes, but will disable and hhide the recipe to avoid future use.
 
 
 Not Implemented Yet / TODO

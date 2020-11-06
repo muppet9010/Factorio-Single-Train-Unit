@@ -53,6 +53,7 @@ end
 
 Entity.OnStartup = function(event)
     Entity.OnMigration(event)
+
     global.entity.muWagonNamesFilter = Entity.GenerateMuWagonNamesFilter()
     global.entity.muWagonPlacementNameFilter = Entity.GenerateMuWagonPlacementNameFilter()
     local placementNameFilterForMerge = Utils.DeepCopy(global.entity.muWagonPlacementNameFilter)
