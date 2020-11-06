@@ -37,7 +37,7 @@ styleData.GeneratePrototypes = function()
         }
     end
 
-    --FLOW
+    -- FLOW
     for _, direction in pairs({{"_horizontal", "horizontal"}, {"_vertical", "vertical"}}) do
         for _, margin in pairs({{"", 0, 0, 0, 0}, {"_marginTL", 4, 4, 0, 0}}) do
             for _, padding in pairs({{"", 0, 0, 0, 0}, {"_paddingBR", 0, 0, 4, 4}}) do
@@ -59,7 +59,7 @@ styleData.GeneratePrototypes = function()
         end
     end
 
-    --FRAME - the shadow types include padding/margins to handle the graphics. take this in to account if overwriting the values.
+    -- FRAME - the shadow types include padding/margins to handle the graphics. take this in to account if overwriting the values.
     for _, graphic in pairs(
         {
             {"_main", {base = {position = {0, 0}, corner_size = 8}}, 0, 0},
@@ -94,7 +94,7 @@ styleData.GeneratePrototypes = function()
         end
     end
 
-    --SCROLL
+    -- SCROLL
     for _, margin in pairs({{"", 0, 0, 0, 0}, {"_marginTL", 4, 4, 0, 0}}) do
         for _, padding in pairs({{"", 0, 0, 0, 0}, {"_paddingBR", 0, 0, 4, 4}}) do
             defaultStyle["muppet_scroll" .. margin[1] .. padding[1] .. styleData.styleVersion] = {
@@ -115,7 +115,7 @@ styleData.GeneratePrototypes = function()
         end
     end
 
-    --TABLE
+    -- TABLE
     for _, tableMargin in pairs({{"", 0, 0, 0, 0}, {"_marginTL", 4, 4, 0, 0}}) do
         for _, tablePadding in pairs({{"", 0, 0, 0, 0}, {"_paddingBR", 0, 0, 4, 4}}) do
             for _, cellPadding in pairs({{"", 0, 0, 0, 0}, {"_cellPadded", 4, 4, 4, 4}}) do
@@ -144,7 +144,7 @@ styleData.GeneratePrototypes = function()
         end
     end
 
-    --SPRITE
+    -- SPRITE
     for _, size in pairs({{"_32", 32}, {"_48", 48}, {"_64", 64}}) do
         defaultStyle["muppet_sprite" .. size[1] .. styleData.styleVersion] = {
             type = "image_style",
@@ -157,7 +157,7 @@ styleData.GeneratePrototypes = function()
         }
     end
 
-    --SPRITE BUTTON
+    -- SPRITE BUTTON
     for _, attributes in pairs(
         {
             {"", {}},
@@ -188,7 +188,7 @@ styleData.GeneratePrototypes = function()
         end
     end
 
-    --BUTTON
+    -- BUTTON
     for _, purpose in pairs({{"_text", Colors.black}, {"_heading", Colors.guiheadingcolor}}) do
         for _, textSize in pairs({{"_small", "_small"}, {"_medium", "_medium"}, {"_large", "_large"}}) do
             for _, boldness in pairs({{"", ""}, {"_semibold", "_semibold"}, {"_bold", "_bold"}}) do
@@ -227,7 +227,7 @@ styleData.GeneratePrototypes = function()
         end
     end
 
-    --LABEL
+    -- LABEL
     for _, purpose in pairs({{"_text", Colors.white}, {"_heading", Colors.guiheadingcolor}}) do
         for _, textSize in pairs({{"_small", "_small"}, {"_medium", "_medium"}, {"_large", "_large"}}) do
             for _, boldness in pairs({{"", ""}, {"_semibold", "_semibold"}, {"_bold", "_bold"}}) do
@@ -253,7 +253,7 @@ styleData.GeneratePrototypes = function()
         end
     end
 
-    --TEXT BOX - set width & height setting when using as base game has values that can't be nil'd
+    -- TEXT BOX - set width & height setting when using as base game has values that can't be nil'd
     for _, margin in pairs({{"", 0, 0, 0, 0}, {"_marginTL", 4, 4, 0, 0}}) do
         for _, padding in pairs({{"", 0, 0, 0, 0}, {"_paddingBR", 0, 0, 4, 4}}) do
             defaultStyle["muppet_textbox" .. margin[1] .. padding[1] .. styleData.styleVersion] = {

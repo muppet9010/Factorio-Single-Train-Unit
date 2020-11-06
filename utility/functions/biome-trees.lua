@@ -12,7 +12,7 @@ local logPositives = false
 local logData = false
 
 BiomeTrees.GetBiomeTreeName = function(surface, position)
-    --Returns the tree name or nil if tile isn't land type
+    -- Returns the tree name or nil if tile isn't land type
     BiomeTrees._ObtainRequiredData()
     local tile = surface.get_tile(position)
     local tileData = global.UTILITYBIOMETREES.tileData[tile.name]
@@ -39,7 +39,7 @@ BiomeTrees.GetBiomeTreeName = function(surface, position)
 
     local suitableTrees = {}
     local currentChance = 0
-    --Make sure we find a tree of some type. Start as accurate as possible and then beocme less precise.
+    -- Make sure we find a tree of some type. Start as accurate as possible and then beocme less precise.
     for accuracy = 1, 1.5, 0.1 do
         for _, tree in pairs(global.UTILITYBIOMETREES.treeData) do
             if tileTemp >= tree.tempRange[1] / accuracy and tileTemp <= tree.tempRange[2] * accuracy and tileMoisture >= tree.moistureRange[1] / accuracy and tileMoisture <= tree.moistureRange[2] * accuracy then
@@ -69,17 +69,30 @@ BiomeTrees.GetBiomeTreeName = function(surface, position)
         Logging.LogPrint("trees found for conditions: tile: " .. tileData.name .. "   temp: " .. tileTemp .. "    moisture: " .. tileMoisture)
     end
 
-    local highestChance = suitableTrees[#suitableTrees].chanceEnd
+    local highestChance, treeName, treeFound = suitableTrees[#suitableTrees].chanceEnd, nil, false
     local chanceValue = math.random() * highestChance
     for _, treeEntry in pairs(suitableTrees) do
         if chanceValue >= treeEntry.chanceStart and chanceValue <= treeEntry.chanceEnd then
-            return treeEntry.tree.name
+            treeName = treeEntry.tree.name
+            treeFound = true
+            break
         end
+    end
+    if not treeFound then
+        return nil
+    end
+
+    -- Check the tree type still exists, if not re-generate data and run process again. There's no startup event requried with this method.
+    if game.entity_prototypes[treeName] == nil then
+        BiomeTrees._ObtainRequiredData(true)
+        return BiomeTrees.GetBiomeTreeName(surface, position)
+    else
+        return treeName
     end
 end
 
 BiomeTrees.AddBiomeTreeNearPosition = function(surface, position, distance)
-    --Returns the tree entity if one found and created or nil
+    -- Returns the tree entity if one found and created or nil
     BiomeTrees._ObtainRequiredData()
     local treeType = BiomeTrees.GetBiomeTreeName(surface, position)
     if treeType == nil then
@@ -95,7 +108,7 @@ BiomeTrees.AddBiomeTreeNearPosition = function(surface, position, distance)
         end
         return nil
     end
-    local newTree = surface.create_entity {name = treeType, position = newPosition, force = "neutral"}
+    local newTree = surface.create_entity {name = treeType, position = newPosition, force = "neutral", raise_built = true}
     if newTree == nil then
         Logging.LogPrint("Failed to create tree at found position")
         return nil
@@ -108,14 +121,17 @@ end
 
 BiomeTrees._GetTruelyRandomTreeForTileCollision = function(tile)
     if tile.collides_with("player-layer") then
-        --Is a non-land tile
+        -- Is a non-land tile
         return nil
     else
         return global.UTILITYBIOMETREES.randomTrees[math.random(#global.UTILITYBIOMETREES.randomTrees)]
     end
 end
 
-BiomeTrees._ObtainRequiredData = function()
+BiomeTrees._ObtainRequiredData = function(forceReload)
+    if forceReload then
+        global.UTILITYBIOMETREES = nil
+    end
     global.UTILITYBIOMETREES = global.UTILITYBIOMETREES or {}
     global.UTILITYBIOMETREES.tileData = global.UTILITYBIOMETREES.tileData or BiomeTrees._GetTileData()
     global.UTILITYBIOMETREES.treeData = global.UTILITYBIOMETREES.treeData or BiomeTrees._GetTreeData()
@@ -179,7 +195,7 @@ BiomeTrees._GetTileData = function()
         tileDetails[tileName] = {name = tileName, type = type, tempRanges = tempRanges, moistureRanges = moistureRanges}
     end
 
-    --Vanilla - 0.18.10
+    -- Vanilla - 1.0.0
     AddTileDetails("grass-1", "grass", {{0, 0.7}, {1, 1}})
     AddTileDetails("grass-2", "grass", {{0.45, 0.45}, {1, 0.8}})
     AddTileDetails("grass-3", "grass", {{0, 0.6}, {0.65, 0.9}})
@@ -206,7 +222,8 @@ BiomeTrees._GetTileData = function()
     AddTileDetails("water-shallow", "water")
     AddTileDetails("water-mud", "water")
     AddTileDetails("out-of-map", "no-trees")
-    AddTileDetails("landfill", "landfill", {{0, 0}, {0.25, 0.15}}) --same as sand-1
+    AddTileDetails("landfill", "desert", {{0, 0}, {0.25, 0.15}}) --same as sand-1
+    AddTileDetails("nuclear-ground", "desert", {{0, 0}, {0.25, 0.15}}) --same as sand-1
 
     return tileDetails
 end

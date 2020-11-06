@@ -1,15 +1,14 @@
---local Logging = require("utility/logging")
 local GuiActionsClosed = {}
 MOD = MOD or {}
 MOD.guiClosedActions = MOD.guiClosedActions or {}
 
---Called from the root of Control.lua
+-- Called from the root of Control.lua
 GuiActionsClosed.MonitorGuiClosedActions = function()
     script.on_event(defines.events.on_gui_closed, GuiActionsClosed._HandleGuiClosedAction)
 end
 
---Called from OnLoad() from each script file.
---When actionFunction is triggered actionData argument passed: {actionName = actionName, playerIndex = playerIndex, entity = entity, data = data_passed_on_event_register, eventData = raw_factorio_event_data}
+-- Called from OnLoad() from each script file.
+-- When actionFunction is triggered actionData argument passed: {actionName = actionName, playerIndex = playerIndex, entity = entity, data = data_passed_on_event_register, eventData = raw_factorio_event_data}
 GuiActionsClosed.LinkGuiClosedActionNameToFunction = function(actionName, actionFunction)
     if actionName == nil or actionFunction == nil then
         error("GuiActions.LinkGuiClosedActionNameToFunction called with missing arguments")
@@ -17,7 +16,7 @@ GuiActionsClosed.LinkGuiClosedActionNameToFunction = function(actionName, action
     MOD.guiClosedActions[actionName] = actionFunction
 end
 
---Called to register a specific GUI type being closed to a named action. For GuiType it accepts defines.gui_type and "all".
+-- Called to register a specific GUI type being closed to a named action. For GuiType it accepts defines.gui_type and "all".
 GuiActionsClosed.RegisterActionNameForGuiTypeClosed = function(guiType, actionName, data)
     if guiType == nil or actionName == nil then
         error("GuiActions.RegisterActionNameForGuiTypeClosed called with missing arguments")
@@ -28,7 +27,7 @@ GuiActionsClosed.RegisterActionNameForGuiTypeClosed = function(guiType, actionNa
     global.UTILITYGUIACTIONSGUITYPECLOSED[guiType][actionName] = data
 end
 
---Called when desired to remove a specific GUI type closing from triggering its action.
+-- Called when desired to remove a specific GUI type closing from triggering its action.
 GuiActionsClosed.RemoveActionNameForGuiTypeClosed = function(guiType, actionName)
     if guiType == nil or actionName == nil then
         error("GuiActions.RemoveActionNameForGuiTypeClosed called with missing arguments")

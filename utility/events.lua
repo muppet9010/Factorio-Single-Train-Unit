@@ -3,7 +3,6 @@
     It supports defines.events and custom events. Also offers a raise event method.
     Intended for use with a modular script design to avoid having to link to each modulars functions in a centralised event handler.
 ]]
---local Logging = require("utility/logging")
 local Utils = require("utility/utils")
 
 local Events = {}
@@ -29,7 +28,7 @@ Events.RegisterHandlerEvent = function(eventName, handlerName, handlerFunction, 
     return eventId
 end
 
---Called from the root of Control.lua for custom inputs (key bindings) as their names are handled specially.
+-- Called from the root of Control.lua for custom inputs (key bindings) as their names are handled specially.
 Events.RegisterCustomInput = function(actionName)
     if actionName == nil then
         error("Events.RegisterCustomInput called with missing arguments")
@@ -37,7 +36,7 @@ Events.RegisterCustomInput = function(actionName)
     script.on_event(actionName, Events._HandleEvent)
 end
 
---Called when needed
+-- Called when needed
 Events.RemoveHandler = function(eventName, handlerName)
     if eventName == nil or handlerName == nil then
         error("Events.RemoveHandler called with missing arguments")
@@ -48,7 +47,7 @@ Events.RemoveHandler = function(eventName, handlerName)
     MOD.events[eventName][handlerName] = nil
 end
 
---Called when needed, but not before tick 0 as they are ignored
+-- Called when needed, but not before tick 0 as they are ignored
 Events.RaiseEvent = function(eventData)
     eventData.tick = game.tick
     local eventName = eventData.name
@@ -62,7 +61,7 @@ Events.RaiseEvent = function(eventData)
     end
 end
 
---Called from anywhere, including OnStartup in tick 0. This won't be passed out to other mods however, only run within this mod.
+-- Called from anywhere, including OnStartup in tick 0. This won't be passed out to other mods however, only run within this mod.
 Events.RaiseInternalEvent = function(eventData)
     eventData.tick = game.tick
     local eventName = eventData.name
@@ -77,7 +76,7 @@ Events.RaiseInternalEvent = function(eventData)
 end
 
 Events._HandleEvent = function(eventData)
-    --inputName used by custom_input , with eventId used by all other events
+    -- input_name used by custom_input , with eventId used by all other events
     local eventId, inputName = eventData.name, eventData.input_name
     if MOD.events[eventId] ~= nil then
         for _, handlerFunction in pairs(MOD.events[eventId]) do
