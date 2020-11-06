@@ -1158,4 +1158,47 @@ Utils.GetRecipeAttribute = function(recipe, attributeName, recipeCostType)
     return nil
 end
 
+Utils.DoesRecipeResultsIncludeItemName = function(recipePrototype, itemName)
+    for _, recipeBase in pairs({recipePrototype, recipePrototype.normal, recipePrototype.expensive}) do
+        if recipeBase ~= nil then
+            if recipeBase.result ~= nil and recipeBase.result == itemName then
+                return true
+            elseif recipeBase.results ~= nil and Utils.GetTableKeyWithInnerKeyValue(recipeBase.results, "name", itemName) ~= nil then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+Utils.RemoveEntitiesRecipesFromTechnologies = function(entityPrototype, recipes, technolgies)
+    --[[
+        From the provided technology list remove all provided recipes from being unlocked that create an item that can place a given entity prototype.
+        Returns a table of the technologies affected or a blank table if no technologies are affected.
+    ]]
+    local technologiesChanged = {}
+    local placedByItemName
+    if entityPrototype.minable ~= nil and entityPrototype.minable.result ~= nil then
+        placedByItemName = entityPrototype.minable.result
+    else
+        return technologiesChanged
+    end
+    for _, recipePrototype in pairs(recipes) do
+        if Utils.DoesRecipeResultsIncludeItemName(recipePrototype, placedByItemName) then
+            recipePrototype.enabled = false
+            for _, technologyPrototype in pairs(technolgies) do
+                if technologyPrototype.effects ~= nil then
+                    for effectIndex, effect in pairs(technologyPrototype.effects) do
+                        if effect.type == "unlock-recipe" and effect.recipe ~= nil and effect.recipe == recipePrototype.name then
+                            table.remove(technologyPrototype.effects, effectIndex)
+                            table.insert(technologiesChanged, technologyPrototype)
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return technologiesChanged
+end
+
 return Utils
