@@ -1,6 +1,6 @@
 # Single Train Unit
 
-Adds a single train unit comprising of a small cargo/fluid wagon and a locomotives at both ends. Total size is of a standard wagon. There are seperate cargo and fluid wagon versions.
+Adds a single train unit comprising of a small cargo/fluid wagon and a locomotives at both ends. Total size is of a standard wagon. There are separate cargo and fluid wagon versions.
 
 ![Single Train Unit Examples](https://thumbs.gfycat.com/DependableMixedBarasinga-size_restricted.gif)
 
@@ -86,9 +86,3 @@ Mod isn't compatible with single train units due to how it creates the boxed tra
 
 *Renai Transportation*
 Mod isn't compatible as it manipulates the train entities when they land after flying. This may be supportable in the future, but not planned at present.
-
-
-Upgrading from old POC mod version
-========================
-
-- You can not upgrade from the Proof Of Concept version of the mod, version 18.x.x. This old version only had a handful of downloads and was a beta test. If you tried this version you'll need to start a new map to get on the main release.
