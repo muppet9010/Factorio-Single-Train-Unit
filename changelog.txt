@@ -5,6 +5,10 @@ Date: 2020-XXXX
     - Option to disable non single train unit locomitives and wagons. Artillery wagons are left in the game with this setting.
   Changes:
   Bugfixes:
+    - Fix crash with pasting blueprinted single train unit with fuel in editor mode.
+    - When pasting blueprinted single train unit with fuel in editor mode, the fuel is duplicated to each loco part, not split between them.
+    - When taking a blueprint of a single train unit, the greatest fuel count of the highest fuel value will be taken. Nefore only the first count of best fuel found was used.
+    - Fixed some possible edge case when blueprinted single train units wouldn't load fuel. May only occur with un-tested fuel load mods.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.9

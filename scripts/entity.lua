@@ -292,40 +292,47 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     wagons.rearLoco.backer_name = ""
 
     -- Handle Fuel
-    if fuelInventoryContents ~= nil then
-        if game.active_mods["Fill4Me"] then
-            -- Will insert the same amount of fuel in to both end locos as was placed in to the placement loco assuming fuel in builder inventory allowing. Otherwise will use all available and split between.
+    if not Utils.IsTableEmpty(fuelInventoryContents) then
+        if builder.is_player() and builder.controller_type ~= defines.controllers.character then
+            -- In editor mode with instant blueprints so just insert in both ends.
             local fuelName, fuelCount = next(fuelInventoryContents, nil)
-            if fuelName ~= nil and fuelCount ~= nil and fuelCount > 0 then
-                local fuelAvailable = builderInventory.get_item_count(fuelName) + fuelCount
-                local fuelToInsert = math.ceil(math.min(fuelAvailable / 2, fuelCount))
-                local fuelInserted = 0
-                if fuelToInsert > 0 then
-                    fuelInserted = fuelInserted + wagons.forwardLoco.get_fuel_inventory().insert({name = fuelName, count = fuelToInsert})
-                end
-                fuelToInsert = math.floor(math.min(fuelAvailable / 2, fuelCount))
-                if fuelToInsert > 0 then
-                    fuelInserted = fuelInserted + wagons.rearLoco.get_fuel_inventory().insert({name = fuelName, count = fuelToInsert})
-                end
-                local fuelUsedFromBuilder = fuelInserted - fuelCount
-                if fuelUsedFromBuilder > 0 then
-                    builderInventory.remove({name = fuelName, count = fuelUsedFromBuilder})
-                elseif fuelUsedFromBuilder < 0 then
-                    Utils.TryInsertInventoryContents({[fuelName] = 0 - fuelUsedFromBuilder}, builderInventory, true, 1)
-                end
-            end
+            wagons.forwardLoco.get_fuel_inventory().insert({name = fuelName, count = fuelCount})
+            wagons.rearLoco.get_fuel_inventory().insert({name = fuelName, count = fuelCount})
         else
-            -- Will spread the fuel from the placement loco across the 2 end locos.
-            local fuelAllMoved = Utils.TryInsertInventoryContents(fuelInventoryContents, wagons.forwardLoco.get_fuel_inventory(), false, 0.5)
-            if not fuelAllMoved then
-                fuelAllMoved = Utils.TryInsertInventoryContents(fuelInventoryContents, wagons.rearLoco.get_fuel_inventory(), false, 1)
-            end
-            if not fuelAllMoved then
-                Utils.TryInsertInventoryContents(fuelInventoryContents, builderInventory, true, 1)
+            if game.active_mods["Fill4Me"] then
+                -- Will insert the same amount of fuel in to both end locos as was placed in to the placement loco assuming fuel in builder inventory allowing. Otherwise will use all available and split between.
+                local fuelName, fuelCount = next(fuelInventoryContents, nil)
+                if fuelName ~= nil and fuelCount ~= nil and fuelCount > 0 then
+                    local fuelAvailable = builderInventory.get_item_count(fuelName) + fuelCount
+                    local fuelToInsert = math.ceil(math.min(fuelAvailable / 2, fuelCount))
+                    local fuelInserted = 0
+                    if fuelToInsert > 0 then
+                        fuelInserted = fuelInserted + wagons.forwardLoco.get_fuel_inventory().insert({name = fuelName, count = fuelToInsert})
+                    end
+                    fuelToInsert = math.floor(math.min(fuelAvailable / 2, fuelCount))
+                    if fuelToInsert > 0 then
+                        fuelInserted = fuelInserted + wagons.rearLoco.get_fuel_inventory().insert({name = fuelName, count = fuelToInsert})
+                    end
+                    local fuelUsedFromBuilder = fuelInserted - fuelCount
+                    if fuelUsedFromBuilder > 0 then
+                        builderInventory.remove({name = fuelName, count = fuelUsedFromBuilder})
+                    elseif fuelUsedFromBuilder < 0 then
+                        Utils.TryInsertInventoryContents({[fuelName] = 0 - fuelUsedFromBuilder}, builderInventory, true, 1)
+                    end
+                end
+            else
+                -- Will spread the fuel from the placement loco across the 2 end locos.
+                local fuelAllMoved = Utils.TryInsertInventoryContents(fuelInventoryContents, wagons.forwardLoco.get_fuel_inventory(), false, 0.5)
+                if not fuelAllMoved then
+                    fuelAllMoved = Utils.TryInsertInventoryContents(fuelInventoryContents, wagons.rearLoco.get_fuel_inventory(), false, 1)
+                end
+                if not fuelAllMoved then
+                    Utils.TryInsertInventoryContents(fuelInventoryContents, builderInventory, true, 1)
+                end
             end
         end
     end
-    if fuelRequestProxy ~= nil then
+    if fuelRequestProxy ~= nil and (not Utils.IsTableEmpty(fuelRequestProxy.item_requests)) then
         surface.create_entity {name = "item-request-proxy", position = wagons.forwardLoco.position, force = wagons.forwardLoco.force, target = wagons.forwardLoco, modules = fuelRequestProxy.item_requests}
         surface.create_entity {name = "item-request-proxy", position = wagons.rearLoco.position, force = wagons.rearLoco.force, target = wagons.rearLoco, modules = fuelRequestProxy.item_requests}
     end

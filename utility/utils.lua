@@ -929,7 +929,7 @@ end
 Utils.TryInsertInventoryContents = function(contents, targetInventory, dropUnmovedOnGround, ratioToMove)
     -- Just takes a list of item names and counts that you get from the inventory.get_contents(). Updates the passed in contents object.
     -- Returns true/false if all items were moved successfully.
-    if contents == nil or #contents == 0 then
+    if Utils.IsTableEmpty(contents) then
         return
     end
     local sourceOwner, itemAllMoved = nil, true
@@ -1027,6 +1027,10 @@ Utils.TrackBestFuelCount = function(trackingTable, itemName, itemCount)
         trackingTable.fuelName = itemName
         trackingTable.fuelCount = itemCount
         trackingTable.fuelValue = fuelValue
+        return true
+    end
+    if trackingTable.fuelName == itemName and itemCount > trackingTable.fuelCount then
+        trackingTable.fuelCount = itemCount
         return true
     end
     return false
