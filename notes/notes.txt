@@ -1,5 +1,4 @@
 - TODO:
-	- put changes back in to correct data stage - see discussion on mod portal.
 
 - Graphics:
     - Add direction indicator to placement graphics to help with snapping to stations.

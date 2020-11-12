@@ -13,7 +13,8 @@
         "? BatteryPack",
         "? space-exploration",
         "? aai-industry",
-        "? Krastorio2"
+        "? Krastorio2",
+        "? zombiesextended-logistics"
     ],
     "description": "Adds a single train unit that is the standard length, but include storage and can travel in both directions"
 }

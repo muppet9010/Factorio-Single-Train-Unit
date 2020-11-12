@@ -1,8 +1,9 @@
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.10
-Date: 2020-XXXX
+Date: 2020-11-12
   Features:
-    - Option to disable non single train unit locomitives and wagons. Artillery wagons are left in the game with this setting.
+    - Option to disable non single train unit locomotives and wagons. Artillery wagons are left in the game with this setting.
+    - Add support for Zombies Extended higher tier trains.
   Changes:
   Bugfixes:
     - Fix crash with pasting blueprinted single train unit with fuel in editor mode.

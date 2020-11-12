@@ -1139,7 +1139,7 @@ Utils.GetRecipeIngredientsAddedTogeather = function(recipeIngredientHandlingTabl
     return ingredientsTable
 end
 
-Utils.GetRecipeAttribute = function(recipe, attributeName, recipeCostType)
+Utils.GetRecipeAttribute = function(recipe, attributeName, recipeCostType, defaultValue)
     --[[
         Returns the attributeName for the recipeCostType if available, otherwise the inline ingredients version.
         recipeType defaults to the no cost type if not supplied. Values are: "ingredients", "normal" and "expensive".
@@ -1159,7 +1159,7 @@ Utils.GetRecipeAttribute = function(recipe, attributeName, recipeCostType)
         return recipe["expensive"][attributeName]
     end
 
-    return nil
+    return defaultValue -- may well be nil
 end
 
 Utils.DoesRecipeResultsIncludeItemName = function(recipePrototype, itemName)
