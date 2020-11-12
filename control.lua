@@ -1,4 +1,5 @@
 local Entity = require("scripts/entity")
+local DisableRegularRollingStock = require("scripts/disable-regular-rolling-stock")
 
 local function CreateGlobals()
     Entity.CreateGlobals()
@@ -18,6 +19,7 @@ local function OnStartup(event)
     OnSettingChanged(nil)
 
     Entity.OnStartup(event)
+    DisableRegularRollingStock.OnStartup(event)
 end
 
 script.on_init(OnStartup)

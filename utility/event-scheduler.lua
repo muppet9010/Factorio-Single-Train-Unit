@@ -1,4 +1,3 @@
---local Logging = require("utility/logging")
 local Utils = require("utility/utils")
 local EventScheduler = {}
 MOD = MOD or {}
@@ -6,18 +5,18 @@ MOD.scheduledEventNames =
     MOD.scheduledEventNames or
     {
         ["EventScheduler.GamePrint"] = function(event)
-            --Builtin game.print delayed function, needed for 0 tick logging (startup) writing to screen activites.
+            -- Builtin game.print delayed function, needed for 0 tick logging (startup) writing to screen activites.
             game.print(event.data.message)
         end
     }
 
---Called from the root of Control.lua
+-- Called from the root of Control.lua
 EventScheduler.RegisterScheduler = function()
     script.on_event(defines.events.on_tick, EventScheduler._OnSchedulerCycle)
 end
 
---Called from OnLoad() from each script file.
---When eventFunction is triggered eventData argument passed: {tick = tick, name = eventName, instanceId = instanceId, data = scheduledFunctionData}
+-- Called from OnLoad() from each script file.
+-- When eventFunction is triggered eventData argument passed: {tick = tick, name = eventName, instanceId = instanceId, data = scheduledFunctionData}
 EventScheduler.RegisterScheduledEventType = function(eventName, eventFunction)
     if eventName == nil or eventFunction == nil then
         error("EventScheduler.RegisterScheduledEventType called with missing arguments")
@@ -25,7 +24,7 @@ EventScheduler.RegisterScheduledEventType = function(eventName, eventFunction)
     MOD.scheduledEventNames[eventName] = eventFunction
 end
 
---Called from OnStartup() or from some other event or trigger to schedule an event.
+-- Called from OnStartup() or from some other event or trigger to schedule an event.
 EventScheduler.ScheduleEvent = function(eventTick, eventName, instanceId, eventData)
     if eventName == nil then
         error("EventScheduler.ScheduleEvent called with missing arguments")
@@ -45,7 +44,7 @@ EventScheduler.ScheduleEvent = function(eventTick, eventName, instanceId, eventD
     global.UTILITYSCHEDULEDFUNCTIONS[eventTick][eventName][instanceId] = eventData
 end
 
---Called whenever required.
+-- Called whenever required.
 EventScheduler.IsEventScheduled = function(targetEventName, targetInstanceId, targetTick)
     if targetEventName == nil then
         error("EventScheduler.IsEventScheduled called with missing arguments")
@@ -57,7 +56,7 @@ EventScheduler.IsEventScheduled = function(targetEventName, targetInstanceId, ta
     return result
 end
 
---Called whenever required.
+-- Called whenever required.
 EventScheduler.RemoveScheduledEvents = function(targetEventName, targetInstanceId, targetTick)
     if targetEventName == nil then
         error("EventScheduler.RemoveScheduledEvents called with missing arguments")
@@ -65,7 +64,7 @@ EventScheduler.RemoveScheduledEvents = function(targetEventName, targetInstanceI
     EventScheduler._ParseScheduledEvents(targetEventName, targetInstanceId, targetTick, EventScheduler._RemoveScheduledEventsFromTickEntry)
 end
 
---Called whenever required.
+-- Called whenever required.
 EventScheduler.GetScheduledEvents = function(targetEventName, targetInstanceId, targetTick)
     if targetEventName == nil then
         error("EventScheduler.GetScheduledEvents called with missing arguments")

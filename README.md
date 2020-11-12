@@ -1,6 +1,6 @@
 # Single Train Unit
 
-Adds a single train unit comprising of a small cargo/fluid wagon and a locomotives at both ends. Total size is of a standard wagon. There are seperate cargo and fluid wagon versions.
+Adds a single train unit comprising of a small cargo/fluid wagon and a locomotives at both ends. Total size is of a standard wagon. There are separate cargo and fluid wagon versions.
 
 ![Single Train Unit Examples](https://thumbs.gfycat.com/DependableMixedBarasinga-size_restricted.gif)
 
@@ -17,7 +17,8 @@ Overview
 - The unit will be mined by the player as a whole and will be damaged/destroyed as a whole.
 - While the graphics look as one, there are actually 2 separate locomotives and a wagon there. So you must fuel both locomotive ends separately and select the right part of the Single Train Unit for giving train orders, entering to drive it, viewing the cargo, etc.
 - UPS efficient as there is no continuously running active code in the mod, so no ongoing CPU load added to the game.
-- The original trains and wagons are unaffected by this mod.
+- The original locomotives and wagons are unaffected by this mod.
+- A mod setting exists to disable the standard larger locomotives and wagons, with artillery wagons remaining. If this is applied mid game it won't remove any existing standard rolling stock or set recipes, but will disable and hhide the recipe to avoid future use.
 
 
 Not Implemented Yet / TODO
@@ -53,6 +54,7 @@ Compatible New Recipe & Tier Mods
 - Space Exploration
 - AAI Industry
 - Krastorio 2
+- Zombies Extended
 
 Compatible Usage Mods
 =============
@@ -67,7 +69,7 @@ As the single train unit is made up of 3 train parts internally you need to acco
 Incompatible Mods
 ============
 
-I have not blocked any other mods unless they hard break this mod. As while they won't work with the single train units added by this mod, they will still work with other types of trains and wagons. All train related mods with known issues or no effect are listed below with details.
+I have not blocked any other mods unless they hard break this mod. As while some won't work with the single train units added by this mod, they will still work with other types of trains and wagons. All train related mods with known issues or no effect are listed below with details.
 
 *Bulk Rail Loader*
 At present the Bulk Rail Loader can't work with the single train units as the Bulk Rail Loader only tries to take cargo items from one end of the wagon, which is a locomotive in the single train units case. This has been raised with the mod author to see if there's a solution. https://mods.factorio.com/mod/railloader/discussion/5f59068dab70d5cb80c7e723
@@ -76,19 +78,13 @@ At present the Bulk Rail Loader can't work with the single train units as the Bu
 At present no integration is present and so there isn't an electric version available.
 
 *Multiple Unit Train Control*
-The Multiple Unit Train Control mod doesn't appear to get applied to Single Train Units by default. Probably due to single train units being placed via script. This is desired behaviour as Single Train Units are already balanced for their dual direction nature.
+The Multiple Unit Train Control mod ignores Single Train Units by default. This is desired behaviour as Single Train Units are already balanced for their dual direction nature.
 
 *Noxys Multidirectional Trains*
-The Noxys Multidirectional Trains mod doesn't appear to get applied to Single Train Units by default. Probably due to single train units being placed via script. This is desired behaviour as Single Train Units are already balanced for their dual direction nature.
+The Noxys Multidirectional Trains mod ignores Single Train Units by default. This is desired behaviour as Single Train Units are already balanced for their dual direction nature.
 
 *Train Construction Site*
 Mod isn't compatible with single train units due to how it creates the boxed train prototypes at present. Not raised to mod author so far due to lack of interest.
 
 *Renai Transportation*
 Mod isn't compatible as it manipulates the train entities when they land after flying. This may be supportable in the future, but not planned at present.
-
-
-Upgrading from old POC mod version
-========================
-
-- You can not upgrade from the Proof Of Concept version of the mod, version 18.x.x. This old version only had a handful of downloads and was a beta test. If you tried this version you'll need to start a new map to get on the main release.

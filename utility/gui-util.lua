@@ -84,7 +84,7 @@ GuiUtil.AddElement = function(elementDetails)
     end
 end
 
---Gets a specific name and type from the returned elements table from the GuiUtil.AddElement() function.
+-- Gets a specific name and type from the returned elements table from the GuiUtil.AddElement() function.
 GuiUtil.GetNameFromReturnedElements = function(returnedElements, elementName, elementType)
     if returnedElements == nil then
         return nil
@@ -109,7 +109,7 @@ GuiUtil.GetElementFromPlayersReferenceStorage = function(playerIndex, storeName,
     return global.GUIUtilPlayerElementReferenceStorage[playerIndex][storeName][GuiUtil.GenerateGuiElementName(name, type)]
 end
 
---Similar options as AddElement where arguments exist. Some don't make sense for updating and so not supported.
+-- Similar options as AddElement where arguments exist. Some don't make sense for updating and so not supported.
 GuiUtil.UpdateElementFromPlayersReferenceStorage = function(playerIndex, storeName, name, type, arguments, ignoreMissingElement)
     ignoreMissingElement = ignoreMissingElement or false
     local element = GuiUtil.GetElementFromPlayersReferenceStorage(playerIndex, storeName, name, type)

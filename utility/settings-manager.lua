@@ -77,7 +77,7 @@ SettingsManager.HandleSettingWithArrayOfValues = function(settingType, settingNa
         else
             defaultSettingsContainer[globalSettingName] = valueHandlingFunction(defaultValue)
             if not (expectedValueType.hasChildren and value == "") then
-                --If its an arrayOf type setting and an empty string is input don't show an error. Blank string is valid as well as an empty array JSON.
+                -- If its an arrayOf type setting and an empty string is input don't show an error. Blank string is valid as well as an empty array JSON.
                 Logging.LogPrint("Setting '[" .. settingType .. "][" .. settingName .. "]' isn't a valid JSON array and has an invalid value type for a single value. Expected a single or array of '" .. expectedValueType.name .. "' but got the value '" .. tostring(value) .. "', so using default value of '" .. tostring(defaultValue) .. "'")
             end
         end
@@ -95,7 +95,7 @@ SettingsManager.GetSettingValueForId = function(globalGroupsContainer, id, globa
     error("Trying to get mod setting '" .. settingName .. "' that doesn't exist")
 end
 
---Strips any % characters from a number value to avoid silly user entry issues.
+-- Strips any % characters from a number value to avoid silly user entry issues.
 SettingsManager._ValueToType = function(value, expectedType)
     if expectedType.name == SettingsManager.ExpectedValueTypes.string.name then
         if type(value) == "string" then

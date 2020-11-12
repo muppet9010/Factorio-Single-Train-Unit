@@ -1,58 +1,91 @@
 local Utils = {}
---local Logging = require("utility/logging")
 local factorioUtil = require("__core__/lualib/util")
 Utils.DeepCopy = factorioUtil.table.deepcopy
-Utils.TableMerge = factorioUtil.merge -- takes an array of tables and returns a new table with copies of their contents
+Utils.TableMerge = factorioUtil.merge -- Takes an array of tables and returns a new table with copies of their contents
 
-function Utils.KillAllKillableObjectsInArea(surface, positionedBoundingBox, killerEntity, collisionBoxOnlyEntities, force)
-    local entitiesFound = surface.find_entities(positionedBoundingBox)
-    for k, entity in pairs(entitiesFound) do
-        if entity.valid and (force == nil or entity.force == force) then
-            if entity.health ~= nil and entity.destructible and ((collisionBoxOnlyEntities and Utils.IsCollisionBoxPopulated(entity.prototype.collision_box)) or (not collisionBoxOnlyEntities)) then
-                if killerEntity ~= nil then
-                    entity.die("neutral", killerEntity)
-                else
-                    entity.die("neutral")
-                end
-            end
+function Utils.Are2EntitiesTheSame(entity1, entity2)
+    -- Uses unit number if both support it, otherwise has to compare a lot of attributes to try and work out if they are the same base entity.
+    if not entity1.valid or not entity2.valid then
+        return false
+    end
+    if entity1.unit_number ~= nil and entity2.unit_number ~= nil then
+        if entity1.unit_number == entity2.unit_number then
+            return true
+        else
+            return false
+        end
+    else
+        if entity1.type == entity2.type and entity1.name == entity2.name and entity1.surface.index == entity2.surface.index and entity1.position.x == entity2.position.x and entity1.position.y == entity2.position.y and entity1.force.index == entity2.force.index and entity1.health == entity2.health then
+            return true
+        else
+            return false
         end
     end
 end
 
-function Utils.KillAllObjectsInArea(surface, positionedBoundingBox, killerEntity, force)
-    local entitiesFound = surface.find_entities(positionedBoundingBox)
+function Utils.ReturnAllObjectsInArea(surface, positionedBoundingBox, collisionBoxOnlyEntities, onlyForceAffected, onlyDestructable, onlyKillable, entitiesExcluded)
+    -- Expand force affected to support range of opt in or opt out forces.
+    local entitiesFound, filteredEntitiesFound = surface.find_entities(positionedBoundingBox), {}
     for k, entity in pairs(entitiesFound) do
-        if entity.valid and (force == nil or entity.force == force) then
-            if entity.destructible then
-                if killerEntity ~= nil then
-                    entity.die("neutral", killerEntity)
-                else
-                    entity.die("neutral")
+        if entity.valid then
+            local entityExcluded = false
+            if entitiesExcluded ~= nil and #entitiesExcluded > 0 then
+                for _, excludedEntity in pairs(entitiesExcluded) do
+                    if Utils.Are2EntitiesTheSame(entity, excludedEntity) then
+                        entityExcluded = true
+                        break
+                    end
                 end
+            end
+            if not entityExcluded then
+                if (onlyForceAffected == nil) or (entity.force == onlyForceAffected) then
+                    if (not onlyDestructable) or (entity.destructible) then
+                        if (not onlyKillable) or (entity.health ~= nil) then
+                            if (not collisionBoxOnlyEntities) or (Utils.IsCollisionBoxPopulated(entity.prototype.collision_box)) then
+                                table.insert(filteredEntitiesFound, entity)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return filteredEntitiesFound
+end
+
+function Utils.KillAllKillableObjectsInArea(surface, positionedBoundingBox, killerEntity, collisionBoxOnlyEntities, onlyForceAffected, entitiesExcluded)
+    for k, entity in pairs(Utils.ReturnAllObjectsInArea(surface, positionedBoundingBox, collisionBoxOnlyEntities, onlyForceAffected, true, true, entitiesExcluded)) do
+        if killerEntity ~= nil then
+            entity.die("neutral", killerEntity)
+        else
+            entity.die("neutral")
+        end
+    end
+end
+
+function Utils.KillAllObjectsInArea(surface, positionedBoundingBox, killerEntity, onlyForceAffected, entitiesExcluded)
+    for k, entity in pairs(Utils.ReturnAllObjectsInArea(surface, positionedBoundingBox, false, onlyForceAffected, false, false, entitiesExcluded)) do
+        if entity.destructible then
+            if killerEntity ~= nil then
+                entity.die("neutral", killerEntity)
             else
-                entity.destroy({dp_cliff_correction = true, raise_destroy = true})
+                entity.die("neutral")
             end
-        end
-    end
-end
-
-function Utils.DestroyAllKillableObjectsInArea(surface, positionedBoundingBox, collisionBoxOnlyEntities, force)
-    local entitiesFound = surface.find_entities(positionedBoundingBox)
-    for k, entity in pairs(entitiesFound) do
-        if entity.valid and (force == nil or entity.force == force) then
-            if entity.health ~= nil and entity.destructible and ((collisionBoxOnlyEntities and Utils.IsCollisionBoxPopulated(entity.prototype.collision_box)) or (not collisionBoxOnlyEntities)) then
-                entity.destroy({dp_cliff_correction = true, raise_destroy = true})
-            end
-        end
-    end
-end
-
-function Utils.DestroyAllObjectsInArea(surface, positionedBoundingBox, force)
-    local entitiesFound = surface.find_entities(positionedBoundingBox)
-    for k, entity in pairs(entitiesFound) do
-        if entity.valid and (force == nil or entity.force == force) then
+        else
             entity.destroy({dp_cliff_correction = true, raise_destroy = true})
         end
+    end
+end
+
+function Utils.DestroyAllKillableObjectsInArea(surface, positionedBoundingBox, collisionBoxOnlyEntities, onlyForceAffected, entitiesExcluded)
+    for k, entity in pairs(Utils.ReturnAllObjectsInArea(surface, positionedBoundingBox, collisionBoxOnlyEntities, onlyForceAffected, true, true, entitiesExcluded)) do
+        entity.destroy({dp_cliff_correction = true, raise_destroy = true})
+    end
+end
+
+function Utils.DestroyAllObjectsInArea(surface, positionedBoundingBox, onlyForceAffected, entitiesExcluded)
+    for k, entity in pairs(Utils.ReturnAllObjectsInArea(surface, positionedBoundingBox, false, onlyForceAffected, false, false, entitiesExcluded)) do
+        entity.destroy({dp_cliff_correction = true, raise_destroy = true})
     end
 end
 
@@ -183,6 +216,19 @@ function Utils.ApplyOffsetToPosition(position, offset)
     return position
 end
 
+function Utils.GrowBoundingBox(boundingBox, growthX, growthY)
+    return {
+        left_top = {
+            x = boundingBox.left_top.x - growthX,
+            y = boundingBox.left_top.y - growthY
+        },
+        right_bottom = {
+            x = boundingBox.right_bottom.x + growthX,
+            y = boundingBox.right_bottom.y + growthY
+        }
+    }
+end
+
 function Utils.IsCollisionBoxPopulated(collisionBox)
     if collisionBox == nil then
         return false
@@ -239,8 +285,8 @@ function Utils.HandleFloatNumberAsChancedValue(value)
     return chancedValue
 end
 
---This doesn't guarentee correct on some of the edge cases, but is as close as possible assuming that 1/256 is the variance for the same number (Bilka, Dev on Discord)
 function Utils.FuzzyCompareDoubles(num1, logic, num2)
+    -- This doesn't guarentee correct on some of the edge cases, but is as close as possible assuming that 1/256 is the variance for the same number (Bilka, Dev on Discord)
     local numDif = num1 - num2
     local variance = 1 / 256
     if logic == "=" then
@@ -298,6 +344,18 @@ function Utils.GetTableNonNilLength(table)
     return count
 end
 
+function Utils.GetFirstTableKey(table)
+    return next(table)
+end
+
+function Utils.GetFirstTableValue(table)
+    return table[next(table)]
+end
+
+function Utils.GetFirstTableKeyValue(table)
+    return next(table), table[next(table)]
+end
+
 function Utils.GetMaxKey(table)
     local max_key = 0
     for k in pairs(table) do
@@ -348,7 +406,7 @@ function Utils.GetDistance(pos1, pos2)
 end
 
 function Utils.IsPositionInBoundingBox(position, boundingBox, safeTiling)
-    --safeTiling means that the boundingbox can be tiled without risk of an entity on the border being in 2 result sets, i.e. for use on each chunk.
+    -- safeTiling option means that the boundingbox can be tiled without risk of an entity on the border being in 2 result sets, i.e. for use on each chunk.
     if safeTiling == nil or not safeTiling then
         if position.x >= boundingBox.left_top.x and position.x <= boundingBox.right_bottom.x and position.y >= boundingBox.left_top.y and position.y <= boundingBox.right_bottom.y then
             return true
@@ -381,7 +439,7 @@ function Utils.TableKeyToArray(aTable)
 end
 
 function Utils.TableContentsToJSON(targetTable, name, singleLineOutput)
-    --targetTable is the only mandatory parameter. name if provided will appear as a "name:JSONData" output. singleLineOutput removes all lines and spacing from the output.
+    -- targetTable is the only mandatory parameter. name if provided will appear as a "name:JSONData" output. singleLineOutput removes all lines and spacing from the output.
     singleLineOutput = singleLineOutput or false
     local tablesLogged = {}
     return Utils._TableContentsToJSON(targetTable, name, singleLineOutput, tablesLogged)
@@ -494,7 +552,8 @@ function Utils.WasCreativeModeInstantDeconstructionUsed(event)
 end
 
 function Utils.NormaliseChanceList(dataSet, chancePropertyName, skipFillingEmptyChance)
-    --By default the dataSet's total chance is manipulated in to a 0-1 range. But if optional skipFillingEmptyChance is set to true then total chance below 1 will not be scaled up, so that nil results can be had in random selection.
+    -- The dataset is a table of entries. Each entry has various keys that are used in the calling scope and ignored by this funciton. It also has a key of the name passed in as the chancePropertyName parameter that defines the chance of this result.
+    -- By default the dataSet's total chance (key with name chancePropertyName) is manipulated in to a 0-1 range. But if optional skipFillingEmptyChance is set to true then total chance below 1 will not be scaled up, so that nil results can be had in random selection.
     local totalChance = 0
     for _, v in pairs(dataSet) do
         totalChance = totalChance + v[chancePropertyName]
@@ -524,7 +583,7 @@ function Utils.GetRandomEntryFromNormalisedDataSet(dataSet, chancePropertyName)
 end
 
 function Utils.DisableSiloScript()
-    --OnLoad
+    -- OnLoad
     if remote.interfaces["silo_script"] == nil then
         return
     end
@@ -535,7 +594,7 @@ function Utils.DisableSiloScript()
 end
 
 function Utils.DisableWinOnRocket()
-    --OnInit
+    -- OnInit
     if remote.interfaces["silo_script"] == nil then
         return
     end
@@ -543,7 +602,7 @@ function Utils.DisableWinOnRocket()
 end
 
 function Utils.ClearSpawnRespawnItems()
-    --OnInit
+    -- OnInit
     if remote.interfaces["freeplay"] == nil then
         return
     end
@@ -552,7 +611,7 @@ function Utils.ClearSpawnRespawnItems()
 end
 
 function Utils.SetStartingMapReveal(distance)
-    --OnInit
+    -- OnInit
     if remote.interfaces["freeplay"] == nil then
         return
     end
@@ -560,7 +619,7 @@ function Utils.SetStartingMapReveal(distance)
 end
 
 function Utils.DisableIntroMessage()
-    --OnInit
+    -- OnInit
     if remote.interfaces["freeplay"] == nil then
         return
     end
@@ -655,7 +714,7 @@ function Utils.DisplayTimeOfTicks(inputTicks, displayLargestTimeUnit, displaySma
 end
 
 function Utils._CreatePlacementTestEntityPrototype(entityToClone, newEntityName, subgroup, collisionMask)
-    --TODO: doesn't handle mipmaps at all presently. Also ignores any of the extra data in an icons table of "Types/IconData". Think this should just duplicate the target icons table entry.
+    -- Doesn't handle mipmaps at all presently. Also ignores any of the extra data in an icons table of "Types/IconData". Think this should just duplicate the target icons table entry.
     local clonedIcon = entityToClone.icon
     local clonedIconSize = entityToClone.icon_size
     if clonedIcon == nil then
@@ -700,7 +759,9 @@ function Utils.CreateWaterPlacementTestEntityPrototype(entityToClone, newEntityN
     return Utils._CreatePlacementTestEntityPrototype(entityToClone, newEntityName, subgroup, {"ground-tile", "colliding-with-tiles-only"})
 end
 
-function Utils.GetValidPositionForEntityNearPosition(entityName, surface, centerPos, radius, maxAttempts, searchIncrement, allowNonTileCenter)
+--[[
+    NOT NEEDED AS surface.find_non_colliding_position() STARTS IN CENTER AND WORKS OUT - MAYBE DIDN'T IN THE PAST
+    function Utils.GetValidPositionForEntityNearPosition(entityName, surface, centerPos, radius, maxAttempts, searchIncrement, allowNonTileCenter)
     local pos
     local attempts = 1
     searchIncrement = searchIncrement or 1
@@ -717,28 +778,29 @@ function Utils.GetValidPositionForEntityNearPosition(entityName, surface, center
         end
     end
     return nil
-end
-
+end]]
 function Utils.ToBoolean(text)
+    if text == nil then
+        return nil
+    end
+    if type(text) == "boolean" then
+        return text
+    end
     text = string.lower(text)
-    if text ~= nil and text == "true" then
+    if text == "true" then
         return true
-    elseif text ~= nil and text == "false" then
+    elseif text == "false" then
         return false
     end
     return nil
 end
 
 function Utils.RandomLocationInRadius(centrePos, maxRadius, minRadius)
-    local angleRad = math.random() * (math.pi * 2)
+    local angle = math.random(0, 360)
     minRadius = minRadius or 0
     local radiusMultiplier = maxRadius - minRadius
     local distance = minRadius + (math.random() * radiusMultiplier)
-    local randomPos = {
-        x = (distance * math.sin(angleRad)) + centrePos.x,
-        y = (distance * -math.cos(angleRad)) + centrePos.y
-    }
-    return randomPos
+    return Utils.GetPositionForAngledDistance(centrePos, distance, angle)
 end
 
 function Utils.GetPositionForAngledDistance(startingPos, distance, angle)
@@ -798,7 +860,7 @@ function Utils.IsPositionWithinCircled(circleCenter, radius, position)
 end
 
 Utils.GetValueAndUnitFromString = function(text)
-    return string.match(text, "%d+"), string.match(text, "%a+")
+    return string.match(text, "%d+%.?%d*"), string.match(text, "%a+")
 end
 
 Utils.TryMoveInventoriesLuaItemStacks = function(sourceInventory, targetInventory, dropUnmovedOnGround, ratioToMove)
@@ -867,7 +929,7 @@ end
 Utils.TryInsertInventoryContents = function(contents, targetInventory, dropUnmovedOnGround, ratioToMove)
     -- Just takes a list of item names and counts that you get from the inventory.get_contents(). Updates the passed in contents object.
     -- Returns true/false if all items were moved successfully.
-    if contents == nil or #contents == 0 then
+    if Utils.IsTableEmpty(contents) then
         return
     end
     local sourceOwner, itemAllMoved = nil, true
@@ -965,6 +1027,10 @@ Utils.TrackBestFuelCount = function(trackingTable, itemName, itemCount)
         trackingTable.fuelName = itemName
         trackingTable.fuelCount = itemCount
         trackingTable.fuelValue = fuelValue
+        return true
+    end
+    if trackingTable.fuelName == itemName and itemCount > trackingTable.fuelCount then
+        trackingTable.fuelCount = itemCount
         return true
     end
     return false
@@ -1073,7 +1139,7 @@ Utils.GetRecipeIngredientsAddedTogeather = function(recipeIngredientHandlingTabl
     return ingredientsTable
 end
 
-Utils.GetRecipeAttribute = function(recipe, attributeName, recipeCostType)
+Utils.GetRecipeAttribute = function(recipe, attributeName, recipeCostType, defaultValue)
     --[[
         Returns the attributeName for the recipeCostType if available, otherwise the inline ingredients version.
         recipeType defaults to the no cost type if not supplied. Values are: "ingredients", "normal" and "expensive".
@@ -1093,7 +1159,50 @@ Utils.GetRecipeAttribute = function(recipe, attributeName, recipeCostType)
         return recipe["expensive"][attributeName]
     end
 
-    return nil
+    return defaultValue -- may well be nil
+end
+
+Utils.DoesRecipeResultsIncludeItemName = function(recipePrototype, itemName)
+    for _, recipeBase in pairs({recipePrototype, recipePrototype.normal, recipePrototype.expensive}) do
+        if recipeBase ~= nil then
+            if recipeBase.result ~= nil and recipeBase.result == itemName then
+                return true
+            elseif recipeBase.results ~= nil and Utils.GetTableKeyWithInnerKeyValue(recipeBase.results, "name", itemName) ~= nil then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+Utils.RemoveEntitiesRecipesFromTechnologies = function(entityPrototype, recipes, technolgies)
+    --[[
+        From the provided technology list remove all provided recipes from being unlocked that create an item that can place a given entity prototype.
+        Returns a table of the technologies affected or a blank table if no technologies are affected.
+    ]]
+    local technologiesChanged = {}
+    local placedByItemName
+    if entityPrototype.minable ~= nil and entityPrototype.minable.result ~= nil then
+        placedByItemName = entityPrototype.minable.result
+    else
+        return technologiesChanged
+    end
+    for _, recipePrototype in pairs(recipes) do
+        if Utils.DoesRecipeResultsIncludeItemName(recipePrototype, placedByItemName) then
+            recipePrototype.enabled = false
+            for _, technologyPrototype in pairs(technolgies) do
+                if technologyPrototype.effects ~= nil then
+                    for effectIndex, effect in pairs(technologyPrototype.effects) do
+                        if effect.type == "unlock-recipe" and effect.recipe ~= nil and effect.recipe == recipePrototype.name then
+                            table.remove(technologyPrototype.effects, effectIndex)
+                            table.insert(technologiesChanged, technologyPrototype)
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return technologiesChanged
 end
 
 return Utils

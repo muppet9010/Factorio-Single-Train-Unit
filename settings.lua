@@ -33,11 +33,18 @@ data:extend(
             order = "1004"
         },
         {
-            name = "single_train_unit-use_wip_graphics",
+            name = "single_train_unit-disable_regular_rollingstock",
             type = "bool-setting",
             default_value = false,
             setting_type = "startup",
             order = "2001"
+        },
+        {
+            name = "single_train_unit-use_wip_graphics",
+            type = "bool-setting",
+            default_value = false,
+            setting_type = "startup",
+            order = "9001"
         }
     }
 )

@@ -1,16 +1,15 @@
---local Logging = require("utility/logging")
 local GuiActionsClick = {}
 local Constants = require("constants")
 MOD = MOD or {}
 MOD.guiClickActions = MOD.guiClickActions or {}
 
---Called from the root of Control.lua or from OnLoad.
+-- Called from the root of Control.lua or from OnLoad.
 GuiActionsClick.MonitorGuiClickActions = function()
     script.on_event(defines.events.on_gui_click, GuiActionsClick._HandleGuiClickAction)
 end
 
---Called from OnLoad() from each script file.
---When actionFunction is triggered actionData argument passed: {actionName = actionName, playerIndex = playerIndex, data = data_passed_on_event_register, eventData = raw_factorio_event_data}
+-- Called from OnLoad() from each script file.
+-- When actionFunction is triggered actionData argument passed: {actionName = actionName, playerIndex = playerIndex, data = data_passed_on_event_register, eventData = raw_factorio_event_data}
 GuiActionsClick.LinkGuiClickActionNameToFunction = function(actionName, actionFunction)
     if actionName == nil or actionFunction == nil then
         error("GuiActions.LinkGuiClickActionNameToFunction called with missing arguments")
@@ -18,8 +17,8 @@ GuiActionsClick.LinkGuiClickActionNameToFunction = function(actionName, actionFu
     MOD.guiClickActions[actionName] = actionFunction
 end
 
---Generally called from the GuiUtil library now, but can be called manually.
---Called after creating a button or other GuiElement is created to register a specific GUI click action name to it.
+-- Generally called from the GuiUtil library now, but can be called manually.
+-- Called after creating a button or other GuiElement is created to register a specific GUI click action name to it.
 -- Optional data will be passed through to the actionName when called. If disabled is true then click not registered (for use with GUI templating).
 GuiActionsClick.RegisterGuiForClick = function(elementName, elementType, actionName, data, disabled)
     if elementName == nil or elementType == nil or actionName == nil then
@@ -71,7 +70,7 @@ GuiActionsClick._HandleGuiClickAction = function(rawFactorioEventData)
     end
 end
 
---Just happens to be the same as in GuiUtil, but not a requirement.
+-- Just happens to be the same as in GuiUtil, but not a requirement.
 GuiActionsClick.GenerateGuiElementName = function(name, type)
     if name == nil then
         return nil

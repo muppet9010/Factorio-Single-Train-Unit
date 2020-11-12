@@ -1,7 +1,7 @@
 local Commands = {}
 local Utils = require("utility/utils")
 
---Call from OnLoad
+-- Call from OnLoad
 Commands.Register = function(name, helpText, commandFunction, adminOnly)
     commands.remove_command(name)
     local handlerFunction
