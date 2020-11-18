@@ -4,6 +4,7 @@ Date: 2020-11-xxx
   Features:
   Changes:
   Bugfixes:
+    - Add detection, user notification and item return for when a STU ends up with both locos facing the same way. Core Factorio behaviour I can't wokr out how to counter in slightly off straight scenarios.
   Info:
 ---------------------------------------------------------------------------------------------------
 Version: 19.0.10

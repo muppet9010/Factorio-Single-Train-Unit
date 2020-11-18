@@ -1,5 +1,4 @@
 - TODO:
-	- Check out Elisium's save with pathing issue.
 	- Add whitelist mod setting to disable all regular rolling stock.
 	- Add an item only version of the locomotive for SE science needs.
 	- Add whitelist entry for vehicle loading wagons (modded).
@@ -14,11 +13,11 @@
 	- Add a second graphic option to use a tram render suggested by Klonan: https://sketchfab.com/3d-models/tatra-t3-76aa08d7c06340fc89229551c45e3c3a
 
 - Deferred:
-    - Handle other mods placeing our placement entity. By raising events it may trigger mods that currently ignore us. i.e.
-         - Renai Transportation
+    - Handle other mods placeing our placement entity. By raising events it may trigger mods that currently ignore us. i.e:
+        - Renai Transportation
     - Chase up with other mods support for mine:
         - Electric Trains
-	- Electronic Locomotives & Electronic Factorio Extended Locomotives (this shows how to use the remote call to register)
+    - Electronic Locomotives & Electronic Factorio Extended Locomotives (this shows how to use the remote call to register)
 	- Support for bobs trains: https://mods.factorio.com/mod/boblogistics
 	- Support for bobs vehicle equipment: https://mods.factorio.com/mod/bobvehicleequipment
 	- Do a single ended version, with a 4 tile large cargo area.

@@ -6,6 +6,7 @@ local Events = require("utility/events")
 
 local debug_placementAttemptCircles = false -- clear all on map via: /c rendering.clear("single_train_unit")
 local debug_writeAllWarnings = false
+local debug_placementLocoDirectionOrientation = false
 
 local LoopDirectionValue = function(value)
     return Utils.LoopIntValueWithinRange(value, 0, 7)
@@ -250,7 +251,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     entity.destroy()
     local wagons = {forwardLoco = nil, middleCargo = nil, rearLoco = nil}
 
-    wagons.forwardLoco = Entity.PlaceWagon(locoStaticData.name, forwardLocoPosition, surface, force, forwardLocoDirection)
+    wagons.forwardLoco = Entity.PlaceWagon(locoStaticData.name, forwardLocoPosition, surface, force, forwardLocoDirection, "front")
     if wagons.forwardLoco == nil then
         Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Front Loco", event.replaced, event, fuelInventoryContents, health, schedule)
         return
@@ -276,9 +277,15 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
         end
     end
 
-    wagons.rearLoco = Entity.PlaceWagon(locoStaticData.name, rearLocoPosition, surface, force, rearLocoDirection)
+    wagons.rearLoco = Entity.PlaceWagon(locoStaticData.name, rearLocoPosition, surface, force, rearLocoDirection, "rear")
     if wagons.rearLoco == nil then
         Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Rear Loco", event.replaced, event, fuelInventoryContents, health, schedule)
+        return
+    end
+
+    local orientationDiff = wagons.rearLoco.orientation - wagons.forwardLoco.orientation
+    if (orientationDiff > -1.25 and orientationDiff < -0.75) or (orientationDiff > -0.25 and orientationDiff < 0.25) or (orientationDiff > 0.75 and orientationDiff < 1.75) then
+        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Loco orientations the same", event.replaced, event, fuelInventoryContents, health, schedule)
         return
     end
 
@@ -342,7 +349,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     Entity.RecordSingleUnit(wagons, wagonStaticData.unitType)
 end
 
-Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
+Entity.PlaceWagon = function(prototypeName, position, surface, force, direction, placement)
     if debug_placementAttemptCircles then
         rendering.draw_circle {
             color = {r = 0, g = 0, b = 1},
@@ -357,6 +364,9 @@ Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
         Logging.LogPrint("WARNING: " .. prototypeName .. " failed to place at " .. Logging.PositionToString(position) .. " with direction: " .. direction, debug_writeAllWarnings)
         return
     end
+    if debug_placementLocoDirectionOrientation and string.find(prototypeName, "loco", 0, true) ~= nil then
+        rendering.draw_text {text = placement .. " : " .. tostring(direction) .. " = " .. wagon.orientation, surface = surface, target = position, color = {1, 0, 0, 1}}
+    end
     return wagon
 end
 
@@ -366,14 +376,15 @@ Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityP
     local builderInventory = Utils.GetBuilderInventory(builder)
     local placementSimpleItemStackTable = {{name = placedEntityName, count = 1, health = health}}
 
-    Logging.LogPrint("WARNING: " .. "failed placing " .. failedOnName, debug_writeAllWarnings)
+    Logging.LogPrint("WARNING: " .. "failed placing " .. failedOnName .. " - first orientation", debug_writeAllWarnings)
     for _, wagon in pairs(wagons) do
         if wagon ~= nil and wagon.valid then
             wagon.destroy()
         end
     end
     if eventReplaced ~= nil and eventReplaced then
-        Logging.LogPrint("ERROR: " .. "failed placing " .. failedOnName .. " for second orientation, so giving up")
+        Logging.LogPrint("ERROR: " .. "failed placing single train unit on this exact bit of track, please try somewhere else.")
+        Logging.LogPrint("ERROR: " .. "failed placing " .. failedOnName .. " - second orientation", debug_writeAllWarnings)
         Utils.TryInsertSimpleItems(placementSimpleItemStackTable, builderInventory, true, 1)
         Utils.TryInsertInventoryContents(fuelInventoryContents, builderInventory, true, 1)
         return
