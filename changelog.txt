@@ -4,7 +4,8 @@ Date: 2020-11-xxx
   Features:
     - Whitelist setting for disabling standard locomotives and wagons added.
   Changes:
-    - Disable standard locomitives and wagons - exclude Vehicle Wagon by default.
+    - Disable standard locomotives and wagons - exclude Vehicle Wagon by default.
+    - When Space Exploration mod is active and standard locomotives and wagons are disabled, an item only (non placable) version of the locomotive will always be craftable for use in science.
   Bugfixes:
     - Detect and fix when an STU ends up with both locos facing the same way. Core Factorio behaviour I just correct, rather than avoid.
   Info:

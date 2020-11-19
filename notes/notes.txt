@@ -1,5 +1,4 @@
 - TODO:
-	- Add an item only version of the locomotive for SE science needs.
 	- Add support for Schall trains.
 
 - Graphics:
