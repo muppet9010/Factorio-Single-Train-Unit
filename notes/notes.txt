@@ -1,7 +1,5 @@
 - TODO:
-	- Add whitelist mod setting to disable all regular rolling stock.
 	- Add an item only version of the locomotive for SE science needs.
-	- Add whitelist entry for vehicle loading wagons (modded).
 	- Add support for Schall trains.
 
 - Graphics:

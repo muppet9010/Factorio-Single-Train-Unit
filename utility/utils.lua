@@ -1205,4 +1205,25 @@ Utils.RemoveEntitiesRecipesFromTechnologies = function(entityPrototype, recipes,
     return technologiesChanged
 end
 
+Utils.SplitStringOnCharacters = function(text, splitCharacters, returnAskey)
+    local list = {}
+    local results = text:gmatch("[^" .. splitCharacters .. "]*")
+    for phrase in results do
+        phrase = Utils.StringTrim(phrase)
+        if phrase ~= nil and phrase ~= "" then
+            if returnAskey ~= nil and returnAskey == true then
+                list[phrase] = true
+            else
+                table.insert(list, phrase)
+            end
+        end
+    end
+    return list
+end
+
+Utils.StringTrim = function(text)
+    -- trim6 from http://lua-users.org/wiki/StringTrim
+    return string.match(text, "^()%s*$") and "" or string.match(text, "^%s*(.*%S)")
+end
+
 return Utils

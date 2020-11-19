@@ -40,6 +40,14 @@ data:extend(
             order = "2001"
         },
         {
+            name = "single_train_unit-disable_regular_rollingstock_whitelist",
+            type = "string-setting",
+            allow_blank = true,
+            default_value = "",
+            setting_type = "startup",
+            order = "2002"
+        },
+        {
             name = "single_train_unit-use_wip_graphics",
             type = "bool-setting",
             default_value = false,
