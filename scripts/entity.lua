@@ -6,7 +6,6 @@ local Events = require("utility/events")
 
 local debug_placementAttemptCircles = false -- clear all on map via: /c rendering.clear("single_train_unit")
 local debug_writeAllWarnings = false
-local debug_placementLocoDirectionOrientation = false
 
 local LoopDirectionValue = function(value)
     return Utils.LoopIntValueWithinRange(value, 0, 7)
@@ -16,7 +15,7 @@ Entity.CreateGlobals = function()
     global.entity = global.entity or {}
     global.entity.singleTrainUnits = global.entity.singleTrainUnits or {}
     --[[
-    global.entity.singleTrainUnits = {
+    global.entity.singleTrainUnits[singleTrainUnitId] = {
         id = singleTrainUnitId,
         wagons = {
             forwardLoco = ENTITY, middleCargo = ENTITY, rearLoco = ENTITY
@@ -251,7 +250,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     entity.destroy()
     local wagons = {forwardLoco = nil, middleCargo = nil, rearLoco = nil}
 
-    wagons.forwardLoco = Entity.PlaceWagon(locoStaticData.name, forwardLocoPosition, surface, force, forwardLocoDirection, "front")
+    wagons.forwardLoco = Entity.PlaceWagon(locoStaticData.name, forwardLocoPosition, surface, force, forwardLocoDirection)
     if wagons.forwardLoco == nil then
         Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Front Loco", event.replaced, event, fuelInventoryContents, health, schedule)
         return
@@ -277,23 +276,34 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
         end
     end
 
-    wagons.rearLoco = Entity.PlaceWagon(locoStaticData.name, rearLocoPosition, surface, force, rearLocoDirection, "rear")
+    wagons.rearLoco = Entity.PlaceWagon(locoStaticData.name, rearLocoPosition, surface, force, rearLocoDirection)
     if wagons.rearLoco == nil then
         Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Rear Loco", event.replaced, event, fuelInventoryContents, health, schedule)
         return
     end
 
+    -- For nearly vertically aligned placements that are off by a fraction towards the top left to bottom right angle, the locos are created by Factorio both facing the same way, despite opposite directions specified. This is a very edge case, so just detect and rotate the bad one.
     local orientationDiff = wagons.rearLoco.orientation - wagons.forwardLoco.orientation
     if (orientationDiff > -1.25 and orientationDiff < -0.75) or (orientationDiff > -0.25 and orientationDiff < 0.25) or (orientationDiff > 0.75 and orientationDiff < 1.75) then
-        Entity.PlaceOrionalWagonBack(surface, placedEntityName, placedEntityPosition, force, placedEntityDirection, wagons, "Loco orientations the same", event.replaced, event, fuelInventoryContents, health, schedule)
-        return
+        local flipLoco = nil
+        if (forwardLocoDirection == 0 and wagons.forwardLoco.orientation > 0.25 and wagons.forwardLoco.orientation < 0.75) or (forwardLocoDirection == 4 and (wagons.forwardLoco.orientation < 0.25 or wagons.forwardLoco.orientation > 0.75)) then
+            flipLoco = wagons.forwardLoco
+        end
+        if (rearLocoDirection == 0 and wagons.rearLoco.orientation > 0.25 and wagons.rearLoco.orientation < 0.75) or (rearLocoDirection == 4 and (wagons.rearLoco.orientation < 0.25 or wagons.rearLoco.orientation > 0.75)) then
+            flipLoco = wagons.rearLoco
+        end
+        if flipLoco then
+            flipLoco.disconnect_rolling_stock(defines.rail_direction.front)
+            flipLoco.disconnect_rolling_stock(defines.rail_direction.back)
+            flipLoco.rotate()
+        end
     end
 
+    -- Connect to each end just incase during placement it didn't, or we detached them for some reason.
     for _, wagon in pairs(wagons) do
         wagon.connect_rolling_stock(defines.rail_direction.front)
         wagon.connect_rolling_stock(defines.rail_direction.back)
     end
-
     -- Set to blank as cargo & fluid wagons can't have names. We want all parts of the unit to have the same on-hover name.
     wagons.forwardLoco.backer_name = ""
     wagons.rearLoco.backer_name = ""
@@ -349,7 +359,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     Entity.RecordSingleUnit(wagons, wagonStaticData.unitType)
 end
 
-Entity.PlaceWagon = function(prototypeName, position, surface, force, direction, placement)
+Entity.PlaceWagon = function(prototypeName, position, surface, force, direction)
     if debug_placementAttemptCircles then
         rendering.draw_circle {
             color = {r = 0, g = 0, b = 1},
@@ -363,9 +373,6 @@ Entity.PlaceWagon = function(prototypeName, position, surface, force, direction,
     if wagon == nil then
         Logging.LogPrint("WARNING: " .. prototypeName .. " failed to place at " .. Logging.PositionToString(position) .. " with direction: " .. direction, debug_writeAllWarnings)
         return
-    end
-    if debug_placementLocoDirectionOrientation and string.find(prototypeName, "loco", 0, true) ~= nil then
-        rendering.draw_text {text = placement .. " : " .. tostring(direction) .. " = " .. wagon.orientation, surface = surface, target = position, color = {1, 0, 0, 1}}
     end
     return wagon
 end
@@ -448,6 +455,12 @@ Entity.OnTrainCreated = function(event)
     local frontCarriage = event.train.front_stock
     local backCarriage = event.train.back_stock
     if frontCarriage == nil or backCarriage == nil then
+        return
+    end
+
+    -- If this train doesn't have a STU table entry (either not an STU or hasn't been registered yet) don't interfear as it can break other game logic.
+    local stu = global.entity.wagonIdToSingleTrainUnit[frontCarriage.unit_number]
+    if stu == nil then
         return
     end
 
