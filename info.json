@@ -14,7 +14,8 @@
         "? space-exploration",
         "? aai-industry",
         "? Krastorio2",
-        "? zombiesextended-logistics"
+        "? zombiesextended-logistics",
+        "? SchallArmouredTrain"
     ],
     "description": "Adds a single train unit that is the standard length, but include storage and can travel in both directions"
 }

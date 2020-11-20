@@ -50,11 +50,10 @@ Compatible New Recipe & Tier Mods
 - Battery Pack
 - Factorio Extended
 - Factorio Extended Plus
-- Space Exploration
 - AAI Industry
 - Krastorio 2
 - Zombies Extended
-- Schall Armoured Trains
+- Schall Armoured Train - matches mod's armoured rolling stock options enabled
 
 Compatible Usage Mods
 =============
@@ -71,6 +70,7 @@ Intentionally Ignored / 0 Impact Mods
 - Vehicle Wagon (2)
 - Multiple Unit Train Control
 - Noxys Multidirectional Trains
+- Space Exploration - always keeps an item only version of the locomotive available for science use
 
 Incompatible Mods
 ============
