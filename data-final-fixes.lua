@@ -8,6 +8,7 @@ require("prototypes/Krastorio2")
 require("prototypes/TrainConstructionSite")
 require("prototypes/ZombiesExtended-Logistics")
 require("prototypes/SchallArmouredTrain-ArmouredTrains")
+require("prototypes/SchallArmouredTrain-Nuclear")
 
 -- Do final changes
 require("prototypes/disable-regular-rolling-stock")

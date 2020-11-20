@@ -53,7 +53,7 @@ Compatible New Recipe & Tier Mods
 - AAI Industry
 - Krastorio 2
 - Zombies Extended
-- Schall Armoured Train - matches mod's armoured rolling stock options enabled
+- Schall Armoured Train - armoured trains and nuclear trains
 
 Compatible Usage Mods
 =============

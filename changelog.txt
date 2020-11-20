@@ -3,7 +3,7 @@ Version: 19.0.11
 Date: 2020-11-xxx
   Features:
     - Whitelist setting for disabling standard locomotives and wagons added.
-    - Add support for Schall Armoured Train mod and its various rolling stock options.
+    - Add support for Schall Armoured Trains mod and its nuclear trains. Requires the mods settings to enbale the component rolling wtock types.
   Changes:
     - Disable standard locomotives and wagons - exclude Vehicle Wagon by default.
     - When Space Exploration mod is active and standard locomotives and wagons are disabled, an item only (non placable) version of the locomotive will always be craftable for use in science.
