@@ -7,10 +7,6 @@ local Events = require("utility/events")
 local debug_placementAttemptCircles = false -- clear all on map via: /c rendering.clear("single_train_unit")
 local debug_writeAllWarnings = false
 
-local LoopDirectionValue = function(value)
-    return Utils.LoopIntValueWithinRange(value, 0, 7)
-end
-
 Entity.CreateGlobals = function()
     global.entity = global.entity or {}
     global.entity.singleTrainUnits = global.entity.singleTrainUnits or {}
@@ -227,7 +223,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     end
 
     local wagonStaticData, locoStaticData = placementStaticData.placedStaticDataWagon, placementStaticData.placedStaticDataLoco
-    local placedEntityDirection = LoopDirectionValue(Utils.RoundNumberToDecimalPlaces(placedEntityOrientation * 8, 0))
+    local placedEntityDirection = Utils.OrientationToDirection(placedEntityOrientation)
     local locoDistance = (placementStaticData.joint_distance / 2) - (locoStaticData.joint_distance / 2)
 
     local forwardLocoOrientation = placedEntityOrientation
@@ -235,7 +231,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     local forwardLocoDirection = placedEntityDirection
     local rearLocoOrientation = placedEntityOrientation - 0.5
     local rearLocoPosition = Utils.GetPositionForAngledDistance(placedEntityPosition, locoDistance, rearLocoOrientation * 360)
-    local rearLocoDirection = LoopDirectionValue(placedEntityDirection + 4)
+    local rearLocoDirection = Utils.LoopIntValueWithinRange(placedEntityDirection + 4, 0, 7)
     local middleCargoDirection = placedEntityDirection
     local middleCargoPosition = placedEntityPosition
 
@@ -397,7 +393,7 @@ Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityP
         return
     end
 
-    placedEntityDirection = LoopDirectionValue(placedEntityDirection + 4)
+    placedEntityDirection = Utils.LoopIntValueWithinRange(placedEntityDirection + 4, 0, 7)
     local placedWagon = surface.create_entity {name = placedEntityName, position = placedEntityPosition, force = force, snap_to_train_stop = false, direction = placedEntityDirection}
     if placedWagon ~= nil then
         Utils.TryInsertInventoryContents(fuelInventoryContents, placedWagon.get_fuel_inventory(), true, 1)

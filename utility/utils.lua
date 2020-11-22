@@ -1226,4 +1226,8 @@ Utils.StringTrim = function(text)
     return string.match(text, "^()%s*$") and "" or string.match(text, "^%s*(.*%S)")
 end
 
+Utils.OrientationToDirection = function(orientation)
+    return Utils.LoopIntValueWithinRange(Utils.RoundNumberToDecimalPlaces(orientation * 8, 0), 0, 7)
+end
+
 return Utils
