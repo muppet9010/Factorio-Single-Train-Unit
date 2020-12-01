@@ -1,13 +1,13 @@
 {
     "name": "single_train_unit",
-    "version": "19.0.11",
+    "version": "20.0.11",
     "title": "Single Train Unit",
     "author": "Muppet9010",
     "contact": "",
     "homepage": "https://mods.factorio.com/mod/single_train_unit",
-    "factorio_version": "1.0",
+    "factorio_version": "1.1",
     "dependencies": [
-        "base >= 1.0.0",
+        "base >= 1.1.0",
         "? FactorioExtended-Plus-Transport",
         "? FactorioExtended-Trains",
         "? BatteryPack",

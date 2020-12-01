@@ -1,11 +1,12 @@
 ---------------------------------------------------------------------------------------------------
-Version: 19.0.11
+Version: 20.0.11
 Date: 2020-11-xxx
   Features:
+    - Update to Factorio 1.1.
     - Whitelist setting for disabling standard locomotives and wagons added.
     - Add support for Schall Armoured Trains mod and its nuclear trains. Requires the mods settings to enbale the component rolling wtock types.
   Changes:
-    - Disable standard locomotives and wagons - exclude Vehicle Wagon by default.
+    - For Disable standard locomotives and wagons option - exclude Vehicle Wagon by default.
     - When Space Exploration mod is active and standard locomotives and wagons are disabled, an item only (non placable) version of the locomotive will always be craftable for use in science.
   Bugfixes:
     - Detect and fix when an STU ends up with both locos facing the same way. Core Factorio behaviour I just correct, rather than avoid.
