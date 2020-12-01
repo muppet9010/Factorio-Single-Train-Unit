@@ -17,8 +17,7 @@ Overview
 - The unit will be mined by the player as a whole and will be damaged/destroyed as a whole.
 - While the graphics look as one, there are actually 2 separate locomotives and a wagon there. So you must fuel both locomotive ends separately and select the right part of the Single Train Unit for giving train orders, entering to drive it, viewing the cargo, etc.
 - UPS efficient as there is no continuously running active code in the mod, so no ongoing CPU load added to the game.
-- The original locomotives and wagons are unaffected by this mod.
-- A mod setting exists to disable the standard larger locomotives and wagons, with artillery wagons remaining. If this is applied mid game it won't remove any existing standard rolling stock or set recipes, but will disable and hhide the recipe to avoid future use.
+- An optional mod setting exists to disable the standard larger locomotives and wagons. Unique purpose wagons like the artillery wagon and modded Vehicle Wagon are not impacted. If this is applied mid game it won't remove any existing standard rolling stock or set recipes, but will disable and hide the recipe to avoid future use. A whitelist option exists to exclude specific named entities from disabling.
 
 
 Not Implemented Yet / TODO
@@ -33,9 +32,9 @@ Not Implemented Yet / TODO
 Limitations / Known Issues
 ================
 
-- You can't get out of a fast moving train some times. This is a core Factorio limitation.
+- You can't get out of a fast moving train some times. This seems to be a core Factorio limitation.
 - Don't build a longer train with multiple single train units joined together out of order. Start at one end and place each one sequentially. As placing a middle single train unit between 2 other rail wagons may not place correctly.
-- You can not detach a single train unit from other carriages as the parts all face outwards. There is protection in the mod to prevent a single train unit being broken up. However, you can detach regular carriages (cargo, loco, fluid) from a single train unit. If you need to detach a single train unit from another, its often easiest to just mine one of them.
+- You can not detach a single train unit from other carriages as the parts all face outwards. There is protection in the mod to prevent a single train unit being broken up. However, you can detach regular carriages (cargo, loco, fluid) from a single train unit. If you need to detach a single train unit from another, the only option is to mine (pickup) one of them.
 - Single train units when being placed will only snap to a stations position if they are facing the right way. There's no visual way to tell their direction at present, so just rotate them before placing if needed. Snapping on corners can be finickity.
 - When single train units are blueprinted with fuel in them the highest fuel value type and count across them all is noted and this is used in the ghosted request. As blueprints lose the relationship between the single train unit parts its not possible to keep the fuel to train parts exactly the same.
 - When one single train unit is blueprinted with a schedule, the schedule will be applied correctly. However, if a blueprint has multiple single train units in it, they will all get the same schedule.
@@ -51,10 +50,10 @@ Compatible New Recipe & Tier Mods
 - Battery Pack
 - Factorio Extended
 - Factorio Extended Plus
-- Space Exploration
 - AAI Industry
 - Krastorio 2
 - Zombies Extended
+- Schall Armoured Train - armoured trains and nuclear trains
 
 Compatible Usage Mods
 =============
@@ -65,6 +64,13 @@ The Fill4Me mod's auto insertion of fuel is applied to both locomotive ends of t
 *Signalized Couplers*
 As the single train unit is made up of 3 train parts internally you need to account for this in the signals used. i.e. to decouple a single train unit at the end of a train use -3 as the decouple signal, not the standard -1 for a vanilla cargo wagon or locomotive.
 
+Intentionally Ignored / 0 Impact Mods
+==============
+
+- Vehicle Wagon (2)
+- Multiple Unit Train Control
+- Noxys Multidirectional Trains
+- Space Exploration - always keeps an item only version of the locomotive available for science use
 
 Incompatible Mods
 ============
@@ -76,12 +82,6 @@ At present the Bulk Rail Loader can't work with the single train units as the Bu
 
 *Electric Train*
 At present no integration is present and so there isn't an electric version available.
-
-*Multiple Unit Train Control*
-The Multiple Unit Train Control mod ignores Single Train Units by default. This is desired behaviour as Single Train Units are already balanced for their dual direction nature.
-
-*Noxys Multidirectional Trains*
-The Noxys Multidirectional Trains mod ignores Single Train Units by default. This is desired behaviour as Single Train Units are already balanced for their dual direction nature.
 
 *Train Construction Site*
 Mod isn't compatible with single train units due to how it creates the boxed train prototypes at present. Not raised to mod author so far due to lack of interest.

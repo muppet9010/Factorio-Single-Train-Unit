@@ -7,15 +7,11 @@ local Events = require("utility/events")
 local debug_placementAttemptCircles = false -- clear all on map via: /c rendering.clear("single_train_unit")
 local debug_writeAllWarnings = false
 
-local LoopDirectionValue = function(value)
-    return Utils.LoopIntValueWithinRange(value, 0, 7)
-end
-
 Entity.CreateGlobals = function()
     global.entity = global.entity or {}
     global.entity.singleTrainUnits = global.entity.singleTrainUnits or {}
     --[[
-    global.entity.singleTrainUnits = {
+    global.entity.singleTrainUnits[singleTrainUnitId] = {
         id = singleTrainUnitId,
         wagons = {
             forwardLoco = ENTITY, middleCargo = ENTITY, rearLoco = ENTITY
@@ -227,7 +223,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     end
 
     local wagonStaticData, locoStaticData = placementStaticData.placedStaticDataWagon, placementStaticData.placedStaticDataLoco
-    local placedEntityDirection = LoopDirectionValue(Utils.RoundNumberToDecimalPlaces(placedEntityOrientation * 8, 0))
+    local placedEntityDirection = Utils.OrientationToDirection(placedEntityOrientation)
     local locoDistance = (placementStaticData.joint_distance / 2) - (locoStaticData.joint_distance / 2)
 
     local forwardLocoOrientation = placedEntityOrientation
@@ -235,7 +231,7 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
     local forwardLocoDirection = placedEntityDirection
     local rearLocoOrientation = placedEntityOrientation - 0.5
     local rearLocoPosition = Utils.GetPositionForAngledDistance(placedEntityPosition, locoDistance, rearLocoOrientation * 360)
-    local rearLocoDirection = LoopDirectionValue(placedEntityDirection + 4)
+    local rearLocoDirection = Utils.LoopIntValueWithinRange(placedEntityDirection + 4, 0, 7)
     local middleCargoDirection = placedEntityDirection
     local middleCargoPosition = placedEntityPosition
 
@@ -282,11 +278,28 @@ Entity.OnBuiltEntity_MUPlacement = function(event)
         return
     end
 
+    -- For nearly vertically aligned placements that are off by a fraction towards the top left to bottom right angle, the locos are created by Factorio both facing the same way, despite opposite directions specified. This is a very edge case, so just detect and rotate the bad one.
+    local orientationDiff = wagons.rearLoco.orientation - wagons.forwardLoco.orientation
+    if (orientationDiff > -1.25 and orientationDiff < -0.75) or (orientationDiff > -0.25 and orientationDiff < 0.25) or (orientationDiff > 0.75 and orientationDiff < 1.75) then
+        local flipLoco = nil
+        if (forwardLocoDirection == 0 and wagons.forwardLoco.orientation > 0.25 and wagons.forwardLoco.orientation < 0.75) or (forwardLocoDirection == 4 and (wagons.forwardLoco.orientation < 0.25 or wagons.forwardLoco.orientation > 0.75)) then
+            flipLoco = wagons.forwardLoco
+        end
+        if (rearLocoDirection == 0 and wagons.rearLoco.orientation > 0.25 and wagons.rearLoco.orientation < 0.75) or (rearLocoDirection == 4 and (wagons.rearLoco.orientation < 0.25 or wagons.rearLoco.orientation > 0.75)) then
+            flipLoco = wagons.rearLoco
+        end
+        if flipLoco then
+            flipLoco.disconnect_rolling_stock(defines.rail_direction.front)
+            flipLoco.disconnect_rolling_stock(defines.rail_direction.back)
+            flipLoco.rotate()
+        end
+    end
+
+    -- Connect to each end just incase during placement it didn't, or we detached them for some reason.
     for _, wagon in pairs(wagons) do
         wagon.connect_rolling_stock(defines.rail_direction.front)
         wagon.connect_rolling_stock(defines.rail_direction.back)
     end
-
     -- Set to blank as cargo & fluid wagons can't have names. We want all parts of the unit to have the same on-hover name.
     wagons.forwardLoco.backer_name = ""
     wagons.rearLoco.backer_name = ""
@@ -366,20 +379,21 @@ Entity.PlaceOrionalWagonBack = function(surface, placedEntityName, placedEntityP
     local builderInventory = Utils.GetBuilderInventory(builder)
     local placementSimpleItemStackTable = {{name = placedEntityName, count = 1, health = health}}
 
-    Logging.LogPrint("WARNING: " .. "failed placing " .. failedOnName, debug_writeAllWarnings)
+    Logging.LogPrint("WARNING: " .. "failed placing " .. failedOnName .. " - first orientation", debug_writeAllWarnings)
     for _, wagon in pairs(wagons) do
         if wagon ~= nil and wagon.valid then
             wagon.destroy()
         end
     end
     if eventReplaced ~= nil and eventReplaced then
-        Logging.LogPrint("ERROR: " .. "failed placing " .. failedOnName .. " for second orientation, so giving up")
+        Logging.LogPrint("ERROR: " .. "failed placing single train unit on this exact bit of track, please try somewhere else.")
+        Logging.LogPrint("ERROR: " .. "failed placing " .. failedOnName .. " - second orientation", debug_writeAllWarnings)
         Utils.TryInsertSimpleItems(placementSimpleItemStackTable, builderInventory, true, 1)
         Utils.TryInsertInventoryContents(fuelInventoryContents, builderInventory, true, 1)
         return
     end
 
-    placedEntityDirection = LoopDirectionValue(placedEntityDirection + 4)
+    placedEntityDirection = Utils.LoopIntValueWithinRange(placedEntityDirection + 4, 0, 7)
     local placedWagon = surface.create_entity {name = placedEntityName, position = placedEntityPosition, force = force, snap_to_train_stop = false, direction = placedEntityDirection}
     if placedWagon ~= nil then
         Utils.TryInsertInventoryContents(fuelInventoryContents, placedWagon.get_fuel_inventory(), true, 1)
@@ -437,6 +451,12 @@ Entity.OnTrainCreated = function(event)
     local frontCarriage = event.train.front_stock
     local backCarriage = event.train.back_stock
     if frontCarriage == nil or backCarriage == nil then
+        return
+    end
+
+    -- If this train doesn't have a STU table entry (either not an STU or hasn't been registered yet) don't interfear as it can break other game logic.
+    local stu = global.entity.wagonIdToSingleTrainUnit[frontCarriage.unit_number]
+    if stu == nil then
         return
     end
 

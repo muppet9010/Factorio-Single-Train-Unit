@@ -27,6 +27,7 @@ local function MakeMULocoPrototype(thisStaticData, locoPrototypeData)
     muLoco.back_light[2].shift[2] = 1.2
     muLoco.front_light[1].shift[2] = -13.5
     muLoco.front_light[2].shift[2] = -13.5
+    muLoco.front_light_pictures.layers = {muLoco.front_light_pictures.layers[1]} -- removes the second top (middle) light
     muLoco.corpse = nil
     muLoco.dying_explosion = nil
     muLoco.stop_trigger = nil
