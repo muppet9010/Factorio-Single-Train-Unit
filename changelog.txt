@@ -1,6 +1,14 @@
 ---------------------------------------------------------------------------------------------------
+Version: 20.0.12
+Date: 2022-12-27
+  Features:
+  Changes:
+  Bugfixes:
+    - Handle mods that remove some train lights, i.e. RealisticFlashlight. The lights may look a little off after this, but stops the crash at least.
+  Info:
+---------------------------------------------------------------------------------------------------
 Version: 20.0.11
-Date: 2020-11-xxx
+Date: 2020-12-01
   Features:
     - Update to Factorio 1.1.
     - Whitelist setting for disabling standard locomotives and wagons added.

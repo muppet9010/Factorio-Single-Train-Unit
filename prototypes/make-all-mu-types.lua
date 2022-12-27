@@ -18,16 +18,16 @@ local function MakeMULocoPrototype(thisStaticData, locoPrototypeData)
     local placementStaticData = thisStaticData.placementStaticData
     local muLoco = Utils.DeepCopy(refLocoPrototype)
     muLoco.name = thisStaticData.name
-    muLoco.localised_name = {"entity-name." .. placementStaticData.name}
+    muLoco.localised_name = { "entity-name." .. placementStaticData.name }
     muLoco.minable.result = nil
     muLoco.vertical_selection_shift = -0.5
     muLoco.pictures = Utils.EmptyRotatedSprite()
-    muLoco.drawing_box = {{-4, -4}, {-3, -3}} -- see nothing of the wheels
-    muLoco.back_light[1].shift[2] = 1.2
-    muLoco.back_light[2].shift[2] = 1.2
-    muLoco.front_light[1].shift[2] = -13.5
-    muLoco.front_light[2].shift[2] = -13.5
-    muLoco.front_light_pictures.layers = {muLoco.front_light_pictures.layers[1]} -- removes the second top (middle) light
+    muLoco.drawing_box = { { -4, -4 }, { -3, -3 } } -- see nothing of the wheels
+    if muLoco.back_light[1] ~= nil then muLoco.back_light[1].shift[2] = 1.2 end
+    if muLoco.back_light[2] ~= nil then muLoco.back_light[2].shift[2] = 1.2 end
+    if muLoco.front_light[1] ~= nil then muLoco.front_light[1].shift[2] = -13.5 end
+    if muLoco.front_light[2] ~= nil then muLoco.front_light[2].shift[2] = -13.5 end
+    muLoco.front_light_pictures.layers = { muLoco.front_light_pictures.layers[1] } -- removes the second top (middle) light
     muLoco.corpse = nil
     muLoco.dying_explosion = nil
     muLoco.stop_trigger = nil
@@ -43,13 +43,13 @@ local function MakeMULocoPrototype(thisStaticData, locoPrototypeData)
     muLoco.burner.effectivity = locoPrototypeData.burner_effectivity
     muLoco.minimap_representation = nil
     muLoco.selected_minimap_representation = nil
-    muLoco.placeable_by = {item = placementStaticData.name, count = 1}
+    muLoco.placeable_by = { item = placementStaticData.name, count = 1 }
     muLoco.alert_when_damaged = false
-    muLoco.alert_icon_shift = {0, -0.5}
+    muLoco.alert_icon_shift = { 0, -0.5 }
     table.insert(muLoco.flags, "not-deconstructable")
     table.insert(muLoco.flags, "placeable-off-grid")
     table.insert(muLoco.flags, "hidden")
-    data:extend({muLoco})
+    data:extend({ muLoco })
 end
 
 local function MakeMUWagonPrototype(thisStaticData, prototypeData)
@@ -65,7 +65,7 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
         muWagon.tank_count = 1
     end
     muWagon.name = thisStaticData.name
-    muWagon.localised_name = {"entity-name." .. placementStaticData.name}
+    muWagon.localised_name = { "entity-name." .. placementStaticData.name }
     muWagon.minable.result = placementStaticData.name
     muWagon.vertical_selection_shift = -0.5
     muWagon.wheels = Utils.EmptyRotatedSprite()
@@ -73,28 +73,28 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
     muWagon.stand_by_light = nil
     muWagon.collision_box = thisStaticData.collision_box
     muWagon.selection_box = thisStaticData.selection_box
-    muWagon.alert_icon_shift = {0, -0.5}
+    muWagon.alert_icon_shift = { 0, -0.5 }
     muWagon.allow_manual_color = true
     muWagon.joint_distance = thisStaticData.joint_distance
     muWagon.connection_distance = thisStaticData.connection_distance
     muWagon.connection_snap_distance = thisStaticData.connection_snap_distance
     muWagon.weight = prototypeData.weight
     muWagon.max_health = itsLocoPrototype.max_health
-    muWagon.placeable_by = {item = placementStaticData.name, count = 1}
+    muWagon.placeable_by = { item = placementStaticData.name, count = 1 }
     muWagon.minimap_representation = {
         filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "/" .. thisStaticData.name .. "-minimap-representation.png",
-        flags = {"icon"},
-        size = {20, 70},
+        flags = { "icon" },
+        size = { 20, 70 },
         scale = 0.5
     }
     muWagon.selected_minimap_representation = {
         filename = Constants.AssetModName .. "/graphics/entity/" .. thisStaticData.name .. "/" .. thisStaticData.name .. "-selected-minimap-representation.png",
-        flags = {"icon"},
-        size = {20, 70},
+        flags = { "icon" },
+        size = { 20, 70 },
         scale = 0.5
     }
     muWagon.icons = prototypeData.icons
-    muWagon.drawing_box = {{-1, -4}, {1, 3}} -- same as locomotive
+    muWagon.drawing_box = { { -1, -4 }, { 1, 3 } } -- same as locomotive
     if thisStaticData.prototypeType == "cargo-wagon" and settings.startup["single_train_unit-use_wip_graphics"].value then
         local filenameFolder = Constants.AssetModName .. "/graphics/entity/single_train_unit-double_end-cargo-wagon/"
         muWagon.pictures = {
@@ -118,11 +118,11 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
                     },
                     line_length = 4,
                     lines_per_file = 4,
-                    shift = {0.0, -0.5},
+                    shift = { 0.0, -0.5 },
                     scale = 0.5
                 },
                 {
-                    flags = {"shadow"},
+                    flags = { "shadow" },
                     priority = "very-low",
                     width = 490,
                     height = 401,
@@ -190,7 +190,7 @@ local function MakeMUWagonPrototype(thisStaticData, prototypeData)
     end
     table.insert(muWagon.flags, "placeable-off-grid")
     table.insert(muWagon.flags, "hidden")
-    data:extend({muWagon})
+    data:extend({ muWagon })
 end
 
 local function MakeMuWagonPlacementPrototype(thisStaticData, wagonPrototypeData, locoPrototypeData)
@@ -212,7 +212,7 @@ local function MakeMuWagonPlacementPrototype(thisStaticData, wagonPrototypeData,
     muWagonPlacement.burner.effectivity = locoPrototypeData.burner_effectivity
     table.insert(muWagonPlacement.flags, "not-deconstructable")
     table.insert(muWagonPlacement.flags, "placeable-off-grid")
-    data:extend({muWagonPlacement})
+    data:extend({ muWagonPlacement })
 end
 
 local function MakeMuWagonPlacementItemPrototype(thisStaticData, prototypeData)
@@ -225,12 +225,12 @@ local function MakeMuWagonPlacementItemPrototype(thisStaticData, prototypeData)
         place_result = thisStaticData.name,
         stack_size = 5
     }
-    data:extend({muWagonPlacementItem})
+    data:extend({ muWagonPlacementItem })
 end
 
 local function MakeMuWagonPlacementRecipePrototype(thisStaticData, prototypeData)
     local muWagonPlacementRecipe =
-        Utils.MakeRecipePrototype(
+    Utils.MakeRecipePrototype(
         thisStaticData.name,
         thisStaticData.name,
         false,
@@ -241,7 +241,7 @@ local function MakeMuWagonPlacementRecipePrototype(thisStaticData, prototypeData
             expensive = Utils.GetRecipeAttribute(refLocoRecipe, "energy_required", "expensive") * 2
         }
     )
-    data:extend({muWagonPlacementRecipe})
+    data:extend({ muWagonPlacementRecipe })
 end
 
 local muLocoPrototypeData = {
@@ -259,7 +259,7 @@ local muCargoPrototypeData = {
             icon_mipmaps = 4
         }
     },
-    recipeIngredients = Utils.GetRecipeIngredientsAddedTogeather({{refLocoRecipe, "add", 2}, {refCargoWagonRecipe, "highest", 1}}),
+    recipeIngredients = Utils.GetRecipeIngredientsAddedTogeather({ { refLocoRecipe, "add", 2 }, { refCargoWagonRecipe, "highest", 1 } }),
     weight = refCargoWagonPrototype.weight * weightMultiplier,
     itemSubgroup = refLocoItem.subgroup
 }
@@ -278,7 +278,7 @@ local muFluidPrototypeData = {
             icon_mipmaps = 4
         }
     },
-    recipeIngredients = Utils.GetRecipeIngredientsAddedTogeather({{refLocoRecipe, "add", 2}, {refFluidWagonRecipe, "highest", 1}}),
+    recipeIngredients = Utils.GetRecipeIngredientsAddedTogeather({ { refLocoRecipe, "add", 2 }, { refFluidWagonRecipe, "highest", 1 } }),
     weight = refFluidWagonPrototype.weight * weightMultiplier,
     itemSubgroup = refLocoItem.subgroup
 }
