@@ -1,4 +1,6 @@
 - TODO:
+	- Mark single train unit in compatible with walked warptorio and other mods that copy from surfaces
+    - Zombie extended (new version) has a mod setting "zombies-use-seperate-tab" that when false puts all the train stuff in the default tab. Check this setting and put mine in either default subgroup or mod specific one.
 
 - Graphics:
     - Add direction indicator to placement graphics to help with snapping to stations.
