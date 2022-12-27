@@ -8,14 +8,15 @@
             "type": "factoriomod",
             "request": "launch",
             "name": "Factorio Mod Debug",
-            "factorioPath": "C:/FactorioModding/bin/x64/factorio.exe",
             "factorioArgs": [
-                "--window-size=1280x720"
+                "--window-size=1600x900"
             ],
             "hookControl": true,
             "hookData": true,
             "hookSettings": true,
-            "hookLog": true
+            "hookLog": true,
+            "hookMode": "debug",
+            "profileLines": true
         }
     ]
 }
